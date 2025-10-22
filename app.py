@@ -240,13 +240,13 @@ def render_header():
     <div class="custom-header">
         <div class="header-logos">
             <div>
-                {f'<img src="data:image/png;base64,{get_base64_image(moe_logo_path)}" class="logo-left">' if moe_logo_path.exists() else ''}
+                {f'<img src="data:image/png;base64,{get_base64_image(qatar_lms_logo_path)}" class="logo-right" style="max-height:80px;">' if qatar_lms_logo_path.exists() else ''}
             </div>
             <div>
-                {f'<img src="data:image/png;base64,{get_base64_image(qatar_lms_logo_path)}" class="logo-center">' if qatar_lms_logo_path.exists() else ''}
+                {f'<img src="data:image/png;base64,{get_base64_image(enjaz_logo_path)}" class="logo-center" style="max-height:100px;">' if enjaz_logo_path.exists() else ''}
             </div>
             <div>
-                {f'<img src="data:image/png;base64,{get_base64_image(enjaz_logo_path)}" class="logo-right">' if enjaz_logo_path.exists() else ''}
+                {f'<img src="data:image/png;base64,{get_base64_image(moe_logo_path)}" class="logo-left" style="max-height:80px;">' if moe_logo_path.exists() else ''}
             </div>
         </div>
         <h1>🏆 إنجاز</h1>
