@@ -118,7 +118,7 @@ def get_class_recommendation_by_percentage(percentage, class_name):
         
         "يحتاج إلى تحسين": f'{emoji} **نسبة الحل {percentage:.1f}% (يحتاج إلى تحسين)**\n\n"نسبة الحل ما زالت تحتاج إلى تحسين عاجل، إذ لم تتجاوز 40%. نوصي بتكثيف الجهود عبر التذكير المستمر بنهاية الحصص بإنجاز التقييمات، مع {PARENT_COMMUNICATION}."',
         
-        "غير مستفيد": f'{emoji} **نسبة الحل {percentage:.1f}% (غير مستفيد)**\n\n"لم ينجز الصف أي تقييم أسبوعي في هذه المادة. نوصي بإطلاق خطة عاجلة تشمل: تذكير الطلاب بنهاية كل حصة بأهمية إنجاز التقييمات، و{PARENT_COMMUNICATION}، مع اعتماد نظام قطر للتعليم كمنصة رئيسية."
+        "غير مستفيد": f'{emoji} **نسبة الحل {percentage:.1f}% (غير مستفيد)**\n\n"لم ينجز الصف أي تقييم أسبوعي في هذه المادة. نوصي بإطلاق خطة عاجلة تشمل: تذكير الطلاب بنهاية كل حصة بأهمية إنجاز التقييمات، و{PARENT_COMMUNICATION}، مع اعتماد نظام قطر للتعليم كمنصة رئيسية."'
     }
     
     return recommendations.get(band, f"نسبة الحل: {percentage:.1f}%")
@@ -142,17 +142,17 @@ def get_subject_recommendation_by_percentage(percentage, subject_name):
     emoji = get_band_emoji(band)
     
     recommendations = {
-        "ممتاز جداً": f'{emoji} **نسبة الحل {percentage:.1f}% (ممتاز جدًا)**\n\n"المادة حققت نسبة إنجاز مرتفعة جدًا في التقييمات الأسبوعية على نظام قطر للتعليم. يُوصى بدعم استدامة هذا المستوى عبر توثيق أفضل الممارسات وتعميمها بين الصفوف، مع الحرص على {PARENT_COMMUNICATION} لتعزيز الشراكة التربوية. كما يُوصى بـ {FIXED_REMINDER}"',
+        "البلاتينية": f'{emoji} **نسبة الحل {percentage:.1f}% (البلاتينية)**\n\n"المادة حققت نسبة إنجاز بلاتينية في التقييمات الأسبوعية على نظام قطر للتعليم. يُوصى بدعم استدامة هذا المستوى عبر توثيق أفضل الممارسات وتعميمها، مع {FIXED_REMINDER}"',
         
-        "جيد جداً": f'{emoji} **نسبة الحل {percentage:.1f}% (جيد جدًا)**\n\n"المادة أظهرت نسبة إنجاز جيدة جدًا مع فرصة للارتقاء إلى مستوى الامتياز. يُوصى بزيادة التحفيز والمتابعة، و{PARENT_COMMUNICATION} لدعم انتظام الطلاب، مع التأكيد على {FIXED_REMINDER}"',
+        "الذهبية": f'{emoji} **نسبة الحل {percentage:.1f}% (الذهبية)**\n\n"المادة أظهرت نسبة إنجاز ذهبية مع فرصة للارتقاء إلى مستوى البلاتينية. يُوصى بزيادة التحفيز والمتابعة، مع {FIXED_REMINDER}"',
         
-        "جيد": f'{emoji} **نسبة الحل {percentage:.1f}% (جيد)**\n\n"متوسط الإنجاز في المادة يعكس تفاعلًا مقبولًا مع التقييمات الأسبوعية، لكنه بحاجة إلى دفع إضافي. يُوصى بتعزيز المتابعة و{PARENT_COMMUNICATION} لرفع مستوى الالتزام، مع الاستمرار في {FIXED_REMINDER}"',
+        "الفضية": f'{emoji} **نسبة الحل {percentage:.1f}% (الفضية)**\n\n"متوسط الإنجاز في المادة يعكس تفاعلًا مقبولًا (فئة فضية). يُوصى بتعزيز المتابعة و{PARENT_COMMUNICATION}، مع {FIXED_REMINDER}"',
         
-        "يحتاج إلى تحسين": f'{emoji} **نسبة الحل {percentage:.1f}% (يحتاج إلى تحسين)**\n\n"نسبة الإنجاز متوسطة منخفضة وتحتاج إلى رفع. يُوصى بزيادة المتابعة من القسم و{PARENT_COMMUNICATION} لتحفيز الطلاب على الالتزام، مع التشديد على {FIXED_REMINDER}"',
+        "البرونزية": f'{emoji} **نسبة الحل {percentage:.1f}% (البرونزية)**\n\n"نسبة الإنجاز متوسطة (فئة برونزية). يُوصى بزيادة المتابعة و{PARENT_COMMUNICATION} لتحفيز الطلاب، مع {FIXED_REMINDER}"',
         
-        "ضعيف": f'{emoji} **نسبة الحل {percentage:.1f}% (ضعيف)**\n\n"المادة أظهرت ضعفًا في إنجاز التقييمات الأسبوعية. يُوصى بتدخل مباشر من القسم مع تفعيل {PARENT_COMMUNICATION} بشكل منتظم لتعزيز التزام الطلاب، مع التركيز على {FIXED_REMINDER}"',
+        "يحتاج إلى تحسين": f'{emoji} **نسبة الحل {percentage:.1f}% (يحتاج إلى تحسين)**\n\n"المادة أظهرت ضعفًا في إنجاز التقييمات. يُوصى بتدخل مباشر مع تفعيل {PARENT_COMMUNICATION}، مع {FIXED_REMINDER}"',
         
-        "انعدام الإنجاز": f'{emoji} **نسبة الحل {percentage:.1f}% (انعدام الإنجاز)**\n\n"لم يتم تسجيل أي إنجاز في التقييمات الأسبوعية لهذه المادة. يُوصى بمتابعة عاجلة من القسم، مع تكثيف {PARENT_COMMUNICATION} لتوضيح أهمية الالتزام بالنظام، والتركيز على {FIXED_REMINDER}"'
+        "غير مستفيد": f'{emoji} **نسبة الحل {percentage:.1f}% (غير مستفيد)**\n\n"لم يتم تسجيل أي إنجاز في التقييمات الأسبوعية. يُوصى بمتابعة عاجلة مع تكثيف {PARENT_COMMUNICATION}، مع {FIXED_REMINDER}"'
     }
     
     return recommendations.get(band, f"نسبة الحل: {percentage:.1f}%")
@@ -176,17 +176,17 @@ def get_student_recommendation_by_percentage(percentage, student_name):
     emoji = get_band_emoji(band)
     
     recommendations = {
-        "ممتاز جداً": f'{emoji} **أداء ممتاز جدًا ({percentage:.1f}%)**\n\nالطالب ملتزم بشكل ممتاز. نوصي بالاستمرار والتشجيع.',
+        "البلاتينية": f'{emoji} **أداء بلاتيني ({percentage:.1f}%)**\n\nالطالب ملتزم بشكل ممتاز. نوصي بالاستمرار والتشجيع.',
         
-        "جيد جداً": f'{emoji} **أداء جيد جدًا ({percentage:.1f}%)**\n\nالطالب يحقق أداءً جيدًا. نوصي بمزيد من التحفيز للوصول للامتياز.',
+        "الذهبية": f'{emoji} **أداء ذهبي ({percentage:.1f}%)**\n\nالطالب يحقق أداءً ذهبيًا. نوصي بمزيد من التحفيز للوصول للبلاتينية.',
         
-        "جيد": f'{emoji} **أداء جيد ({percentage:.1f}%)**\n\nالطالب يحتاج إلى مزيد من الالتزام. نوصي بالمتابعة المستمرة.',
+        "الفضية": f'{emoji} **أداء فضي ({percentage:.1f}%)**\n\nالطالب يحتاج إلى مزيد من الالتزام. نوصي بالمتابعة المستمرة.',
         
-        "يحتاج إلى تحسين": f'{emoji} **يحتاج إلى تحسين ({percentage:.1f}%)**\n\nالطالب يحتاج إلى متابعة مكثفة. نوصي بـ {PARENT_COMMUNICATION} والتذكير المستمر.',
+        "البرونزية": f'{emoji} **أداء برونزي ({percentage:.1f}%)**\n\nالطالب يحتاج إلى متابعة مكثفة. نوصي بالتذكير المستمر والتحفيز.',
         
-        "ضعيف": f'{emoji} **أداء ضعيف ({percentage:.1f}%)**\n\nالطالب يحتاج إلى تدخل عاجل. نوصي بـ {PARENT_COMMUNICATION} الفوري ووضع خطة متابعة يومية.',
+        "يحتاج إلى تحسين": f'{emoji} **يحتاج إلى تحسين ({percentage:.1f}%)**\n\nالطالب يحتاج إلى تدخل عاجل. نوصي بـ {PARENT_COMMUNICATION} ووضع خطة متابعة يومية.',
         
-        "انعدام الإنجاز": f'{emoji} **انعدام الإنجاز ({percentage:.1f}%)**\n\nالطالب لم ينجز أي تقييم. نوصي بـ {PARENT_COMMUNICATION} العاجل واجتماع فوري مع ولي الأمر.'
+        "غير مستفيد": f'{emoji} **غير مستفيد ({percentage:.1f}%)**\n\nالطالب لم ينجز أي تقييم. نوصي بـ {PARENT_COMMUNICATION} العاجل واجتماع فوري مع ولي الأمر.'
     }
     
     return recommendations.get(band, f"نسبة الإنجاز: {percentage:.1f}%")
@@ -207,20 +207,20 @@ def get_recommendation_for_band(band, student_name=None, level='student'):
     
     percentage = band_to_percentage.get(band)
     
-    # If band is already in Arabic, get percentage from completion rate
+     # If band is already in Arabic, get percentage from band name
     if band in BAND_LABELS:
-        # Get percentage from band name
-        if band == "ممتاز جداً":
+        # Get percentage from band name (new system)
+        if band == "البلاتينية":
             percentage = 95.0
-        elif band == "جيد جداً":
+        elif band == "الذهبية":
             percentage = 82.0
-        elif band == "جيد":
+        elif band == "الفضية":
             percentage = 67.0
-        elif band == "يحتاج إلى تحسين":
+        elif band == "البرونزية":
             percentage = 50.0
-        elif band == "ضعيف":
+        elif band == "يحتاج إلى تحسين":
             percentage = 20.0
-        elif band == "انعدام الإنجاز":
+        elif band == "غير مستفيد":
             percentage = 0.0
         else:
             percentage = None
