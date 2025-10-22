@@ -7,49 +7,88 @@ FOOTER_HTML = """
     direction: rtl; 
     text-align: center; 
     font-family: 'Cairo', 'Segoe UI', system-ui, sans-serif;
-    background: #8A1538; 
+    background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
     color: #fff; 
-    border-radius: 20px; 
-    padding: 28px 18px; 
-    margin-top: 24px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    border-radius: 35px; 
+    padding: 35px 25px; 
+    margin-top: 32px;
+    box-shadow: 0 12px 32px rgba(138, 21, 56, 0.4), 0 4px 16px rgba(201, 162, 39, 0.1);
+    border-top: 4px solid #C9A227;
+    position: relative;
+    overflow: hidden;
+  }
+  .injaz-footer::before{
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(201,162,39,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .injaz-footer::after{
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(201,162,39,0.15) 0%, transparent 70%);
+    border-radius: 50%;
   }
   .injaz-footer .row{
-    font-size: 1rem; 
-    line-height: 1.9;
-    margin: 4px 0;
+    font-size: 1.05rem; 
+    line-height: 2;
+    margin: 6px 0;
+    position: relative;
+    z-index: 1;
   }
   .injaz-footer .label{
-    color: #C9A227; 
-    font-weight: 600;
+    color: #E5C75A; 
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   .injaz-footer .sep{
-    width: 210px; 
-    height: 3px; 
-    background: #C9A227; 
-    border-radius: 2px; 
-    margin: 16px auto;
+    width: 220px; 
+    height: 4px; 
+    background: linear-gradient(90deg, transparent 0%, #C9A227 50%, transparent 100%); 
+    border-radius: 3px; 
+    margin: 20px auto;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 2px 8px rgba(201,162,39,0.3);
   }
   .injaz-footer .vision{
-    font-size: 1.15rem; 
-    font-weight: 600;
-    opacity: 0.95; 
-    margin: 12px 0;
+    font-size: 1.25rem; 
+    font-weight: 700;
+    opacity: 1; 
+    margin: 16px 0;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    color: #FFFFFF;
   }
   .injaz-footer .copyright{
-    font-size: 0.92rem; 
-    opacity: 0.95; 
-    margin-top: 12px;
+    font-size: 0.95rem; 
+    opacity: 1; 
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+    font-weight: 600;
   }
   .injaz-footer a{
-    color: #C9A227; 
+    color: #E5C75A; 
     text-decoration: none; 
-    font-weight: 600; 
-    border-bottom: 1px dotted rgba(201,162,39,.35);
+    font-weight: 700; 
+    border-bottom: 2px dotted rgba(229,199,90,.5);
+    transition: all 0.3s ease;
+    position: relative;
   }
   .injaz-footer a:hover{
-    color: #E5C75A; 
-    border-bottom: 1px solid #E5C75A;
+    color: #FFD700; 
+    border-bottom: 2px solid #FFD700;
+    text-shadow: 0 0 8px rgba(255,215,0,0.5);
   }
 
   @media (max-width:540px){

@@ -4,7 +4,7 @@ Flat Design with Qatar Education Branding
 """
 
 # Qatar Official Colors
-QATAR_MAROON = "#6d3a46"
+QATAR_MAROON = "#8A1538"  # Unified burgundy color
 QATAR_GOLD = "#C9A227"
 QATAR_WHITE = "#FFFFFF"
 
@@ -60,14 +60,15 @@ def get_professional_css():
     
     .professional-header {{
         background: linear-gradient(135deg, {QATAR_MAROON} 0%, #6B0F2A 100%);
-        padding: 2.5rem 2rem;
-        border-radius: 0 0 30px 30px;
-        margin: -1rem -1rem 2rem -1rem;
+        padding: 3rem 2.5rem;
+        border-radius: 0 0 35px 35px;
+        margin: -1rem -1rem 2.5rem -1rem;
         text-align: center;
         color: white;
-        box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
+        box-shadow: 0 12px 32px rgba(138, 21, 56, 0.4), 0 4px 16px rgba(201, 162, 39, 0.1);
         position: relative;
         overflow: hidden;
+        border-bottom: 4px solid {QATAR_GOLD};
     }}
     
     .professional-header::before {{
@@ -285,8 +286,9 @@ def get_professional_css():
     .stButton>button:hover {{
         background: linear-gradient(135deg, {QATAR_GOLD} 0%, #B8A020 100%);
         color: {QATAR_MAROON};
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(201, 162, 39, 0.4);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 10px 30px rgba(201, 162, 39, 0.5), 0 4px 16px rgba(138, 21, 56, 0.2);
+        border-color: {QATAR_MAROON};
     }}
     
     .stButton>button:active {{
@@ -354,30 +356,36 @@ def get_professional_css():
        ============================================ */
     
     .stTabs [data-baseweb="tab-list"] {{
-        gap: 8px;
-        background-color: white;
-        padding: 0.5rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        gap: 10px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 0.75rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(138, 21, 56, 0.1), inset 0 1px 2px rgba(255,255,255,0.8);
+        border: 1px solid rgba(138, 21, 56, 0.1);
     }}
     
     .stTabs [data-baseweb="tab"] {{
         background-color: transparent;
-        border-radius: 8px;
+        border-radius: 12px;
         color: {QATAR_MAROON};
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-        transition: all 0.3s;
+        font-weight: 700;
+        padding: 0.85rem 1.75rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
     }}
     
     .stTabs [data-baseweb="tab"]:hover {{
-        background-color: rgba(138, 21, 56, 0.1);
+        background: linear-gradient(135deg, rgba(138, 21, 56, 0.08) 0%, rgba(138, 21, 56, 0.12) 100%);
+        border-color: rgba(201, 162, 39, 0.3);
+        transform: translateY(-2px);
     }}
     
     .stTabs [aria-selected="true"] {{
         background: linear-gradient(135deg, {QATAR_MAROON} 0%, #6B0F2A 100%);
         color: white !important;
-        box-shadow: 0 4px 12px rgba(138, 21, 56, 0.3);
+        box-shadow: 0 6px 20px rgba(138, 21, 56, 0.4), 0 2px 8px rgba(201, 162, 39, 0.2);
+        border-color: {QATAR_GOLD};
+        transform: translateY(-2px);
     }}
     
     /* ============================================
