@@ -5,7 +5,7 @@ Main Streamlit Application with Advanced Features
 
 import streamlit as st
 import pandas as pd
-from datetime import date
+from datetime import date, timedelta
 import pytz
 from pathlib import Path
 import base64
@@ -300,7 +300,12 @@ def main():
             value=date.today() - timedelta(days=30),
             help="تاريخ البداية"
         )
-        end_date = date.today()
+        end_date = st.sidebar.date_input(
+            "📅 إلى تاريخ (اليوم)",
+            value=date.today(),
+            help="تاريخ النهاية - الافتراضي هو اليوم",
+            disabled=False
+        )
     
     # Display selected date range
     st.sidebar.info(f"📅 الفترة: {start_date.strftime('%Y-%m-%d')} إلى {end_date.strftime('%Y-%m-%d')}")
