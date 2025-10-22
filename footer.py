@@ -69,12 +69,9 @@ FOOTER_HTML = """
   
   <div class="sep"></div>
   
-  <!-- 2. المنفذ + المنصب -->
-  <div class="row"><span class="label">منسّق المشاريع الإلكترونية:</span> أ. سحر عثمان</div>
-  
-  <!-- 3. البريد + LinkedIn (نصوص فقط) -->
+  <!-- 2. تطوير وتنفيذ -->
+  <div class="row"><span class="label">تطوير وتنفيذ:</span> Sahar Osman</div>
   <div class="row"><a href="mailto:Sahar.Osman@education.qa">Sahar.Osman@education.qa</a></div>
-  <div class="row"><a href="https://www.linkedin.com/in/sahar-osman-a19a45209/" target="_blank" rel="noopener">linkedin.com/in/sahar-osman-a19a45209/</a></div>
   
   <!-- 4. فاصل -->
   <div class="sep"></div>
