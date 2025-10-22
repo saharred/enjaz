@@ -142,13 +142,14 @@ def calculate_school_statistics_for_presentation(all_data):
     return stats
 
 
-def get_presentation_outline(school_stats, subject_stats, coordinator_recommendation="", coordinator_actions=""):
+def get_presentation_outline(school_stats, subject_stats, top_performers_stats, coordinator_recommendation="", coordinator_actions=""):
     """
     Generate presentation outline based on data.
     
     Args:
         school_stats: Dictionary with school statistics
         subject_stats: List of subject statistics
+        top_performers_stats: Dictionary with top performers statistics
         coordinator_recommendation: Text for coordinator's recommendation
         coordinator_actions: Text for coordinator's actions
     
@@ -192,6 +193,18 @@ def get_presentation_outline(school_stats, subject_stats, coordinator_recommenda
         'has_chart': True,
         'chart_type': 'subject_comparison'
     })
+    
+    # Slide 5: Top Performers Analysis
+    if top_performers_stats['total_top_performers'] > 0:
+        outline.append({
+            'id': 'top_performers',
+            'page_title': 'تحليل أداء الطلاب المتفوقين',
+            'summary': f'عدد الطلاب المتفوقين: {top_performers_stats["total_top_performers"]} طالب ({top_performers_stats["percentage_of_total"]:.1f}% من الإجمالي)، مع تفاصيل البلاتينية والذهبية',
+            'image_plan': '',
+            'has_chart': True,
+            'chart_type': 'top_performers',
+            'top_performers_data': top_performers_stats
+        })
     
     # Slides 5-N: Individual subject analysis
     for idx, subject in enumerate(subject_stats, 1):
@@ -500,6 +513,179 @@ def generate_subject_band_chart_html(band_counts, subject_name):
                         font: {{
                             family: 'Tajawal',
                             size: 12
+                        }}
+                    }},
+                    grid: {{
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }}
+                }}
+            }}
+        }}
+    }});
+    </script>
+    """
+    
+    return chart_html
+
+
+
+
+
+def calculate_top_performers_statistics(all_data):
+    """
+    Calculate statistics for top performing students (Platinum and Gold bands).
+    
+    Args:
+        all_data: List of sheet data dictionaries
+    
+    Returns:
+        Dictionary with top performers statistics
+    """
+    stats = {
+        'total_top_performers': 0,
+        'platinum_count': 0,
+        'gold_count': 0,
+        'percentage_of_total': 0.0,
+        'top_students': [],  # List of student names and their rates
+        'subjects_excellence': {}  # Subject-wise top performers count
+    }
+    
+    if not all_data:
+        return stats
+    
+    # Collect all unique students with their overall performance
+    all_students = {}
+    
+    for sheet_data in all_data:
+        subject_name = sheet_data.get('subject', sheet_data['sheet_name'])
+        
+        for student in sheet_data['students']:
+            if not student.get('has_due', False):
+                continue
+            
+            student_name = student['student_name']
+            
+            if student_name not in all_students:
+                all_students[student_name] = {
+                    'total_due': 0,
+                    'completed': 0,
+                    'subjects': []
+                }
+            
+            all_students[student_name]['total_due'] += student['total_due']
+            all_students[student_name]['completed'] += student['completed']
+            all_students[student_name]['subjects'].append({
+                'subject': subject_name,
+                'rate': student['completion_rate']
+            })
+    
+    # Calculate overall rates and identify top performers
+    top_students_list = []
+    
+    for student_name, student_data in all_students.items():
+        if student_data['total_due'] > 0:
+            overall_rate = (student_data['completed'] / student_data['total_due']) * 100
+            band = get_band(overall_rate)
+            
+            if band in ['البلاتينية', 'الذهبية']:
+                stats['total_top_performers'] += 1
+                
+                if band == 'البلاتينية':
+                    stats['platinum_count'] += 1
+                else:
+                    stats['gold_count'] += 1
+                
+                top_students_list.append({
+                    'name': student_name,
+                    'rate': overall_rate,
+                    'band': band,
+                    'subjects': student_data['subjects']
+                })
+                
+                # Count subject-wise excellence
+                for subject_info in student_data['subjects']:
+                    if subject_info['rate'] >= 80:  # Gold or Platinum in this subject
+                        subject = subject_info['subject']
+                        if subject not in stats['subjects_excellence']:
+                            stats['subjects_excellence'][subject] = 0
+                        stats['subjects_excellence'][subject] += 1
+    
+    # Sort top students by rate (descending)
+    top_students_list.sort(key=lambda x: x['rate'], reverse=True)
+    stats['top_students'] = top_students_list
+    
+    # Calculate percentage
+    total_students = len(all_students)
+    if total_students > 0:
+        stats['percentage_of_total'] = (stats['total_top_performers'] / total_students) * 100
+    
+    return stats
+
+
+def generate_top_performers_chart_html(platinum_count, gold_count):
+    """
+    Generate HTML/JavaScript for top performers comparison chart.
+    
+    Args:
+        platinum_count: Number of platinum students
+        gold_count: Number of gold students
+    
+    Returns:
+        HTML string with chart
+    """
+    chart_html = f"""
+    <div style="width: 100%; height: 350px;">
+        <canvas id="topPerformersChart"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+    const ctx = document.getElementById('topPerformersChart').getContext('2d');
+    const chart = new Chart(ctx, {{
+        type: 'bar',
+        data: {{
+            labels: ['البلاتينية 💎', 'الذهبية 🥇'],
+            datasets: [{{
+                label: 'عدد الطلاب المتفوقين',
+                data: [{platinum_count}, {gold_count}],
+                backgroundColor: ['#E5E4E2', '#FFD700'],
+                borderWidth: 0
+            }}]
+        }},
+        options: {{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {{
+                legend: {{
+                    display: false
+                }},
+                tooltip: {{
+                    rtl: true,
+                    callbacks: {{
+                        label: function(context) {{
+                            return 'عدد الطلاب: ' + context.parsed.y;
+                        }}
+                    }}
+                }}
+            }},
+            scales: {{
+                x: {{
+                    ticks: {{
+                        font: {{
+                            family: 'Tajawal',
+                            size: 16
+                        }}
+                    }},
+                    grid: {{
+                        display: false
+                    }}
+                }},
+                y: {{
+                    beginAtZero: true,
+                    ticks: {{
+                        stepSize: 1,
+                        font: {{
+                            family: 'Tajawal',
+                            size: 14
                         }}
                     }},
                     grid: {{
