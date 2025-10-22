@@ -641,19 +641,28 @@ def main():
                             st.error(f"❌ حدث خطأ: {str(e)}")
             
             else:  # عدة طلاب (ملف مضغوط)
-                # Select all checkbox
-                select_all = st.checkbox(
-                    f"✅ تحديد الكل ({len(all_students)} طالب)",
-                    key="select_all_students"
-                )
+                col1, col2 = st.columns([3, 1])
                 
-                # Determine default selection
-                default_selection = sorted(all_students) if select_all else []
+                with col2:
+                    # Select all button
+                    if st.button(f"✅ تحديد الكل ({len(all_students)})", use_container_width=True):
+                        st.session_state.bulk_report_students = sorted(all_students)
+                        st.rerun()
+                
+                with col1:
+                    # Clear selection button
+                    if st.button("❌ إلغاء التحديد", use_container_width=True):
+                        st.session_state.bulk_report_students = []
+                        st.rerun()
+                
+                # Initialize session state if not exists
+                if 'bulk_report_students' not in st.session_state:
+                    st.session_state.bulk_report_students = []
                 
                 selected_students = st.multiselect(
                     "اختر الطلاب (يمكن اختيار أكثر من طالب)",
                     sorted(all_students),
-                    default=default_selection,
+                    default=st.session_state.bulk_report_students,
                     key="bulk_report_students"
                 )
                 
