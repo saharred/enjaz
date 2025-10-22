@@ -227,32 +227,67 @@ def apply_custom_css():
 
 
 def render_header():
-    """Render custom header with logos."""
-    school_info = load_school_info()
+    """Render custom header with logos - New Design."""
     assets_path = Path(__file__).parent / 'enjaz' / 'assets'
     
-    # Check if logos exist
-    moe_logo_path = assets_path / 'moe_logo.png'
+    # Logos
     enjaz_logo_path = assets_path / 'logo.png'
     qatar_lms_logo_path = assets_path / 'qatar_lms_logo.png'
     
+    # Get base64 encoded images
+    enjaz_logo_b64 = get_base64_image(enjaz_logo_path) if enjaz_logo_path.exists() else ''
+    qatar_logo_b64 = get_base64_image(qatar_lms_logo_path) if qatar_lms_logo_path.exists() else ''
+    
     header_html = f"""
-    <div class="custom-header">
-        <div class="header-logos">
-            <div>
-                {f'<img src="data:image/png;base64,{get_base64_image(qatar_lms_logo_path)}" class="logo-right" style="max-height:80px;">' if qatar_lms_logo_path.exists() else ''}
-            </div>
-            <div>
-                {f'<img src="data:image/png;base64,{get_base64_image(enjaz_logo_path)}" class="logo-center" style="max-height:100px;">' if enjaz_logo_path.exists() else ''}
-            </div>
-            <div>
-                {f'<img src="data:image/png;base64,{get_base64_image(moe_logo_path)}" class="logo-left" style="max-height:80px;">' if moe_logo_path.exists() else ''}
-            </div>
-        </div>
-        <h1>🏆 إنجاز</h1>
-        <p class="subtitle">ضمان تنمية رقمية مستدامة</p>
-        <p>نظام تحليل التقييمات الإلكترونية الأسبوعية على قطر للتعليم</p>
+    <style>
+    .enjaz-logos {{
+        display: grid;
+        grid-template-columns: 96px 1fr 96px;
+        gap: 12px;
+        align-items: center;
+        max-width: 1100px;
+        margin: 0 auto 8px auto;
+        padding: 20px 0;
+    }}
+    .enjaz-logos img {{
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }}
+    .enjaz-title {{
+        text-align: center;
+        color: {QATAR_MAROON};
+        font-weight: 800;
+        font-size: 42px;
+        font-family: 'Cairo', sans-serif;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }}
+    .enjaz-subtitle {{
+        text-align: center;
+        color: {QATAR_GOLD};
+        font-weight: 700;
+        font-size: 18px;
+        font-family: 'Cairo', sans-serif;
+        margin: 8px 0 4px 0;
+    }}
+    .enjaz-description {{
+        text-align: center;
+        color: #555;
+        font-size: 16px;
+        font-family: 'Cairo', sans-serif;
+        margin: 0;
+    }}
+    </style>
+    
+    <div class="enjaz-logos">
+        {'<img src="data:image/png;base64,' + enjaz_logo_b64 + '" alt="Enjaz"/>' if enjaz_logo_b64 else '<div></div>'}
+        <div class="enjaz-title">إنجاز 🏆</div>
+        {'<img src="data:image/png;base64,' + qatar_logo_b64 + '" alt="Qatar Education"/>' if qatar_logo_b64 else '<div></div>'}
     </div>
+    
+    <p class="enjaz-subtitle">ضمان تنمية رقمية مستدامة</p>
+    <p class="enjaz-description">نظام تحليل التقييمات الإلكترونية الأسبوعية على قطر للتعليم</p>
     """
     
     st.markdown(header_html, unsafe_allow_html=True)
