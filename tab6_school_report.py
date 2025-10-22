@@ -237,6 +237,7 @@ def render_school_report_tab(all_data):
                     calculate_school_statistics_for_presentation,
                     calculate_subject_statistics,
                     calculate_top_performers_statistics,
+                    calculate_struggling_students_statistics,
                     get_presentation_outline
                 )
                 
@@ -244,6 +245,7 @@ def render_school_report_tab(all_data):
                 pres_school_stats = calculate_school_statistics_for_presentation(all_data)
                 subject_stats = calculate_subject_statistics(all_data)
                 top_performers_stats = calculate_top_performers_statistics(all_data)
+                struggling_students_stats = calculate_struggling_students_statistics(all_data)
                 
                 # Check if there's data
                 if pres_school_stats['total_assessments'] == 0:
@@ -254,6 +256,7 @@ def render_school_report_tab(all_data):
                         pres_school_stats,
                         subject_stats,
                         top_performers_stats,
+                        struggling_students_stats,
                         coordinator_recommendation,
                         presentation_coordinator_actions
                     )
@@ -263,6 +266,7 @@ def render_school_report_tab(all_data):
                         'school_stats': pres_school_stats,
                         'subject_stats': subject_stats,
                         'top_performers_stats': top_performers_stats,
+                        'struggling_students_stats': struggling_students_stats,
                         'coordinator_recommendation': coordinator_recommendation,
                         'coordinator_actions': presentation_coordinator_actions,
                         'outline': outline

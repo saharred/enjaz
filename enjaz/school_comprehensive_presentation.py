@@ -142,7 +142,7 @@ def calculate_school_statistics_for_presentation(all_data):
     return stats
 
 
-def get_presentation_outline(school_stats, subject_stats, top_performers_stats, coordinator_recommendation="", coordinator_actions=""):
+def get_presentation_outline(school_stats, subject_stats, top_performers_stats, struggling_students_stats, coordinator_recommendation="", coordinator_actions=""):
     """
     Generate presentation outline based on data.
     
@@ -150,6 +150,7 @@ def get_presentation_outline(school_stats, subject_stats, top_performers_stats, 
         school_stats: Dictionary with school statistics
         subject_stats: List of subject statistics
         top_performers_stats: Dictionary with top performers statistics
+        struggling_students_stats: Dictionary with struggling students statistics
         coordinator_recommendation: Text for coordinator's recommendation
         coordinator_actions: Text for coordinator's actions
     
@@ -204,6 +205,18 @@ def get_presentation_outline(school_stats, subject_stats, top_performers_stats, 
             'has_chart': True,
             'chart_type': 'top_performers',
             'top_performers_data': top_performers_stats
+        })
+    
+    # Slide 6: Struggling Students Analysis
+    if struggling_students_stats['total_struggling'] > 0:
+        outline.append({
+            'id': 'struggling_students',
+            'page_title': 'تحليل أداء الطلاب المتعثرين',
+            'summary': f'عدد الطلاب المتعثرين: {struggling_students_stats["total_struggling"]} طالب ({struggling_students_stats["percentage_of_total"]:.1f}% من الإجمالي)، مع توصيات للتدخل الفوري',
+            'image_plan': '',
+            'has_chart': True,
+            'chart_type': 'struggling_students',
+            'struggling_students_data': struggling_students_stats
         })
     
     # Slides 5-N: Individual subject analysis
@@ -648,6 +661,187 @@ def generate_top_performers_chart_html(platinum_count, gold_count):
                 label: 'عدد الطلاب المتفوقين',
                 data: [{platinum_count}, {gold_count}],
                 backgroundColor: ['#E5E4E2', '#FFD700'],
+                borderWidth: 0
+            }}]
+        }},
+        options: {{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {{
+                legend: {{
+                    display: false
+                }},
+                tooltip: {{
+                    rtl: true,
+                    callbacks: {{
+                        label: function(context) {{
+                            return 'عدد الطلاب: ' + context.parsed.y;
+                        }}
+                    }}
+                }}
+            }},
+            scales: {{
+                x: {{
+                    ticks: {{
+                        font: {{
+                            family: 'Tajawal',
+                            size: 16
+                        }}
+                    }},
+                    grid: {{
+                        display: false
+                    }}
+                }},
+                y: {{
+                    beginAtZero: true,
+                    ticks: {{
+                        stepSize: 1,
+                        font: {{
+                            family: 'Tajawal',
+                            size: 14
+                        }}
+                    }},
+                    grid: {{
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }}
+                }}
+            }}
+        }}
+    }});
+    </script>
+    """
+    
+    return chart_html
+
+
+
+
+
+def calculate_struggling_students_statistics(all_data):
+    """
+    Calculate statistics for struggling students (Needs Development and Not Benefiting bands).
+    
+    Args:
+        all_data: List of sheet data dictionaries
+    
+    Returns:
+        Dictionary with struggling students statistics
+    """
+    stats = {
+        'total_struggling': 0,
+        'needs_development_count': 0,  # 1-49.99%
+        'not_benefiting_count': 0,      # 0%
+        'percentage_of_total': 0.0,
+        'struggling_students': [],  # List of student names and their rates
+        'subjects_concern': {},  # Subject-wise struggling students count
+        'intervention_priority': []  # Students who need immediate intervention
+    }
+    
+    if not all_data:
+        return stats
+    
+    # Collect all unique students with their overall performance
+    all_students = {}
+    
+    for sheet_data in all_data:
+        subject_name = sheet_data.get('subject', sheet_data['sheet_name'])
+        
+        for student in sheet_data['students']:
+            if not student.get('has_due', False):
+                continue
+            
+            student_name = student['student_name']
+            
+            if student_name not in all_students:
+                all_students[student_name] = {
+                    'total_due': 0,
+                    'completed': 0,
+                    'subjects': []
+                }
+            
+            all_students[student_name]['total_due'] += student['total_due']
+            all_students[student_name]['completed'] += student['completed']
+            all_students[student_name]['subjects'].append({
+                'subject': subject_name,
+                'rate': student['completion_rate']
+            })
+    
+    # Calculate overall rates and identify struggling students
+    struggling_students_list = []
+    
+    for student_name, student_data in all_students.items():
+        if student_data['total_due'] > 0:
+            overall_rate = (student_data['completed'] / student_data['total_due']) * 100
+            band = get_band(overall_rate)
+            
+            if band in ['يحتاج إلى تطوير', 'لا يستفيد من النظام']:
+                stats['total_struggling'] += 1
+                
+                if band == 'يحتاج إلى تطوير':
+                    stats['needs_development_count'] += 1
+                else:
+                    stats['not_benefiting_count'] += 1
+                
+                struggling_students_list.append({
+                    'name': student_name,
+                    'rate': overall_rate,
+                    'band': band,
+                    'subjects': student_data['subjects']
+                })
+                
+                # Count subject-wise struggling
+                for subject_info in student_data['subjects']:
+                    if subject_info['rate'] < 50:  # Struggling in this subject
+                        subject = subject_info['subject']
+                        if subject not in stats['subjects_concern']:
+                            stats['subjects_concern'][subject] = 0
+                        stats['subjects_concern'][subject] += 1
+                
+                # Identify students who need immediate intervention (0% or very low)
+                if overall_rate < 10:
+                    stats['intervention_priority'].append({
+                        'name': student_name,
+                        'rate': overall_rate
+                    })
+    
+    # Sort struggling students by rate (ascending - worst first)
+    struggling_students_list.sort(key=lambda x: x['rate'])
+    stats['struggling_students'] = struggling_students_list
+    
+    # Calculate percentage
+    total_students = len(all_students)
+    if total_students > 0:
+        stats['percentage_of_total'] = (stats['total_struggling'] / total_students) * 100
+    
+    return stats
+
+
+def generate_struggling_students_chart_html(needs_development_count, not_benefiting_count):
+    """
+    Generate HTML/JavaScript for struggling students comparison chart.
+    
+    Args:
+        needs_development_count: Number of students who need development
+        not_benefiting_count: Number of students not benefiting
+    
+    Returns:
+        HTML string with chart
+    """
+    chart_html = f"""
+    <div style="width: 100%; height: 350px;">
+        <canvas id="strugglingStudentsChart"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+    const ctx = document.getElementById('strugglingStudentsChart').getContext('2d');
+    const chart = new Chart(ctx, {{
+        type: 'bar',
+        data: {{
+            labels: ['يحتاج إلى تطوير ⚠️', 'لا يستفيد من النظام ❌'],
+            datasets: [{{
+                label: 'عدد الطلاب المتعثرين',
+                data: [{needs_development_count}, {not_benefiting_count}],
+                backgroundColor: ['#FF6600', '#C00000'],
                 borderWidth: 0
             }}]
         }},
