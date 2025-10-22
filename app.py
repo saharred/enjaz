@@ -699,9 +699,18 @@ def main():
                 total_completed = sum(s['completed'] for s in student_subjects)
                 overall_rate = 100 * total_completed / total_due if total_due > 0 else 0
                 
+                # Get student info
+                student_grade = student_info[selected_student]['grade']
+                student_section = student_info[selected_student]['section']
+                student_band = get_band(overall_rate)
+                student_emoji = get_band_emoji(overall_rate)
+                
+                # Display student info
+                st.info(f"🏫 **الصف:** {student_grade} | 📚 **الشعبة:** {student_section}")
+                
                 st.subheader(f"📊 ملخص أداء: {selected_student}")
                 
-                col1, col2, col3 = st.columns(3)
+                col1, col2, col3, col4 = st.columns(4)
                 
                 with col1:
                     st.metric("إجمالي التقييمات", total_due)
@@ -711,6 +720,9 @@ def main():
                 
                 with col3:
                     st.metric("نسبة الإنجاز", f"{overall_rate:.1f}%")
+                
+                with col4:
+                    st.metric("الفئة", f"{student_emoji} {student_band}")
                 
                 # Subject breakdown
                 st.subheader("📚 التفصيل حسب المواد")
