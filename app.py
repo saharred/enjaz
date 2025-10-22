@@ -12,7 +12,7 @@ import base64
 
 # Import Enjaz modules
 from enjaz.data_ingest_lms import aggregate_lms_files
-from enjaz.analysis import calculate_weekly_kpis, calculate_class_stats, get_band
+from enjaz.analysis import calculate_weekly_kpis, calculate_class_stats, get_band, get_band_emoji
 from enjaz.school_info import load_school_info, save_school_info
 from enjaz.advanced_charts import (
     create_band_distribution_chart,
