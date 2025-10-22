@@ -14,12 +14,12 @@ from enjaz.comprehensive_report import (
     export_comprehensive_report_to_excel
 )
 from enjaz.analysis import get_band
-from enjaz.department_recommendations import get_recommendation_by_completion_rate
+from enjaz.department_recommendations import get_subject_recommendation
 
 
 def get_school_level_recommendation(completion_rate):
     """Get school-level recommendation based on overall completion rate."""
-    return get_recommendation_by_completion_rate(completion_rate)
+    return get_subject_recommendation(completion_rate)
 
 
 def calculate_school_statistics(all_data):
