@@ -457,18 +457,24 @@ def main():
                 import tempfile
                 import os
                 
-                if st.button("📅 تصدير إلى Excel"):
-                    with tempfile.TemporaryDirectory() as tmpdir:
-                        excel_path = os.path.join(tmpdir, 'تقرير_الصف_والمادة.xlsx')
-                        export_school_report_to_excel(horizontal_df, excel_path)
-                        
-                        with open(excel_path, 'rb') as f:
-                            st.download_button(
-                                label="⬇️ تحميل التقرير",
-                                data=f.read(),
-                                file_name='تقرير_الصف_والمادة.xlsx',
-                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                            )
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if st.button("✓ تقرير جميع الطلاب (Excel)"):
+                        with tempfile.TemporaryDirectory() as tmpdir:
+                            excel_path = os.path.join(tmpdir, 'تقرير_جميع_الطلاب.xlsx')
+                            export_school_report_to_excel(horizontal_df, excel_path)
+                            
+                            with open(excel_path, 'rb') as f:
+                                st.download_button(
+                                    label="⬇️ تحميل Excel",
+                                    data=f.read(),
+                                    file_name='تقرير_جميع_الطلاب.xlsx',
+                                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                                )
+                
+                with col2:
+                    st.info("📄 تصدير Word سيتم إضافته قريباً")
         
         except Exception as e:
             st.error(f"❌ حدث خطأ في إنشاء التقرير: {str(e)}")
