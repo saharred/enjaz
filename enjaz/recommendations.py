@@ -3,6 +3,7 @@ Recommendations module for Enjaz application.
 Generates Arabic professional recommendations for teachers.
 """
 
+from enjaz.analysis import BAND_LABELS
 
 # Fixed reminder line to be included in all recommendations
 FIXED_REMINDER = "تذكير الطلاب دائماً بحل التقييمات بنهاية كل حصة، ورقمنة استراتيجية الصفوف المقلوبة بتوظيف نظام قطر للتعليم."

@@ -11,8 +11,7 @@ from enjaz.comprehensive_report_horizontal import (
     create_horizontal_comprehensive_report
 )
 from enjaz.comprehensive_report import (
-    export_comprehensive_report_to_excel,
-    export_comprehensive_report_to_word
+    export_comprehensive_report_to_excel
 )
 from enjaz.analysis import get_band
 
@@ -81,7 +80,7 @@ def render_school_report_tab(all_data):
         # Export options
         st.subheader("📥 تصدير التقرير")
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         
         with col1:
             # Export to Excel
@@ -111,33 +110,6 @@ def render_school_report_tab(all_data):
                     st.error(f"❌ حدث خطأ: {str(e)}")
         
         with col2:
-            # Export to Word
-            if st.button("📝 تصدير إلى Word"):
-                try:
-                    with tempfile.NamedTemporaryFile(delete=False, suffix='.docx') as tmp:
-                        word_path = export_comprehensive_report_to_word(
-                            df,
-                            tmp.name
-                        )
-                        
-                        with open(word_path, 'rb') as f:
-                            word_data = f.read()
-                        
-                        st.download_button(
-                            label="⬇️ تحميل ملف Word",
-                            data=word_data,
-                            file_name="التقرير_التحليلي_الشامل.docx",
-                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        )
-                        
-                        # Clean up temp file
-                        os.unlink(word_path)
-                        
-                        st.success("✅ تم إنشاء ملف Word بنجاح!")
-                except Exception as e:
-                    st.error(f"❌ حدث خطأ: {str(e)}")
-        
-        with col3:
             # Export to CSV
             if st.button("📊 تصدير إلى CSV"):
                 try:

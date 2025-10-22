@@ -326,13 +326,12 @@ def main():
             return
     
     # Main navigation
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "📊 لوحة المعلومات",
-        "📈 الرسوم البيانية",
+        "🏫 تقرير المدرسة",
         "📚 تقرير الصف/المادة",
         "🏫 ملف الطالب",
         "📥 التقارير الفردية",
-        "🏫 تقرير المدرسة",
         "📊 التصدير التحليلي"
     ])
     
@@ -404,27 +403,10 @@ def main():
             st.error(f"⚠️ خطأ في إنشاء لوحة المعلومات: {str(e)}")
             st.info("📊 البيانات متوفرة في التبويبات الأخرى")
     
-    # Tab 2: Charts
+    # Tab 2: School Report
     with tab2:
-        st.header("📈 الرسوم البيانية التفاعلية")
-        
-        chart_type = st.selectbox(
-            "اختر نوع الرسم البياني",
-            ["توزيع الفئات", "مقارنة الشعب", "مقارنة المواد"]
-        )
-        
-        try:
-            if chart_type == "توزيع الفئات":
-                fig = create_band_distribution_chart(all_data)
-            elif chart_type == "مقارنة الشعب":
-                fig = create_class_comparison_chart(all_data)
-            else:
-                fig = create_subject_comparison_chart(all_data)
-            
-            st.plotly_chart(fig, use_container_width=True)
-        except Exception as e:
-            st.error(f"⚠️ خطأ في إنشاء الرسم البياني: {str(e)}")
-            st.info("📈 يرجى التأكد من رفع الملفات بشكل صحيح")
+        from tab6_school_report import render_school_report_tab
+        render_school_report_tab(all_data)
     
     # Tab 3: Class/Subject Report - Horizontal View
     with tab3:
@@ -610,32 +592,69 @@ def main():
                         st.error(f"❌ حدث خطأ: {str(e)}")
         
         else:
-            # Class/Subject report
-            sheet_names = [f"{d['subject']} - {d.get('class_code', '')}" for d in all_data]
-            selected_sheet = st.selectbox("اختر المادة والشعبة", sheet_names, key="report_sheet")
+            # Class/Subject report with multiselect
+            st.info("📌 يمكنك اختيار عدة مواد/شعب لتجميعها في تقرير واحد (مثلاً: معلم علوم يدرّس ثالث1 و ثالث2)")
             
-            if st.button("📄 إنشاء التقرير"):
+            sheet_names = [f"{d['subject']} - {d.get('class_code', '')}" for d in all_data]
+            selected_sheets = st.multiselect(
+                "اختر المواد والشعب (يمكن اختيار أكثر من واحد)",
+                sheet_names,
+                key="report_sheets"
+            )
+            
+            if selected_sheets and st.button("📄 إنشاء التقرير"):
                 with st.spinner("⏳ جاري إنشاء التقرير..."):
                     try:
-                        sheet_index = sheet_names.index(selected_sheet)
-                        sheet_data = all_data[sheet_index]
+                        # Get selected sheet indices
+                        selected_indices = [sheet_names.index(name) for name in selected_sheets]
                         
-                        pdf_buffer = create_class_subject_report(
-                            sheet_data.get('subject', ''),
-                            sheet_data.get('class_code', ''),
-                            sheet_data
-                        )
+                        # Import teacher report module
+                        from enjaz.teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
                         
-                        st.download_button(
-                            label="⬇️ تحميل التقرير (PDF)",
-                            data=pdf_buffer,
-                            file_name=f"تقرير_{selected_sheet}.pdf",
-                            mime="application/pdf"
-                        )
+                        # Aggregate data from selected sheets
+                        teacher_data = aggregate_teacher_data(all_data, selected_indices)
                         
-                        st.success("✅ تم إنشاء التقرير بنجاح!")
+                        # Create Excel report
+                        import tempfile
+                        import os
+                        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
+                            excel_path = export_teacher_report_to_excel(teacher_data, tmp.name)
+                            
+                            with open(excel_path, 'rb') as f:
+                                excel_data = f.read()
+                            
+                            st.download_button(
+                                label="⬇️ تحميل التقرير (Excel)",
+                                data=excel_data,
+                                file_name=f"تقرير_مجمّع_{len(selected_sheets)}_مواد.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            )
+                            
+                            # Clean up
+                            os.unlink(excel_path)
+                        
+                        st.success(f"✅ تم إنشاء تقرير مجمّع لـ {len(selected_sheets)} مادة/شعبة بنجاح!")
+                        
+                        # Display summary
+                        st.subheader("📊 ملخص التقرير")
+                        col1, col2, col3, col4 = st.columns(4)
+                        
+                        with col1:
+                            st.metric("👥 عدد الطلاب", teacher_data['total_students'])
+                        
+                        with col2:
+                            st.metric("📊 عدد التقييمات", teacher_data['total_assessments'])
+                        
+                        with col3:
+                            st.metric("✅ المُنجز", teacher_data['total_completed'])
+                        
+                        with col4:
+                            st.metric("🎯 متوسط الإنجاز", f"{teacher_data['average_completion']:.1f}%")
+                        
                     except Exception as e:
                         st.error(f"❌ حدث خطأ: {str(e)}")
+                        import traceback
+                        st.code(traceback.format_exc())
     
     # Tab 6: School Report
     with tab6:
