@@ -651,6 +651,63 @@ def main():
                         with col4:
                             st.metric("🎯 متوسط الإنجاز", f"{teacher_data['average_completion']:.1f}%")
                         
+                        # Email sending feature
+                        st.divider()
+                        st.subheader("📧 إرسال التقرير عبر البريد الإلكتروني")
+                        
+                        with st.expander("📧 إرسال التقرير للمعلم", expanded=False):
+                            from enjaz.email_sender import send_teacher_report_email, validate_email, get_email_config_instructions
+                            
+                            col_email1, col_email2 = st.columns(2)
+                            
+                            with col_email1:
+                                teacher_name = st.text_input(
+                                    "👤 اسم المعلم/ة",
+                                    placeholder="مثلاً: أحمد محمد",
+                                    key="teacher_name_email"
+                                )
+                            
+                            with col_email2:
+                                teacher_email = st.text_input(
+                                    "📧 البريد الإلكتروني",
+                                    placeholder="teacher@school.qa",
+                                    key="teacher_email"
+                                )
+                            
+                            if st.button("✉️ إرسال التقرير", key="send_email_btn"):
+                                if not teacher_name or not teacher_email:
+                                    st.warning("⚠️ يرجى إدخال الاسم والبريد الإلكتروني")
+                                elif not validate_email(teacher_email):
+                                    st.error("❌ البريد الإلكتروني غير صحيح")
+                                else:
+                                    with st.spinner("📤 جاري إرسال التقرير..."):
+                                        # Create temporary file for email
+                                        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_email:
+                                            excel_path_email = export_teacher_report_to_excel(teacher_data, tmp_email.name)
+                                            
+                                            success, message = send_teacher_report_email(
+                                                recipient_email=teacher_email,
+                                                teacher_name=teacher_name,
+                                                report_file_path=excel_path_email,
+                                                subject_count=len(selected_sheets)
+                                            )
+                                            
+                                            # Clean up
+                                            os.unlink(excel_path_email)
+                                        
+                                        if success:
+                                            st.success(message)
+                                        else:
+                                            st.warning(message)
+                            
+                            # Configuration instructions
+                            with st.expander("⚙️ إعدادات البريد الإلكتروني"):
+                                st.markdown(get_email_config_instructions())
+                        
+                        # Store report path in session state for email
+                        if 'last_report_path' not in st.session_state:
+                            st.session_state.last_report_path = None
+                        
                     except Exception as e:
                         st.error(f"❌ حدث خطأ: {str(e)}")
                         import traceback
