@@ -110,6 +110,7 @@ FOOTER_HTML = """
   
   <!-- 2. تطوير وتنفيذ -->
   <div class="row"><span class="label">تطوير وتنفيذ:</span> Sahar Osman</div>
+  <div class="row" style="font-size: 0.95rem; color: #E5C75A; font-weight: 600; margin-top: 2px;">E-Learning Projects Coordinator</div>
   <div class="row"><a href="mailto:Sahar.Osman@education.qa">Sahar.Osman@education.qa</a></div>
   
   <!-- 4. فاصل -->
