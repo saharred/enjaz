@@ -17,6 +17,8 @@ from reportlab.lib.enums import TA_RIGHT, TA_CENTER
 import arabic_reshaper
 from bidi.algorithm import get_display
 
+from enjaz.pdf_fonts import get_arabic_font_name, AMIRI_REGULAR, AMIRI_BOLD
+
 
 def reshape_arabic_text(text):
     """
@@ -159,7 +161,7 @@ def create_pdf_report(title, content_data, filename="report.pdf"):
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6d3a46')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+                ('FONTNAME', (0, 0), (-1, -1), AMIRI_REGULAR),
                 ('FONTSIZE', (0, 0), (-1, -1), 10),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                 ('BACKGROUND', (0, 1), (-1, -1), colors.white),

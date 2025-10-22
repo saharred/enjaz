@@ -21,6 +21,7 @@ from pathlib import Path
 from enjaz.analysis import get_band, get_band_color
 from enjaz.recommendations import get_recommendation_for_band
 from enjaz.school_info import load_school_info, get_qr_links
+from enjaz.pdf_fonts import get_arabic_font_name, AMIRI_REGULAR, AMIRI_BOLD
 
 
 def reshape_arabic(text):
@@ -95,7 +96,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
         fontSize=16,
         textColor=colors.HexColor('#6d3a46'),
         spaceAfter=10,
-        fontName='Helvetica-Bold'
+        fontName=AMIRI_BOLD
     )
     
     heading_style = ParagraphStyle(

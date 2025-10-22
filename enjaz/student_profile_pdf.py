@@ -16,6 +16,7 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 
 from enjaz.analysis import get_band, get_band_color
+from enjaz.pdf_fonts import get_arabic_font_name, AMIRI_REGULAR, AMIRI_BOLD
 
 
 def reshape_arabic(text):
