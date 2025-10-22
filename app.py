@@ -753,7 +753,7 @@ def main():
     
     # Tab 6: School Report
     with tab6:
-        from enjaz.tab6_school_report import render_school_report_tab
+        from tab6_school_report import render_school_report_tab
         render_school_report_tab(all_data)
 
     # Render footer
