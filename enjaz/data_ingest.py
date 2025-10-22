@@ -239,6 +239,7 @@ def parse_excel_file(file_path_or_buffer, today, week_name=None):
                     total_due = 0
                     completed = 0
                     not_submitted = 0
+                    student_assessments = []  # Store detailed assessment info
                     
                     for assessment in assessment_columns:
                         col_idx = assessment['col_idx']
@@ -259,6 +260,13 @@ def parse_excel_file(file_path_or_buffer, today, week_name=None):
                             continue
                         
                         value_str = str(cell_value).strip().upper()
+                        
+                        # Store assessment details
+                        student_assessments.append({
+                            'title': assessment['title'],
+                            'due_date': due_date,
+                            'value': cell_value
+                        })
                         
                         if value_str == 'M':
                             # Not submitted
@@ -284,7 +292,8 @@ def parse_excel_file(file_path_or_buffer, today, week_name=None):
                         'completed': completed,
                         'not_submitted': not_submitted,
                         'completion_rate': completion_rate,
-                        'has_due': has_due
+                        'has_due': has_due,
+                        'assessments': student_assessments  # Include detailed assessments
                     })
                 
                 # Parse sheet name

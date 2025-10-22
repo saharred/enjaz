@@ -184,8 +184,7 @@ def render_header():
     st.markdown("""
         <div class="main-header">
             <h1>🏆 إنجاز</h1>
-            <p>نظام تحليل بيانات التقييمات الأسبوعية</p>
-            <p style="font-size: 1rem; margin-top: 1rem;">مدرسة عثمان بن عفّان النموذجية للبنين</p>
+            <p>نظام تحليل التقييمات الإلكترونية الأسبوعية على قطر للتعليم</p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -196,8 +195,9 @@ def render_footer():
     """
     st.markdown("""
         <div class="main-footer">
-            <p><strong>© 2025 — جميع الحقوق محفوظة | مدرسة عثمان بن عفّان النموذجية للبنين</strong></p>
-            <p>Developed & Implemented by: E-Projects Coordinator / Sahar Osman — 📧 <a href="mailto:Sahar.Osman@education.qa">Sahar.Osman@education.qa</a></p>
+            <p><strong>© 2025 — جميع الحقوق محفوظة</strong></p>
+            <p><strong>مدرسة عثمان بن عفّان النموذجية للبنين</strong></p>
+            <p><a href="mailto:Sahar.Osman@education.qa">Sahar.Osman@education.qa</a></p>
             <p><strong>رؤيتنا: "متعلم ريادي لتنمية مستدامة"</strong></p>
         </div>
     """, unsafe_allow_html=True)
