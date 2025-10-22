@@ -47,6 +47,7 @@ from enjaz.professional_design import (
     QATAR_MAROON,
     QATAR_GOLD
 )
+from tab7_analytics_export import render_analytics_export_tab
 
 # Page configuration
 st.set_page_config(
@@ -291,13 +292,14 @@ def main():
     st.success(f"✅ تم تحميل {len(all_data)} ورقة عمل بنجاح!")
     
     # Main navigation
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "📊 لوحة المعلومات",
         "📈 الرسوم البيانية",
         "📚 تقرير الصف/المادة",
         "🏫 ملف الطالب",
         "📥 التقارير الفردية",
-        "🏫 تقرير المدرسة"
+        "🏫 تقرير المدرسة",
+        "📊 التصدير التحليلي"
     ])
     
     # Tab 1: Dashboard
@@ -605,6 +607,10 @@ def main():
     with tab6:
         from tab6_school_report import render_school_report_tab
         render_school_report_tab(all_data)
+    
+    # Tab 7: Analytics Export
+    with tab7:
+        render_analytics_export_tab(all_data)
 
     # Render footer
     render_professional_footer()
