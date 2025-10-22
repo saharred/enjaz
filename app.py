@@ -260,14 +260,20 @@ def render_header():
 
 def render_footer():
     """Render custom footer."""
-    school_info = load_school_info()
-    
     footer_html = f"""
     <div class="custom-footer">
-        <p><strong>© 2025 — جميع الحقوق محفوظة</strong></p>
-        <p><strong>{school_info['school_name']}</strong></p>
-        <p><a href="mailto:{school_info['email']}">{school_info['email']}</a></p>
-        <p><strong>رؤيتنا: "{school_info['vision']}"</strong></p>
+        <p style="margin:0;"><strong>© 2025 — جميع الحقوق محفوظة</strong></p>
+        <p style="margin:0;"><strong>مدرسة عثمان بن عفّان النموذجية للبنين</strong></p>
+        <p style="margin:0; color:{QATAR_GOLD}; font-weight:bold;">
+            📧 <a href="mailto:S.mahgou0101@education.qa" style="color:{QATAR_GOLD}; text-decoration:none;">S.mahgou0101@education.qa</a>
+        </p>
+        <p style="margin:0;">
+            <a href="https://www.linkedin.com/in/sahar-osman-a19a45209/" target="_blank" style="text-decoration:none;">
+                <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" width="24" style="vertical-align:middle; margin-left:5px;"/>
+                <span style="color:{QATAR_GOLD}; font-weight:bold;">LinkedIn</span>
+            </a>
+        </p>
+        <p style="margin-top:10px; font-style:italic;">رؤيتنا: "متعلم ريادي لتنمية مستدامة"</p>
     </div>
     """
     
