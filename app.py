@@ -42,11 +42,11 @@ from enjaz.school_report import (
 from enjaz.professional_design import (
     get_professional_css,
     get_header_html,
-    get_footer_html,
     get_metric_card_html,
     QATAR_MAROON,
     QATAR_GOLD
 )
+from footer import render_footer
 from enjaz.data_validation import validate_uploaded_files, display_validation_results
 
 # Page configuration
@@ -946,8 +946,8 @@ def main():
                         import traceback
                         st.code(traceback.format_exc())
     
-    # Render footer
-    render_professional_footer()
+    # Render professional footer
+    render_footer()
 
 
 if __name__ == "__main__":
