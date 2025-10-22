@@ -641,9 +641,19 @@ def main():
                             st.error(f"❌ حدث خطأ: {str(e)}")
             
             else:  # عدة طلاب (ملف مضغوط)
+                # Select all checkbox
+                select_all = st.checkbox(
+                    f"✅ تحديد الكل ({len(all_students)} طالب)",
+                    key="select_all_students"
+                )
+                
+                # Determine default selection
+                default_selection = sorted(all_students) if select_all else []
+                
                 selected_students = st.multiselect(
                     "اختر الطلاب (يمكن اختيار أكثر من طالب)",
                     sorted(all_students),
+                    default=default_selection,
                     key="bulk_report_students"
                 )
                 
