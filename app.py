@@ -534,43 +534,20 @@ def main():
         st.header("📚 تقرير الصف والمادة")
         
         # Filters
-        col_filter1, col_filter2, col_filter3 = st.columns(3)
+        # Get unique grades
+        unique_grades = sorted(set(d.get('grade', '') for d in all_data if d.get('grade')))
+        selected_grade = st.selectbox(
+            "🏫 الصف (المستوى)",
+            options=['الكل'] + unique_grades,
+            help="فلتر حسب الصف"
+        )
         
-        with col_filter1:
-            # Get unique grades
-            unique_grades = sorted(set(d.get('grade', '') for d in all_data if d.get('grade')))
-            selected_grade = st.selectbox(
-                "🏫 الصف (المستوى)",
-                options=['الكل'] + unique_grades,
-                help="فلتر حسب الصف"
-            )
-        
-        with col_filter2:
-            # Get unique sections
-            unique_sections = sorted(set(d.get('section', '') for d in all_data if d.get('section')))
-            selected_section = st.selectbox(
-                "📚 الشعبة",
-                options=['الكل'] + unique_sections,
-                help="فلتر حسب الشعبة"
-            )
-        
-        with col_filter3:
-            # Get unique subjects
-            unique_subjects = sorted(set(d.get('subject', '') for d in all_data if d.get('subject')))
-            selected_subject_filter = st.selectbox(
-                "📝 المادة",
-                options=['الكل'] + unique_subjects,
-                help="فلتر حسب المادة"
-            )
-        
-        # Filter data based on selections
+        # Filter data based on grade selection only
         filtered_data = []
         for d in all_data:
             grade_match = selected_grade == 'الكل' or d.get('grade', '') == selected_grade
-            section_match = selected_section == 'الكل' or d.get('section', '') == selected_section
-            subject_match = selected_subject_filter == 'الكل' or d.get('subject', '') == selected_subject_filter
             
-            if grade_match and section_match and subject_match:
+            if grade_match:
                 filtered_data.append(d)
         
         if not filtered_data:
