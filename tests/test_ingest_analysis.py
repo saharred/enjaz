@@ -292,29 +292,29 @@ class TestBanding:
     """Test banding thresholds."""
     
     def test_band_thresholds(self):
-        """Verify thresholds return correct bands."""
-        assert get_band(100) == "ممتاز جداً"
-        assert get_band(90) == "ممتاز جداً"
-        assert get_band(89.99) == "جيد جداً"
-        assert get_band(75) == "جيد جداً"
-        assert get_band(74.99) == "جيد"
-        assert get_band(60) == "جيد"
-        assert get_band(59.99) == "يحتاج إلى تحسين"
-        assert get_band(40) == "يحتاج إلى تحسين"
-        assert get_band(39.99) == "ضعيف"
-        assert get_band(0.01) == "ضعيف"
-        assert get_band(0) == "انعدام الإنجاز"
+        """Verify thresholds return correct bands (6-band system: 90, 80, 70, 50)."""
+        assert get_band(100) == "البلاتينية"
+        assert get_band(90) == "البلاتينية"
+        assert get_band(89.99) == "الذهبية"
+        assert get_band(80) == "الذهبية"
+        assert get_band(79.99) == "الفضية"
+        assert get_band(70) == "الفضية"
+        assert get_band(69.99) == "البرونزية"
+        assert get_band(50) == "البرونزية"
+        assert get_band(49.99) == "يحتاج إلى تطوير"
+        assert get_band(1) == "يحتاج إلى تطوير"
+        assert get_band(0) == "لا يستفيد من النظام"
         assert get_band(None) == "N/A"
     
     def test_band_labels_complete(self):
-        """Check that BAND_LABELS contains all expected labels."""
+        """Check that BAND_LABELS contains all expected labels (6-band system)."""
         expected = {
-            "ممتاز جداً",
-            "جيد جداً",
-            "جيد",
-            "يحتاج إلى تحسين",
-            "ضعيف",
-            "انعدام الإنجاز"
+            "البلاتينية",
+            "الذهبية",
+            "الفضية",
+            "البرونزية",
+            "يحتاج إلى تطوير",
+            "لا يستفيد من النظام"
         }
         assert set(BAND_LABELS) == expected
 

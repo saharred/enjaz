@@ -368,23 +368,21 @@ def main():
             all_subjects = sorted(list(set([sheet.get('subject', sheet['sheet_name']) for sheet in all_data])))
             
             with subject_filter_placeholder.container():
-                # Select all checkbox
-                select_all_subjects = st.checkbox("✅ تحديد الكل ({} مادة)".format(len(all_subjects)), value=True)
+                # Subject multiselect with "Select All" option
+                selected_subjects = st.multiselect(
+                    "📚 اختر المواد (يمكن اختيار أكثر من مادة)",
+                    all_subjects,
+                    default=all_subjects,
+                    help="اختر مادة أو أكثر لعرض بياناتها فقط. الافتراضي: جميع المواد"
+                )
                 
-                if select_all_subjects:
-                    selected_subjects = st.multiselect(
-                        "اختر المواد (يمكن اختيار أكثر من مادة)",
-                        all_subjects,
-                        default=all_subjects,
-                        help="اختر مادة أو أكثر لعرض بياناتها فقط"
-                    )
+                # Show count of selected subjects
+                if len(selected_subjects) == len(all_subjects):
+                    st.caption(f"✅ تم تحديد جميع المواد ({len(all_subjects)} مادة)")
+                elif len(selected_subjects) > 0:
+                    st.caption(f"🔍 تم تحديد {len(selected_subjects)} من {len(all_subjects)} مادة")
                 else:
-                    selected_subjects = st.multiselect(
-                        "اختر المواد (يمكن اختيار أكثر من مادة)",
-                        all_subjects,
-                        default=[],
-                        help="اختر مادة أو أكثر لعرض بياناتها فقط"
-                    )
+                    st.caption("⚠️ لم يتم تحديد أي مادة")
             
             # Filter data based on selected subjects
             if selected_subjects:
