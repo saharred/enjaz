@@ -165,12 +165,13 @@ def create_student_individual_report(student_name, all_data, class_name, section
     info_title = reshape_arabic("معلومات الطالب")
     elements.append(Paragraph(info_title, heading_style))
     
+    # RTL order: right to left
     info_data = [
-        [reshape_arabic("الشعبة:"), reshape_arabic(section), reshape_arabic("الصف:"), reshape_arabic(class_name)],
-        [reshape_arabic("اسم الطالب:"), reshape_arabic(student_name), '', '']
+        [reshape_arabic(class_name), reshape_arabic("الصف:"), reshape_arabic(section), reshape_arabic("الشعبة:")],
+        ['', '', reshape_arabic(student_name), reshape_arabic("اسم الطالب:")]
     ]
     
-    info_table = Table(info_data, colWidths=[3*cm, 5*cm, 2*cm, 5*cm])
+    info_table = Table(info_data, colWidths=[5*cm, 2*cm, 5*cm, 3*cm])
     info_table.setStyle(TableStyle([
         ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
         ('FONTNAME', (0, 0), (-1, -1), AMIRI_REGULAR),
