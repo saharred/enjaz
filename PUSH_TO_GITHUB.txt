@@ -1,0 +1,69 @@
+═══════════════════════════════════════════════════════════
+   📤 تعليمات رفع المشروع على GitHub - خطوة بخطوة
+═══════════════════════════════════════════════════════════
+
+الخطوة 1️⃣: إنشاء Repository على GitHub
+────────────────────────────────────────────
+1. اذهب إلى: https://github.com
+2. سجّل الدخول (أو أنشئ حساب جديد)
+3. انقر على "+" في الأعلى → "New repository"
+4. املأ المعلومات:
+   ✓ Repository name: enjaz
+   ✓ Description: نظام إنجاز لتحليل التقييمات الأسبوعية
+   ✓ Public أو Private (اختياري)
+   ✗ لا تختر "Initialize with README"
+5. انقر على "Create repository"
+
+الخطوة 2️⃣: إنشاء Personal Access Token
+────────────────────────────────────────────
+1. GitHub → Settings (من القائمة في الأعلى)
+2. Developer settings (في الأسفل)
+3. Personal access tokens → Tokens (classic)
+4. Generate new token (classic)
+5. اختر الصلاحيات: ✓ repo (جميع الصلاحيات)
+6. Generate token
+7. انسخ الـ token (لن تراه مرة أخرى!)
+
+الخطوة 3️⃣: ربط المشروع بـ GitHub
+────────────────────────────────────────────
+افتح Terminal/Command Prompt وأدخل:
+
+cd /path/to/enjaz
+
+git remote add origin https://github.com/YOUR-USERNAME/enjaz.git
+
+(استبدل YOUR-USERNAME باسم المستخدم الخاص بك)
+
+الخطوة 4️⃣: رفع الملفات
+────────────────────────────────────────────
+git push -u origin main
+
+عند طلب:
+- Username: اسم المستخدم في GitHub
+- Password: الصق الـ Personal Access Token
+
+الخطوة 5️⃣: التحقق
+────────────────────────────────────────────
+اذهب إلى: https://github.com/YOUR-USERNAME/enjaz
+يجب أن ترى جميع الملفات!
+
+═══════════════════════════════════════════════════════════
+   🚀 نشر التطبيق على Streamlit Cloud (اختياري)
+═══════════════════════════════════════════════════════════
+
+1. اذهب إلى: https://share.streamlit.io
+2. سجّل الدخول بحساب GitHub
+3. New app
+4. اختر: YOUR-USERNAME/enjaz
+5. Branch: main
+6. Main file: app.py
+7. Deploy!
+
+بعد دقائق، ستحصل على رابط عام للتطبيق!
+
+═══════════════════════════════════════════════════════════
+
+للمزيد من التفاصيل، راجع: GITHUB_GUIDE.md
+
+تم التحضير بواسطة: نظام إنجاز v1.0
+© 2025 — مدرسة عثمان بن عفّان النموذجية للبنين
