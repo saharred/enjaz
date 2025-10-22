@@ -311,6 +311,12 @@ def main():
     st.sidebar.info(f"📅 الفترة: {start_date.strftime('%Y-%m-%d')} إلى {end_date.strftime('%Y-%m-%d')}")
     st.sidebar.markdown("---")
     
+    # Subject filter (will be populated after loading data)
+    st.sidebar.subheader("📚 فلتر المواد")
+    # Placeholder - will be updated after data is loaded
+    subject_filter_placeholder = st.sidebar.empty()
+    st.sidebar.markdown("---")
+    
     if not uploaded_files:
         st.info("👈 الرجاء رفع ملفات Excel من القائمة الجانبية للبدء")
         render_professional_footer()
@@ -357,6 +363,36 @@ def main():
                 return
             
             st.success(f"✅ تم تحليل الملف بنجاح! تم تحميل {len(all_data)} ورقة عمل 🎉")
+            
+            # Populate subject filter
+            all_subjects = sorted(list(set([sheet.get('subject', sheet['sheet_name']) for sheet in all_data])))
+            
+            with subject_filter_placeholder.container():
+                # Select all checkbox
+                select_all_subjects = st.checkbox("✅ تحديد الكل ({} مادة)".format(len(all_subjects)), value=True)
+                
+                if select_all_subjects:
+                    selected_subjects = st.multiselect(
+                        "اختر المواد (يمكن اختيار أكثر من مادة)",
+                        all_subjects,
+                        default=all_subjects,
+                        help="اختر مادة أو أكثر لعرض بياناتها فقط"
+                    )
+                else:
+                    selected_subjects = st.multiselect(
+                        "اختر المواد (يمكن اختيار أكثر من مادة)",
+                        all_subjects,
+                        default=[],
+                        help="اختر مادة أو أكثر لعرض بياناتها فقط"
+                    )
+            
+            # Filter data based on selected subjects
+            if selected_subjects:
+                all_data = [sheet for sheet in all_data if sheet.get('subject', sheet['sheet_name']) in selected_subjects]
+                if len(selected_subjects) < len(all_subjects):
+                    st.info(f"🔍 تم فلترة البيانات: {len(selected_subjects)} مادة محددة")
+            else:
+                st.warning("⚠️ لم يتم اختيار أي مادة. سيتم عرض جميع المواد.")
             
         except Exception as e:
             st.error(f"❌ خطأ في معالجة البيانات: {str(e)}")
