@@ -11,7 +11,7 @@ from pathlib import Path
 import base64
 
 # Import Enjaz modules
-from enjaz.data_ingest import aggregate_multiple_files
+from enjaz.data_ingest_lms import aggregate_lms_files
 from enjaz.analysis import calculate_weekly_kpis, calculate_class_stats
 from enjaz.school_info import load_school_info, save_school_info
 from enjaz.advanced_charts import (
@@ -264,16 +264,18 @@ def render_footer():
     <div class="custom-footer">
         <p style="margin:0;"><strong>© 2025 — جميع الحقوق محفوظة</strong></p>
         <p style="margin:0;"><strong>مدرسة عثمان بن عفّان النموذجية للبنين</strong></p>
-        <p style="margin:0; color:{QATAR_GOLD}; font-weight:bold;">
+        <p style="margin:5px 0; font-size:0.95rem;">تطوير و تنفيذ: <strong>Sahar Osman</strong></p>
+        <p style="margin:0; font-size:0.9rem; font-style:italic;">E-learning Project Coordinator</p>
+        <p style="margin:10px 0 0 0; color:{QATAR_GOLD}; font-weight:bold;">
             📧 <a href="mailto:S.mahgou0101@education.qa" style="color:{QATAR_GOLD}; text-decoration:none;">S.mahgou0101@education.qa</a>
         </p>
-        <p style="margin:0;">
+        <p style="margin:5px 0;">
             <a href="https://www.linkedin.com/in/sahar-osman-a19a45209/" target="_blank" style="text-decoration:none;">
                 <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" width="24" style="vertical-align:middle; margin-left:5px;"/>
                 <span style="color:{QATAR_GOLD}; font-weight:bold;">LinkedIn</span>
             </a>
         </p>
-        <p style="margin-top:10px; font-style:italic;">رؤيتنا: "متعلم ريادي لتنمية مستدامة"</p>
+        <p style="margin-top:15px; font-style:italic; border-top:1px solid rgba(255,255,255,0.2); padding-top:10px;">رؤيتنا: "متعلم ريادي لتنمية مستدامة"</p>
     </div>
     """
     
@@ -370,7 +372,7 @@ def main():
         qatar_tz = pytz.timezone('Asia/Qatar')
         today = date.today()
         
-        all_data = aggregate_multiple_files(uploaded_files, today=today)
+        all_data = aggregate_lms_files(uploaded_files, today=today)
     
     if not all_data:
         st.error("❌ لم يتم العثور على بيانات صالحة في الملفات المرفوعة.")
