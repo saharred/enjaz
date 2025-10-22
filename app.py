@@ -282,7 +282,7 @@ def render_header():
     
     <div class="enjaz-logos">
         {'<img src="data:image/png;base64,' + enjaz_logo_b64 + '" alt="Enjaz"/>' if enjaz_logo_b64 else '<div></div>'}
-        <div class="enjaz-title">إنجاز 🏆</div>
+        <div class="enjaz-title">إنجاز</div>
         {'<img src="data:image/png;base64,' + qatar_logo_b64 + '" alt="Qatar Education"/>' if qatar_logo_b64 else '<div></div>'}
     </div>
     
