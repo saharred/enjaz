@@ -1,0 +1,11 @@
+streamlit>=1.32.0
+pandas>=2.2.0
+numpy>=1.26.0
+openpyxl>=3.1.2
+xlsxwriter>=3.2.0
+plotly>=5.19.0
+reportlab>=4.1.0
+arabic-reshaper>=3.0.0
+python-bidi>=0.4.2
+pytz>=2024.1
+
