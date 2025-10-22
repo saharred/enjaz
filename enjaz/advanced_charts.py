@@ -12,14 +12,14 @@ import pandas as pd
 QATAR_MAROON = "#8A1538"
 QATAR_GOLD = "#C9A227"
 
-# Band colors
+# Band colors (updated for new classification system)
 BAND_COLORS = {
-    "ممتاز جداً": "#2ECC71",  # Green
-    "جيد جداً": "#3498DB",     # Blue
-    "جيد": "#F39C12",          # Orange
-    "يحتاج إلى تحسين": "#E67E22",  # Dark Orange
-    "ضعيف": "#E74C3C",        # Red
-    "انعدام الإنجاز": "#95A5A6"  # Gray
+    "البلاتينية": "#E5E4E2",  # Platinum
+    "الذهبية": "#FFD700",     # Gold
+    "الفضية": "#C0C0C0",          # Silver
+    "البرونزية": "#CD7F32",  # Bronze
+    "يحتاج إلى تحسين": "#FF6600",  # Orange
+    "غير مستفيد": "#C00000"  # Red
 }
 
 
@@ -38,12 +38,12 @@ def create_band_distribution_chart(all_data, title="توزيع الطلاب حس
     
     # Count students in each band
     band_counts = {
-        "ممتاز جداً": 0,
-        "جيد جداً": 0,
-        "جيد": 0,
+        "البلاتينية": 0,
+        "الذهبية": 0,
+        "الفضية": 0,
+        "البرونزية": 0,
         "يحتاج إلى تحسين": 0,
-        "ضعيف": 0,
-        "انعدام الإنجاز": 0
+        "غير مستفيد": 0
     }
     
     for sheet_data in all_data:
