@@ -529,73 +529,73 @@ def main():
             st.error(f"⚠️ خطأ في إنشاء الرسم البياني: {str(e)}")
             st.info("📈 يرجى التأكد من رفع الملفات بشكل صحيح")
     
-    # Tab 3: Class/Subject Report
+    # Tab 3: Class/Subject Report - Horizontal View
     with tab3:
-        st.header("📚 تقرير الصف والمادة")
+        st.header("📚 تقرير الصف والمادة - عرض أفقي")
         
-        # Filters
-        # Get unique grades
-        unique_grades = sorted(set(d.get('grade', '') for d in all_data if d.get('grade')))
-        selected_grade = st.selectbox(
-            "🏫 الصف (المستوى)",
-            options=['الكل'] + unique_grades,
-            help="فلتر حسب الصف"
-        )
+        st.info("""
+        📌 **تقرير شامل لجميع الطلاب**
         
-        # Filter data based on grade selection only
-        filtered_data = []
-        for d in all_data:
-            grade_match = selected_grade == 'الكل' or d.get('grade', '') == selected_grade
+        يعرض هذا التقرير جميع الطلاب مع تفاصيل أدائهم في جميع المواد بشكل أفقي:
+        - اسم الطالب | الصف | الشعبة
+        - لكل مادة: إجمالي التقييمات | المنجز | نسبة الحل
+        """)
+        
+        # Use school_report module to create horizontal report
+        from enjaz.school_report import create_horizontal_school_report
+        
+        try:
+            # Create horizontal report
+            horizontal_df = create_horizontal_school_report(all_data)
             
-            if grade_match:
-                filtered_data.append(d)
-        
-        if not filtered_data:
-            st.warning("⚠️ لا توجد بيانات متطابقة مع الفلاتر المحددة")
-        else:
-            # Select sheet from filtered data
-            sheet_names = [f"{d['subject']} - {d.get('class_code', '')}" for d in filtered_data]
-            selected_sheet = st.selectbox("اختر المادة والشعبة", sheet_names)
-        
-            if selected_sheet:
-                sheet_index = sheet_names.index(selected_sheet)
-                sheet_data = filtered_data[sheet_index]
-                
-                stats = calculate_class_stats(sheet_data)
-                
-                st.subheader(f"📊 إحصائيات: {selected_sheet}")
+            if horizontal_df.empty:
+                st.warning("⚠️ لا توجد بيانات للعرض")
+            else:
+                # Display statistics
+                st.subheader("📊 إحصائيات عامة")
                 
                 col1, col2, col3 = st.columns(3)
                 
-                # Calculate student count from sheet_data
-                student_count = len(sheet_data.get('students', []))
-                avg_completion = stats.get('average_completion', 0.0)
-                band = get_band(avg_completion)
+                total_students = len(horizontal_df)
+                avg_completion = horizontal_df['نسبة الحل العامة (%)'].mean()
                 
                 with col1:
-                    st.metric("عدد الطلاب", student_count)
+                    st.metric("إجمالي الطلاب", total_students)
                 
                 with col2:
                     st.metric("متوسط الإنجاز", f"{avg_completion:.1f}%")
                 
                 with col3:
-                    st.metric("الفئة", band)
+                    band = get_band(avg_completion)
+                    st.metric("الفئة العامة", band)
                 
-                # Student table
-                st.subheader("📋 قائمة الطلاب")
+                # Display horizontal table
+                st.subheader("📋 تفاصيل جميع الطلاب")
+                st.dataframe(horizontal_df, use_container_width=True, height=600)
                 
-                students_df = pd.DataFrame([
-                    {
-                        'اسم الطالب': s['student_name'],
-                        'الإجمالي': s['total_due'],
-                        'المُنجز': s['completed'],
-                        'المتبقي': s['not_submitted'],
-                        'نسبة الإنجاز': f"{s['completion_rate']:.1f}%"
-                    }
-                    for s in sheet_data['students'] if s['has_due']
-                ])
+                # Export option
+                st.subheader("📄 تصدير التقرير")
                 
-                st.dataframe(students_df, use_container_width=True)
+                from enjaz.school_report import export_school_report_to_excel
+                import tempfile
+                import os
+                
+                if st.button("📅 تصدير إلى Excel"):
+                    with tempfile.TemporaryDirectory() as tmpdir:
+                        excel_path = os.path.join(tmpdir, 'تقرير_الصف_والمادة.xlsx')
+                        export_school_report_to_excel(horizontal_df, excel_path)
+                        
+                        with open(excel_path, 'rb') as f:
+                            st.download_button(
+                                label="⬇️ تحميل التقرير",
+                                data=f.read(),
+                                file_name='تقرير_الصف_والمادة.xlsx',
+                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            )
+        
+        except Exception as e:
+            st.error(f"❌ حدث خطأ في إنشاء التقرير: {str(e)}")
+            st.info("📊 البيانات متوفرة في التبويبات الأخرى")
     
     # Tab 4: Student Profile
     with tab4:
