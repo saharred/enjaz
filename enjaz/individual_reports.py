@@ -173,6 +173,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     info_table = Table(info_data, colWidths=[3*cm, 5*cm, 2*cm, 5*cm])
     info_table.setStyle(TableStyle([
         ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+        ('FONTNAME', (0, 0), (-1, -1), AMIRI_REGULAR),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
     ]))
@@ -225,11 +226,13 @@ def create_student_individual_report(student_name, all_data, class_name, section
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6d3a46')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), AMIRI_BOLD),
         ('FONTSIZE', (0, 0), (-1, 0), 10),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
         
         # Data rows
         ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 1), (-1, -1), AMIRI_REGULAR),
         ('FONTSIZE', (0, 1), (-1, -1), 9),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F5F5F5')]),
@@ -253,6 +256,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     stats_table = Table(stats_data, colWidths=[5*cm, 5*cm, 5*cm])
     stats_table.setStyle(TableStyle([
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, -1), AMIRI_REGULAR),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F0F0F0')),
@@ -317,6 +321,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     footer_table = Table(footer_data, colWidths=[15*cm])
     footer_table.setStyle(TableStyle([
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, -1), AMIRI_REGULAR),
         ('FONTSIZE', (0, 0), (-1, -1), 9),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
     ]))
@@ -463,10 +468,12 @@ def create_class_subject_report(subject, class_code, sheet_data):
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6d3a46')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), AMIRI_BOLD),
         ('FONTSIZE', (0, 0), (-1, 0), 10),
         
         # Data
         ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 1), (-1, -1), AMIRI_REGULAR),
         ('FONTSIZE', (0, 1), (-1, -1), 9),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F5F5F5')]),
@@ -516,6 +523,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
     footer_table = Table(footer_data, colWidths=[15*cm])
     footer_table.setStyle(TableStyle([
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, -1), AMIRI_REGULAR),
         ('FONTSIZE', (0, 0), (-1, -1), 9),
     ]))
     
