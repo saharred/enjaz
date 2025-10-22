@@ -12,7 +12,7 @@ import base64
 
 # Import Enjaz modules
 from enjaz.data_ingest import aggregate_multiple_files
-from enjaz.analysis import compute_school_kpis, compute_class_stats
+from enjaz.analysis import calculate_weekly_kpis, calculate_class_stats
 from enjaz.school_info import load_school_info, save_school_info
 from enjaz.advanced_charts import (
     create_band_distribution_chart,
@@ -392,7 +392,7 @@ def main():
     with tab1:
         st.header("📊 لوحة المعلومات الرئيسية")
         
-        kpis = compute_school_kpis(all_data)
+        kpis = calculate_weekly_kpis(all_data)
         
         col1, col2, col3, col4 = st.columns(4)
         
@@ -467,7 +467,7 @@ def main():
             sheet_index = sheet_names.index(selected_sheet)
             sheet_data = all_data[sheet_index]
             
-            stats = compute_class_stats(sheet_data)
+            stats = calculate_class_stats(sheet_data)
             
             st.subheader(f"📊 إحصائيات: {selected_sheet}")
             
