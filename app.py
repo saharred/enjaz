@@ -398,10 +398,9 @@ def main():
             return
     
     # Main navigation
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4 = st.tabs([
         "✓ لوحة المعلومات",
         "✓ تقرير المدرسة",
-        "✓ تقارير الأقسام",
         "✓ ملف الطالب",
         "✓ التقارير الفردية"
     ])
@@ -479,153 +478,8 @@ def main():
         from tab6_school_report import render_school_report_tab
         render_school_report_tab(all_data)
     
-    # Tab 3: Department Statistical Report
+    # Tab 3: Student Profile
     with tab3:
-        st.header("✓ التقرير الإحصائي للأقسام")
-        st.subheader("📊 التقرير الكمي الوصفي")
-        
-        from enjaz.analysis import get_band
-        from enjaz.department_recommendations import get_subject_recommendation, PREDEFINED_RECOMMENDATIONS
-        import pandas as pd
-        
-        try:
-            # Calculate statistics per subject
-            subject_stats = []
-            
-            for sheet_data in all_data:
-                subject_name = sheet_data.get('subject', sheet_data['sheet_name'])
-                students = sheet_data['students']
-                
-                # Calculate totals
-                total_students = len([s for s in students if s.get('has_due', False)])
-                if total_students == 0:
-                    continue
-                
-                total_completed = sum(s['completed'] for s in students)
-                total_due = sum(s['total_due'] for s in students)
-                completion_rate = round(100.0 * total_completed / max(total_due, 1), 1)
-                
-                # Calculate band distribution
-                band_counts = {
-                    'البلاتينية': 0,
-                    'الذهبية': 0,
-                    'الفضية': 0,
-                    'البرونزية': 0,
-                    'يحتاج إلى تطوير': 0,
-                    'لا يستفيد من النظام': 0
-                }
-                
-                for student in students:
-                    if student.get('has_due', False):
-                        band = get_band(student['completion_rate'])
-                        if band in band_counts:
-                            band_counts[band] += 1
-                
-                # Calculate percentages
-                band_percentages = {
-                    k: round(100.0 * v / max(total_students, 1), 1)
-                    for k, v in band_counts.items()
-                }
-                
-                # Get recommendation
-                recommendation = get_subject_recommendation(completion_rate)
-                
-                subject_stats.append({
-                    'المادة': subject_name,
-                    'نسبة الإنجاز': f"{completion_rate}%",
-                    'نسبة الطلاب الفئة البلاتينية': f"{band_percentages['البلاتينية']}%",
-                    'نسبة الطلاب الفئة الذهبية': f"{band_percentages['الذهبية']}%",
-                    'نسبة الطلاب الفئة الفضية': f"{band_percentages['الفضية']}%",
-                    'نسبة الطلاب الفئة البرونزية': f"{band_percentages['البرونزية']}%",
-                    'نسبة الطلاب الفئة تحتاج إلى تطوير من النظام': f"{band_percentages['يحتاج إلى تطوير']}%",
-                    'نسبة الطلاب الفئة لا يستفيد من النظام': f"{band_percentages['لا يستفيد من النظام']}%",
-                    'توصية منسق المشاريع': recommendation
-                })
-            
-            if not subject_stats:
-                st.warning("⚠️ لا توجد بيانات للعرض")
-            else:
-                # Display statistics table
-                st.subheader("📋 الجدول الإحصائي")
-                df_stats = pd.DataFrame(subject_stats)
-                st.dataframe(df_stats, use_container_width=True, height=400)
-                
-                # Recommendations section
-                st.subheader("📝 توصية منسق المشاريع")
-                
-                recommendation_mode = st.radio(
-                    "اختر طريقة إدخال التوصية:",
-                    ["🖊️ كتابة مباشرة", "📋 اختيار من التوصيات الجاهزة"],
-                    horizontal=True
-                )
-                
-                if recommendation_mode == "🖊️ كتابة مباشرة":
-                    custom_recommendation = st.text_area(
-                        "أدخل التوصية:",
-                        height=150,
-                        placeholder="اكتب توصيتك هنا..."
-                    )
-                    final_recommendation = custom_recommendation
-                else:
-                    selected_recommendations = st.multiselect(
-                        "اختر التوصيات (يمكن اختيار أكثر من واحدة):",
-                        PREDEFINED_RECOMMENDATIONS
-                    )
-                    final_recommendation = "\n• ".join(selected_recommendations) if selected_recommendations else ""
-                
-                if final_recommendation:
-                    st.info(f"📌 **التوصية النهائية:**\n\n{final_recommendation}")
-                
-                # Export section
-                st.subheader("📄 تصدير التقرير")
-                
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    # Export to Excel
-                    import io
-                    excel_buffer = io.BytesIO()
-                    df_stats.to_excel(excel_buffer, index=False, engine='openpyxl')
-                    excel_buffer.seek(0)
-                    
-                    st.download_button(
-                        label="⬇️ تحميل Excel",
-                        data=excel_buffer,
-                        file_name="تقرير_الأقسام_الإحصائي.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
-                
-                with col2:
-                    # Presentation button
-                    if st.button("📊 إنشاء عرض تقديمي", use_container_width=True):
-                        st.info("⚡ جاري إنشاء العرض التقديمي...")
-                        # Link to the presentation created earlier
-                        st.markdown("""
-                        ### 🎉 العرض التقديمي جاهز!
-                        
-                        اضغط على الرابط أدناه لعرض الشرائح:
-                        
-                        [manus-slides://X0TwrnPxMjnPAHM688fQSP](manus-slides://X0TwrnPxMjnPAHM688fQSP)
-                        
-                        **محتوى العرض:**
-                        - 📊 نسب الإنجاز لكل مادة
-                        - 📈 توزيع الطلاب على الفئات
-                        - 🎯 مقارنة الأداء
-                        - ✅ التوصيات وخطة العمل
-                        """)
-                        st.success("✅ يمكنك تصدير العرض كـ PDF أو PPT من واجهة العرض")
-        
-                
-                # Add spacing
-                st.markdown("---")
-                
-        except Exception as e:
-            st.error(f"❌ حدث خطأ في إنشاء التقرير: {str(e)}")
-            import traceback
-            st.code(traceback.format_exc())
-    
-    # Tab 4: Student Profile
-    with tab4:
         st.header("👤 ملف الطالب الفردي")
         
         # Get all unique students with their grade and section
@@ -696,8 +550,8 @@ def main():
                 
                 st.dataframe(subjects_df, use_container_width=True)
     
-    # Tab 5: Individual Reports
-    with tab5:
+    # Tab 4: Individual Reports
+    with tab4:
         st.header("📥 التقارير الفردية")
         
         report_type = st.radio(
