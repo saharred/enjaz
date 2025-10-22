@@ -284,22 +284,19 @@ def main():
     )
     
     if date_filter_type == "من وإلى":
-        col1, col2 = st.sidebar.columns(2)
-        with col1:
-            start_date = st.date_input(
-                "من",
-                value=date.today() - timedelta(days=30),
-                help="تاريخ البداية"
-            )
-        with col2:
-            end_date = st.date_input(
-                "إلى",
-                value=date.today(),
-                help="تاريخ النهاية"
-            )
+        start_date = st.sidebar.date_input(
+            "📅 من تاريخ",
+            value=date.today() - timedelta(days=30),
+            help="تاريخ البداية"
+        )
+        end_date = st.sidebar.date_input(
+            "📅 إلى تاريخ",
+            value=date.today(),
+            help="تاريخ النهاية"
+        )
     else:  # من والآن
         start_date = st.sidebar.date_input(
-            "من تاريخ",
+            "📅 من تاريخ",
             value=date.today() - timedelta(days=30),
             help="تاريخ البداية"
         )
