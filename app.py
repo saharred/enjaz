@@ -431,13 +431,26 @@ def main():
         
         kpis = calculate_weekly_kpis(all_data)
         
+        # Calculate fallback values from data directly
+        total_completed = sum(s['completed'] for d in all_data for s in d['students'])
+        total_due = sum(s['total_due'] for d in all_data for s in d['students'])
+        total_missing = sum(s['not_submitted'] for d in all_data for s in d['students'])
+        total_students = sum(len(d['students']) for d in all_data)
+        
+        # Use .get() with fallbacks
+        val_students = kpis.get('total_students', total_students)
+        val_completed = kpis.get('total_assessments_completed', total_completed)
+        val_due = kpis.get('total_assessments', total_due)
+        val_missing = kpis.get('total_not_submitted', total_missing)
+        val_avg = kpis.get('school_completion_avg', round(100.0 * total_completed / max(total_due, 1), 1))
+        
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             st.markdown(f"""
             <div class="metric-card">
                 <h3>إجمالي الطلاب</h3>
-                <div class="value">{kpis['total_students']}</div>
+                <div class="value">{val_students}</div>
                 <div class="subtitle">طالب</div>
             </div>
             """, unsafe_allow_html=True)
@@ -446,7 +459,7 @@ def main():
             st.markdown(f"""
             <div class="metric-card">
                 <h3>متوسط الإنجاز</h3>
-                <div class="value">{kpis['school_completion_avg']:.1f}%</div>
+                <div class="value">{val_avg:.1f}%</div>
                 <div class="subtitle">نسبة الحل</div>
             </div>
             """, unsafe_allow_html=True)
@@ -455,7 +468,7 @@ def main():
             st.markdown(f"""
             <div class="metric-card">
                 <h3>إجمالي التقييمات</h3>
-                <div class="value">{kpis.get('total_assessments', 0)}</div>
+                <div class="value">{val_due}</div>
                 <div class="subtitle">تقييم مستحق</div>
             </div>
             """, unsafe_allow_html=True)
@@ -464,7 +477,7 @@ def main():
             st.markdown(f"""
             <div class="metric-card">
                 <h3>التقييمات المُنجزة</h3>
-                <div class="value">{kpis['total_assessments_completed']}</div>
+                <div class="value">{val_completed}</div>
                 <div class="subtitle">تقييم</div>
             </div>
             """, unsafe_allow_html=True)
