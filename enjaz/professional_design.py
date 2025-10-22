@@ -82,18 +82,20 @@ def get_professional_css():
         opacity: 0.3;
     }}
     
-    .professional-header .logo-container {{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 1.5rem;
+    .professional-header .logo-side {{
         position: relative;
         z-index: 1;
     }}
     
-    .professional-header .logo-container img {{
-        max-height: 80px;
+    .professional-header .logo-side img {{
+        max-height: 100px;
+        width: auto;
         filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    }}
+    
+    .professional-header .text-side {{
+        position: relative;
+        z-index: 1;
     }}
     
     .professional-header h1 {{
@@ -593,12 +595,16 @@ def get_header_html(logo_horizontal_path=None):
     
     html = f"""
     <div class="professional-header">
-        <div class="logo-container">
-            {logo_html}
+        <div class="header-content" style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+            <div class="logo-side" style="flex-shrink: 0;">
+                {logo_html}
+            </div>
+            <div class="text-side" style="text-align: right;">
+                <h1 style="margin: 0; font-size: 2rem; font-weight: 800;">إنجاز - نظام تحليل التقييمات الإلكترونية الأسبوعية</h1>
+                <div class="subtitle" style="margin-top: 0.5rem; font-size: 1.2rem; font-weight: 600;">تنمية رقمية مستدامة</div>
+                <div class="tagline" style="margin-top: 0.3rem; font-size: 1rem; font-weight: 500;">قطر للتعليم</div>
+            </div>
         </div>
-        <h1>✅ إنجاز - Injaz</h1>
-        <div class="subtitle">نظام تحليل التقييمات الأسبوعية</div>
-        <div class="tagline">Assessment Analysis System | Qatar Education</div>
     </div>
     """
     
