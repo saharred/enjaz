@@ -7,8 +7,10 @@ import pandas as pd
 import tempfile
 import os
 
+from enjaz.comprehensive_report_horizontal import (
+    create_horizontal_comprehensive_report
+)
 from enjaz.comprehensive_report import (
-    create_comprehensive_report,
     export_comprehensive_report_to_excel,
     export_comprehensive_report_to_word
 )
@@ -30,8 +32,8 @@ def render_school_report_tab(all_data):
     """)
     
     try:
-        # Create comprehensive report
-        df = create_comprehensive_report(all_data)
+        # Create horizontal comprehensive report
+        df = create_horizontal_comprehensive_report(all_data)
         
         if df.empty:
             st.warning("⚠️ لا توجد بيانات للعرض")
@@ -46,10 +48,11 @@ def render_school_report_tab(all_data):
         unique_students = df['اسم الطالب'].nunique()
         
         # Calculate average completion
-        avg_completion = df.groupby('اسم الطالب')['النسبة الكلية للإنجاز (%)'].first().mean()
+        avg_completion = df['نسبة الحل (%)'].mean()
         
-        # Count subjects
-        unique_subjects = df['المادة'].nunique()
+        # Count subjects (from column names)
+        subject_cols = [col for col in df.columns if ' - إجمالي' in col]
+        unique_subjects = len(subject_cols)
         
         # Get overall band
         overall_band = get_band(avg_completion)
