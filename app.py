@@ -319,7 +319,7 @@ def main():
     
     if not uploaded_files:
         st.info("👈 الرجاء رفع ملفات Excel من القائمة الجانبية للبدء")
-        render_professional_footer()
+        render_footer()
         return
     
     # Validate files first
@@ -335,17 +335,17 @@ def main():
             
         except FileNotFoundError:
             st.error("❌ لم يتم العثور على الملفات. يرجى رفع ملفات Excel.")
-            render_professional_footer()
+            render_footer()
             return
         except ValueError as e:
             st.error(f"❌ خطأ في قراءة الملف: {str(e)}")
             st.info("💡 تأكد من أن الملف بصيغة Excel صحيحة وغير تالف")
-            render_professional_footer()
+            render_footer()
             return
         except Exception as e:
             st.error(f"❌ حدث خطأ غير متوقع: {str(e)}")
             st.info("💡 يرجى التأكد من أن الملفات من نظام LMS ومحاولة مرة أخرى")
-            render_professional_footer()
+            render_footer()
             return
     
     # Process files
@@ -359,7 +359,7 @@ def main():
             if not all_data:
                 st.error("❌ لم يتم العثور على بيانات صالحة في الملفات المرفوعة.")
                 st.info("💡 تأكد من أن الملفات تحتوي على بيانات الطلاب والتقييمات")
-                render_professional_footer()
+                render_footer()
                 return
             
             st.success(f"✅ تم تحليل الملف بنجاح! تم تحميل {len(all_data)} ورقة عمل 🎉")
@@ -394,7 +394,7 @@ def main():
             
         except Exception as e:
             st.error(f"❌ خطأ في معالجة البيانات: {str(e)}")
-            render_professional_footer()
+            render_footer()
             return
     
     # Main navigation
