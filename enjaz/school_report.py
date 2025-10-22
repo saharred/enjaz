@@ -135,23 +135,87 @@ def create_filtered_school_report(all_data, selected_grades=None, selected_secti
     return create_horizontal_school_report(filtered_data)
 
 
-def export_school_report_to_excel(df, output_path, school_name="المدرسة"):
+def export_school_report_to_excel(df, output_path, school_info=None):
     """
-    Export school report to Excel with formatting.
+    Export school report to Excel with formatting and school information header.
     
     Args:
         df: School report DataFrame
         output_path: Path to save Excel file
-        school_name: Name of the school
+        school_info: Dictionary containing school information
     
     Returns:
         str: Path to saved file
     """
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.drawing.image import Image as XLImage
+    from pathlib import Path
+    from datetime import datetime
+    
+    if school_info is None:
+        from enjaz.school_info import load_school_info
+        school_info = load_school_info()
+    
     with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-        df.to_excel(writer, sheet_name='تقرير المدرسة', index=False)
+        # Write data starting from row 10 to leave space for header
+        df.to_excel(writer, sheet_name='تقرير المدرسة', index=False, startrow=9)
         
         # Get the worksheet
         worksheet = writer.sheets['تقرير المدرسة']
+        
+        # Add school header information
+        header_font = Font(name='Arial', size=14, bold=True)
+        normal_font = Font(name='Arial', size=11)
+        center_alignment = Alignment(horizontal='center', vertical='center')
+        right_alignment = Alignment(horizontal='right', vertical='center')
+        
+        # Add ministry logo if exists
+        assets_path = Path(__file__).parent / 'assets'
+        logo_path = assets_path / 'ministry_logo.png'
+        if logo_path.exists():
+            try:
+                img = XLImage(str(logo_path))
+                img.width = 80
+                img.height = 80
+                worksheet.add_image(img, 'A1')
+            except:
+                pass
+        
+        # School name
+        worksheet['D1'] = school_info.get('school_name', '')
+        worksheet['D1'].font = Font(name='Arial', size=16, bold=True)
+        worksheet['D1'].alignment = center_alignment
+        
+        # Report title
+        worksheet['D2'] = 'تقرير المدرسة الشامل'
+        worksheet['D2'].font = Font(name='Arial', size=14, bold=True)
+        worksheet['D2'].alignment = center_alignment
+        
+        # Date
+        worksheet['D3'] = f"التاريخ: {datetime.now().strftime('%Y-%m-%d')}"
+        worksheet['D3'].font = normal_font
+        worksheet['D3'].alignment = center_alignment
+        
+        # School leadership information
+        row = 5
+        leadership = [
+            ('مدير المدرسة', school_info.get('principal', '')),
+            ('النائب الأكاديمي', school_info.get('academic_deputy', '')),
+            ('النائب الإداري', school_info.get('admin_deputy', '')),
+            ('منسق المشاريع', school_info.get('projects_coordinator', ''))
+        ]
+        
+        for title, name in leadership:
+            if name:
+                worksheet[f'B{row}'] = f"{title}:"
+                worksheet[f'B{row}'].font = Font(name='Arial', size=10, bold=True)
+                worksheet[f'B{row}'].alignment = right_alignment
+                
+                worksheet[f'C{row}'] = name
+                worksheet[f'C{row}'].font = Font(name='Arial', size=10)
+                worksheet[f'C{row}'].alignment = right_alignment
+                
+                row += 1
         
         # Auto-adjust column widths
         for column in worksheet.columns:
@@ -165,6 +229,15 @@ def export_school_report_to_excel(df, output_path, school_name="المدرسة")
                     pass
             adjusted_width = min(max_length + 2, 50)
             worksheet.column_dimensions[column_letter].width = adjusted_width
+        
+        # Format header row (row 10)
+        header_fill = PatternFill(start_color='8A1538', end_color='8A1538', fill_type='solid')
+        header_font_white = Font(name='Arial', size=11, bold=True, color='FFFFFF')
+        
+        for cell in worksheet[10]:
+            cell.fill = header_fill
+            cell.font = header_font_white
+            cell.alignment = center_alignment
     
     return output_path
 

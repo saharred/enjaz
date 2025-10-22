@@ -337,45 +337,109 @@ def school_info_settings():
     with st.sidebar.expander("⚙️ إعدادات المدرسة", expanded=False):
         school_info = load_school_info()
         
-        st.subheader("معلومات المدرسة")
+        st.subheader("🏫 معلومات المدرسة")
         
         school_name = st.text_input(
             "اسم المدرسة",
-            value=school_info['school_name'],
-            key="school_name"
+            value=school_info.get('school_name', ''),
+            key="school_name",
+            help="سيظهر في جميع التقارير المصدرة"
         )
+        
+        st.markdown("---")
+        st.subheader("👥 القيادات المدرسية")
         
         projects_coordinator = st.text_input(
             "منسق المشاريع",
-            value=school_info['projects_coordinator'],
+            value=school_info.get('projects_coordinator', ''),
             key="projects_coordinator"
         )
         
         academic_deputy = st.text_input(
             "النائب الأكاديمي",
-            value=school_info['academic_deputy'],
+            value=school_info.get('academic_deputy', ''),
             key="academic_deputy"
         )
         
         admin_deputy = st.text_input(
             "النائب الإداري",
-            value=school_info['admin_deputy'],
+            value=school_info.get('admin_deputy', ''),
             key="admin_deputy"
         )
         
         principal = st.text_input(
             "مدير المدرسة",
-            value=school_info['principal'],
+            value=school_info.get('principal', ''),
             key="principal"
         )
         
         email = st.text_input(
             "البريد الإلكتروني",
-            value=school_info['email'],
+            value=school_info.get('email', ''),
             key="email"
         )
         
-        if st.button("💾 حفظ الإعدادات"):
+        st.markdown("---")
+        st.subheader("🖼️ شعار الوزارة")
+        
+        moe_logo_file = st.file_uploader(
+            "رفع شعار الوزارة",
+            type=['png', 'jpg', 'jpeg'],
+            help="سيظهر في رأس التقارير المصدرة",
+            key="moe_logo_uploader"
+        )
+        
+        if moe_logo_file is not None:
+            # Save logo to assets folder
+            assets_path = Path(__file__).parent / 'enjaz' / 'assets'
+            assets_path.mkdir(exist_ok=True)
+            logo_path = assets_path / 'ministry_logo.png'
+            
+            with open(logo_path, 'wb') as f:
+                f.write(moe_logo_file.getbuffer())
+            
+            st.success("✅ تم حفظ شعار الوزارة بنجاح")
+            st.image(moe_logo_file, width=150)
+        
+        st.markdown("---")
+        st.subheader("👩‍🏫 بيانات المعلمين")
+        
+        teachers_file = st.file_uploader(
+            "رفع ملف بيانات المعلمين (Excel/CSV)",
+            type=['xlsx', 'xls', 'csv'],
+            help="الملف يجب أن يحتوي على: اسم المعلم - المستوى - الشعبة - المادة - البريد الإلكتروني",
+            key="teachers_file_uploader"
+        )
+        
+        if teachers_file is not None:
+            try:
+                # Read teachers data
+                if teachers_file.name.endswith('.csv'):
+                    teachers_df = pd.read_csv(teachers_file)
+                else:
+                    teachers_df = pd.read_excel(teachers_file)
+                
+                # Save to session state
+                st.session_state['teachers_data'] = teachers_df
+                
+                # Save to file
+                data_path = Path(__file__).parent / 'enjaz' / 'data'
+                data_path.mkdir(exist_ok=True)
+                teachers_path = data_path / 'teachers.xlsx'
+                teachers_df.to_excel(teachers_path, index=False)
+                
+                st.success(f"✅ تم تحميل بيانات {len(teachers_df)} معلم")
+                
+                # Display preview
+                with st.expander("👁️ معاينة البيانات"):
+                    st.dataframe(teachers_df.head(), use_container_width=True)
+                    
+            except Exception as e:
+                st.error(f"❌ خطأ في قراءة الملف: {str(e)}")
+        
+        st.markdown("---")
+        
+        if st.button("💾 حفظ جميع الإعدادات", type="primary", use_container_width=True):
             save_school_info({
                 'school_name': school_name,
                 'projects_coordinator': projects_coordinator,
@@ -383,9 +447,9 @@ def school_info_settings():
                 'admin_deputy': admin_deputy,
                 'principal': principal,
                 'email': email,
-                'vision': school_info['vision']
+                'vision': school_info.get('vision', '')
             })
-            st.success("✅ تم حفظ الإعدادات بنجاح!")
+            st.success("✅ تم حفظ جميع الإعدادات بنجاح!")
             st.rerun()
 
 
