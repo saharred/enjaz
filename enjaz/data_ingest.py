@@ -1,189 +1,323 @@
 """
 Data ingestion module for Enjaz application.
 Handles Excel file parsing and data extraction.
+
+Implements exact parsing rules as specified.
 """
 
 import pandas as pd
 import numpy as np
-from datetime import datetime
-import pytz
-import streamlit as st
+from datetime import datetime, date
+import re
 
 
-def parse_excel_file(file_path_or_buffer, week_name=None):
+def find_student_name_column(df):
+    """
+    Find the student name column.
+    Priority: first header containing "اسم" or "Student", else first column.
+    
+    Args:
+        df: DataFrame with headers in first row
+    
+    Returns:
+        int: Column index for student names
+    """
+    headers = df.iloc[0].astype(str)
+    
+    for idx, header in enumerate(headers):
+        if 'اسم' in header or 'Student' in header.lower():
+            return idx
+    
+    return 0  # Default to first column
+
+
+def find_assessment_start_column(df):
+    """
+    Find where assessment columns start.
+    Start at H (index 7) OR first column after "Overall", whichever is later.
+    
+    Note: This finds the starting point. Individual columns with "Overall"
+    are still excluded via is_excluded_column().
+    
+    Args:
+        df: DataFrame with headers in first row
+    
+    Returns:
+        int: Starting column index for assessments
+    """
+    headers = df.iloc[0].astype(str)
+    
+    # Default start: column H (index 7)
+    start_col = 7
+    
+    # Find last "Overall" column - if found BEFORE column H, start after it
+    for idx, header in enumerate(headers):
+        if idx < 7:  # Only check columns before H
+            if 'Overall' in header or 'overall' in header or 'إجمالي' in header or 'المجموع' in header:
+                start_col = max(start_col, idx + 1)
+    
+    return start_col
+
+
+def is_excluded_column(header):
+    """
+    Check if a column should be excluded from assessment counting.
+    
+    Args:
+        header: Column header string
+    
+    Returns:
+        bool: True if should be excluded
+    """
+    header_str = str(header).lower()
+    
+    exclude_keywords = [
+        'overall', 'unnamed', 'notes', 'ملاحظات', 
+        'إجمالي', 'المجموع', 'nan'
+    ]
+    
+    for keyword in exclude_keywords:
+        if keyword in header_str:
+            return True
+    
+    return False
+
+
+def parse_due_date(value, dayfirst=True):
+    """
+    Parse due date from various formats.
+    
+    Args:
+        value: Date value (can be datetime, string, or other)
+        dayfirst: Whether to interpret dates as day-first
+    
+    Returns:
+        date or None: Parsed date or None if invalid
+    """
+    if pd.isna(value):
+        return None
+    
+    # Already a datetime
+    if isinstance(value, (datetime, pd.Timestamp)):
+        return value.date()
+    
+    # Already a date
+    if isinstance(value, date):
+        return value
+    
+    # Try parsing as string
+    if isinstance(value, str):
+        value = value.strip()
+        
+        # Try pandas parser with dayfirst
+        try:
+            parsed = pd.to_datetime(value, dayfirst=dayfirst, errors='coerce')
+            if pd.notna(parsed):
+                return parsed.date()
+        except:
+            pass
+    
+    return None
+
+
+def parse_sheet_name(sheet_name):
+    """
+    Parse sheet name to extract subject and class.
+    Examples:
+        '03/1 Arabic' → ('Arabic', '03/1')
+        'Arabic 03/1' → ('Arabic', '03/1')
+    
+    Args:
+        sheet_name: Sheet name string
+    
+    Returns:
+        tuple: (subject, class_code)
+    """
+    # Pattern: digits/digits or digits-digits
+    class_pattern = r'\d+[/-]\d+'
+    
+    match = re.search(class_pattern, sheet_name)
+    
+    if match:
+        class_code = match.group()
+        # Remove class code from sheet name to get subject
+        subject = sheet_name.replace(class_code, '').strip()
+        return (subject, class_code)
+    
+    # No class code found
+    return (sheet_name, '')
+
+
+def normalize_arabic_text(text):
+    """
+    Normalize Arabic text by trimming and removing extra whitespace.
+    
+    Args:
+        text: Input text
+    
+    Returns:
+        str: Normalized text
+    """
+    if pd.isna(text):
+        return ''
+    
+    text = str(text).strip()
+    # Remove multiple spaces
+    text = re.sub(r'\s+', ' ', text)
+    
+    return text
+
+
+def parse_excel_file(file_path_or_buffer, today, week_name=None):
     """
     Parse a single Excel file containing multiple sheets (subjects/classes).
     
     Args:
         file_path_or_buffer: Path to Excel file or file buffer
+        today: Current date for due date comparison (date object)
         week_name: Optional name for the week (default: filename)
     
     Returns:
         list: List of dictionaries containing parsed data for each sheet
     """
-    qatar_tz = pytz.timezone('Asia/Qatar')
-    today = datetime.now(qatar_tz).date()
-    
     all_sheets_data = []
     
     try:
         # Read all sheets
         excel_file = pd.ExcelFile(file_path_or_buffer)
         
-        st.info(f"📂 عدد الأوراق في الملف: {len(excel_file.sheet_names)}")
-        
         for sheet_name in excel_file.sheet_names:
             try:
-                # Read the sheet
+                # Read the sheet without header
                 df = pd.read_excel(excel_file, sheet_name=sheet_name, header=None)
                 
                 if df.empty or df.shape[0] < 4:
-                    st.warning(f"⚠️ الورقة '{sheet_name}' فارغة أو لا تحتوي على بيانات كافية")
+                    print(f"Warning: Sheet '{sheet_name}' has insufficient rows, skipping.")
                     continue
                 
-                # Extract assessment columns (starting from column H = index 7)
-                assessment_start_col = 7
+                # Find student name column
+                student_col = find_student_name_column(df)
                 
-                # Row 1 (index 0) = assessment titles
-                # Row 3 (index 2) = due dates
-                # Row 4+ (index 3+) = student data
+                # Find assessment start column
+                assessment_start = find_assessment_start_column(df)
                 
-                assessment_titles = df.iloc[0, assessment_start_col:].values
-                due_dates_raw = df.iloc[2, assessment_start_col:].values
+                # Row 3 (index 2) contains due dates
+                due_dates_row = df.iloc[2]
                 
-                # Parse due dates
-                due_dates = []
-                for dd in due_dates_raw:
-                    if pd.isna(dd):
-                        due_dates.append(None)
-                    else:
-                        try:
-                            if isinstance(dd, datetime):
-                                due_dates.append(dd.date())
-                            elif isinstance(dd, str):
-                                # Try multiple date formats
-                                for fmt in ['%Y-%m-%d', '%d/%m/%Y', '%m/%d/%Y', '%d-%m-%Y']:
-                                    try:
-                                        parsed_date = datetime.strptime(dd, fmt).date()
-                                        due_dates.append(parsed_date)
-                                        break
-                                    except:
-                                        continue
-                                else:
-                                    due_dates.append(None)
-                            else:
-                                due_dates.append(None)
-                        except:
-                            due_dates.append(None)
+                # Get assessment columns (from assessment_start onward)
+                assessment_columns = []
+                
+                for col_idx in range(assessment_start, df.shape[1]):
+                    header = df.iloc[0, col_idx]
+                    
+                    # Skip excluded columns
+                    if is_excluded_column(header):
+                        continue
+                    
+                    # Parse due date
+                    due_date_value = due_dates_row.iloc[col_idx]
+                    due_date = parse_due_date(due_date_value, dayfirst=True)
+                    
+                    assessment_columns.append({
+                        'col_idx': col_idx,
+                        'title': str(header) if pd.notna(header) else f'Assessment {col_idx}',
+                        'due_date': due_date
+                    })
                 
                 # Process student rows (starting from row 4, index 3)
                 students_data = []
-                student_count = 0
                 
-                for idx in range(3, df.shape[0]):
-                    student_name = df.iloc[idx, 0]  # Column A (index 0) has student names
+                for row_idx in range(3, df.shape[0]):
+                    student_name_raw = df.iloc[row_idx, student_col]
+                    student_name = normalize_arabic_text(student_name_raw)
                     
-                    if pd.isna(student_name) or str(student_name).strip() == '':
+                    # Skip rows without student name
+                    if not student_name:
                         continue
                     
-                    student_count += 1
-                    
-                    # Process assessments for this student
-                    assessments = []
-                    total_assigned_due = 0
+                    # Count assessments for this student
+                    total_due = 0
+                    completed = 0
                     not_submitted = 0
                     
-                    for col_idx, (title, due_date) in enumerate(zip(assessment_titles, due_dates)):
-                        actual_col = assessment_start_col + col_idx
+                    for assessment in assessment_columns:
+                        col_idx = assessment['col_idx']
+                        due_date = assessment['due_date']
                         
-                        if actual_col >= df.shape[1]:
-                            break
-                        
-                        value = df.iloc[idx, actual_col]
-                        
-                        # Skip if column is "Overall" or assessment title contains ignore keywords
-                        if pd.notna(title) and ('Overall' in str(title) or 'overall' in str(title) or 
-                                                'إجمالي' in str(title) or 'المجموع' in str(title)):
-                            continue
-                        
-                        # Check if due date is valid and <= today
+                        # Only consider assessments with due_date <= today
                         if due_date is None or due_date > today:
                             continue
                         
-                        total_assigned_due += 1
+                        total_due += 1
                         
-                        # Check value
-                        if pd.isna(value):
+                        # Get cell value
+                        cell_value = df.iloc[row_idx, col_idx]
+                        
+                        if pd.isna(cell_value):
+                            # Empty cell - not submitted
+                            not_submitted += 1
                             continue
                         
-                        value_str = str(value).strip().upper()
+                        value_str = str(cell_value).strip().upper()
                         
-                        # M = not submitted
                         if value_str == 'M':
+                            # Not submitted
                             not_submitted += 1
-                        # I, AB, X = ignore
                         elif value_str in ['I', 'AB', 'X']:
-                            total_assigned_due -= 1  # Don't count this assessment
-                        # Numeric = submitted (even if 0)
+                            # Ignored - don't count as due
+                            total_due -= 1
                         else:
-                            try:
-                                float(value_str)
-                                # It's a number, counts as submitted
-                            except ValueError:
-                                # Not a number, not M, not I/AB/X - treat as submitted
-                                pass
-                        
-                        assessments.append({
-                            'title': title,
-                            'due_date': due_date,
-                            'value': value
-                        })
+                            # Submitted (numeric or any other value)
+                            completed += 1
                     
                     # Calculate completion rate
-                    if total_assigned_due > 0:
-                        completed = total_assigned_due - not_submitted
-                        completion_rate = 100 * completed / total_assigned_due
+                    has_due = total_due > 0
+                    
+                    if has_due:
+                        completion_rate = round(100 * completed / total_due, 2)
                     else:
-                        completed = 0
-                        completion_rate = None  # N/A
+                        completion_rate = 0.0
                     
                     students_data.append({
-                        'student_name': str(student_name).strip(),
-                        'total_assigned_due': total_assigned_due,
+                        'student_name': student_name,
+                        'total_due': total_due,
                         'completed': completed,
                         'not_submitted': not_submitted,
                         'completion_rate': completion_rate,
-                        'assessments': assessments
+                        'has_due': has_due
                     })
+                
+                # Parse sheet name
+                subject, class_code = parse_sheet_name(sheet_name)
                 
                 # Store sheet data
                 if students_data:
                     all_sheets_data.append({
                         'sheet_name': sheet_name,
+                        'subject': subject,
+                        'class_code': class_code,
                         'week_name': week_name,
                         'students': students_data
                     })
-                    st.success(f"✅ تم معالجة الورقة '{sheet_name}' - {student_count} طالب/طالبة")
-                else:
-                    st.warning(f"⚠️ لم يتم العثور على طلاب في الورقة '{sheet_name}'")
                 
             except Exception as e:
-                st.error(f"❌ خطأ في معالجة الورقة '{sheet_name}': {str(e)}")
+                print(f"Error processing sheet '{sheet_name}': {str(e)}")
                 continue
     
     except Exception as e:
-        st.error(f"❌ خطأ في قراءة ملف Excel: {str(e)}")
+        print(f"Error reading Excel file: {str(e)}")
         return []
     
     return all_sheets_data
 
 
-def aggregate_multiple_files(uploaded_files):
+def aggregate_multiple_files(uploaded_files, today):
     """
     Aggregate data from multiple uploaded Excel files.
     
     Args:
         uploaded_files: List of uploaded file objects
+        today: Current date for due date comparison (date object)
     
     Returns:
         list: Combined data from all files
@@ -193,15 +327,8 @@ def aggregate_multiple_files(uploaded_files):
     for idx, uploaded_file in enumerate(uploaded_files):
         week_name = uploaded_file.name if hasattr(uploaded_file, 'name') else f"Week {idx + 1}"
         
-        st.info(f"📄 معالجة الملف: {week_name}")
-        
-        file_data = parse_excel_file(uploaded_file, week_name=week_name)
-        
-        if file_data:
-            all_data.extend(file_data)
-            st.success(f"✅ تم معالجة {len(file_data)} ورقة/أوراق من الملف '{week_name}'")
-        else:
-            st.warning(f"⚠️ لم يتم العثور على بيانات صالحة في الملف '{week_name}'")
+        file_data = parse_excel_file(uploaded_file, today=today, week_name=week_name)
+        all_data.extend(file_data)
     
     return all_data
 

@@ -12,6 +12,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
+import pytz
 
 # Import Enjaz modules
 from enjaz.ui import (
@@ -74,7 +75,11 @@ def main():
     
     # Process uploaded files
     with st.spinner("جاري معالجة الملفات..."):
-        all_data = aggregate_multiple_files(uploaded_files)
+        # Get current date in Qatar timezone
+        qatar_tz = pytz.timezone('Asia/Qatar')
+        today = datetime.now(qatar_tz).date()
+        
+        all_data = aggregate_multiple_files(uploaded_files, today=today)
     
     if not all_data:
         st.error("❌ لم يتم العثور على بيانات صالحة في الملفات المرفوعة.")

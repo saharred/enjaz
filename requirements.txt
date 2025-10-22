@@ -8,4 +8,5 @@ reportlab>=4.1.0
 arabic-reshaper>=3.0.0
 python-bidi>=0.4.2
 pytz>=2024.1
+pytest>=7.0.0
 
