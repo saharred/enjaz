@@ -310,10 +310,14 @@ def parse_excel_file(file_path_or_buffer, today, week_name=None):
                     })
                 
             except Exception as e:
+                import streamlit as st
+                st.warning(f"⚠️ خطأ في معالجة الورقة '{sheet_name}': {str(e)}")
                 print(f"Error processing sheet '{sheet_name}': {str(e)}")
                 continue
     
     except Exception as e:
+        import streamlit as st
+        st.error(f"❌ خطأ في قراءة ملف Excel: {str(e)}")
         print(f"Error reading Excel file: {str(e)}")
         return []
     
