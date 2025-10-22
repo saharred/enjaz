@@ -1,0 +1,58 @@
+/home/ubuntu/enjaz/enjaz/data_ingest_lms.py:35: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
+  parsed = pd.to_datetime(date_str, dayfirst=True)
+2025-10-22 10:40:46.704 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2025-10-22 10:40:46.751 
+Warning: the config option 'server.enableCORS=false' is not compatible with
+'server.enableXsrfProtection=true'.
+As a result, 'server.enableCORS' is being overridden to 'true'.
+
+More information:
+In order to protect against CSRF attacks, we send a cookie with each request.
+To do so, we must specify allowable origins, which places a restriction on
+cross-origin resource sharing.
+
+If cross origin resource sharing is required, please disable server.enableXsrfProtection.
+            
+2025-10-22 10:40:46.752 
+  [33m[1mWarning:[0m to view this Streamlit app on a browser, run it with the following
+  command:
+
+    streamlit run test_comprehensive_display.py [ARGUMENTS]
+2025-10-22 10:40:46.752 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2025-10-22 10:40:46.752 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+/home/ubuntu/enjaz/enjaz/data_ingest_lms.py:35: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
+  parsed = pd.to_datetime(date_str, dayfirst=True)
+2025-10-22 10:40:46.765 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2025-10-22 10:40:46.765 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2025-10-22 10:40:46.765 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+/home/ubuntu/enjaz/enjaz/data_ingest_lms.py:35: UserWarning: Parsing dates in %Y-%m-%d format when dayfirst=True was specified. Pass `dayfirst=False` or specify a format to silence this warning.
+  parsed = pd.to_datetime(date_str, dayfirst=True)
+2025-10-22 10:40:46.775 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2025-10-22 10:40:46.775 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2025-10-22 10:40:46.775 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+📂 Loading sample data...
+Error processing sheet '03-1 Arabic': can't compare datetime.datetime to datetime.date
+Error processing sheet '03-1 Math': can't compare datetime.datetime to datetime.date
+Error processing sheet '03-2 Science': can't compare datetime.datetime to datetime.date
+✅ Loaded 0 sheets
+
+📊 Creating comprehensive report...
+✅ Report created with 0 rows
+
+========================================================================================================================
+📋 التقرير التحليلي الشامل
+========================================================================================================================
+
+الأعمدة المتوفرة:
+
+📊 ملخص التقرير:
+Traceback (most recent call last):
+  File "/home/ubuntu/enjaz/test_comprehensive_display.py", line 44, in <module>
+    print(f"  • عدد الطلاب: {df['اسم الطالب'].nunique()}")
+                             ~~^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/pandas/core/frame.py", line 4107, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/pandas/core/indexes/range.py", line 417, in get_loc
+    raise KeyError(key)
+KeyError: 'اسم الطالب'

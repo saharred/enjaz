@@ -14,8 +14,8 @@ BAND_COLORS = {
     'الذهبية': '#FFD700',     # Gold
     'الفضية': '#C0C0C0',      # Silver
     'البرونزية': '#CD7F32',   # Bronze
-    'يحتاج إلى تحسين': '#FF6600',  # Orange
-    'غير مستفيد': '#C00000'   # Red
+    'يحتاج إلى تطوير': '#FF6600',  # Orange
+    'لا يستفيد من النظام': '#C00000'   # Red
 }
 
 
@@ -512,12 +512,12 @@ def get_professional_css():
     }}
     
     .band-improvement {{
-        background-color: {BAND_COLORS['يحتاج إلى تحسين']};
+        background-color: {BAND_COLORS['يحتاج إلى تطوير']};
         color: white;
     }}
     
     .band-none {{
-        background-color: {BAND_COLORS['غير مستفيد']};
+        background-color: {BAND_COLORS['لا يستفيد من النظام']};
         color: white;
     }}
     
