@@ -47,7 +47,6 @@ from enjaz.professional_design import (
     QATAR_MAROON,
     QATAR_GOLD
 )
-from tab7_analytics_export import render_analytics_export_tab
 from enjaz.data_validation import validate_uploaded_files, display_validation_results
 
 # Page configuration
@@ -326,13 +325,12 @@ def main():
             return
     
     # Main navigation
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "📊 لوحة المعلومات",
         "🏫 تقرير المدرسة",
         "📚 تقرير الصف/المادة",
         "🏫 ملف الطالب",
-        "📥 التقارير الفردية",
-        "📊 التصدير التحليلي"
+        "📥 التقارير الفردية"
     ])
     
     # Tab 1: Dashboard
@@ -713,10 +711,6 @@ def main():
                         import traceback
                         st.code(traceback.format_exc())
     
-    # Tab 6: Analytics Export (التصدير التحليلي)
-    with tab6:
-        render_analytics_export_tab(all_data)
-
     # Render footer
     render_professional_footer()
 
