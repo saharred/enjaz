@@ -420,7 +420,7 @@ def main():
             st.markdown(f"""
             <div class="metric-card">
                 <h3>إجمالي التقييمات</h3>
-                <div class="value">{kpis['total_assessments_due']}</div>
+                <div class="value">{kpis.get('total_assessments', 0)}</div>
                 <div class="subtitle">تقييم مستحق</div>
             </div>
             """, unsafe_allow_html=True)
