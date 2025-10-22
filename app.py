@@ -713,13 +713,8 @@ def main():
                         import traceback
                         st.code(traceback.format_exc())
     
-    # Tab 6: School Report
+    # Tab 6: Analytics Export (التصدير التحليلي)
     with tab6:
-        from tab6_school_report import render_school_report_tab
-        render_school_report_tab(all_data)
-    
-    # Tab 7: Analytics Export
-    with tab7:
         render_analytics_export_tab(all_data)
 
     # Render footer
