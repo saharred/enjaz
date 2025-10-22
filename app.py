@@ -484,8 +484,12 @@ def main():
         
         # Comprehensive dashboard
         st.subheader("📈 لوحة المعلومات الشاملة")
-        fig = create_comprehensive_dashboard(all_data)
-        st.plotly_chart(fig, use_container_width=True)
+        try:
+            fig = create_comprehensive_dashboard(all_data)
+            st.plotly_chart(fig, use_container_width=True)
+        except Exception as e:
+            st.error(f"⚠️ خطأ في إنشاء لوحة المعلومات: {str(e)}")
+            st.info("📊 البيانات متوفرة في التبويبات الأخرى")
     
     # Tab 2: Charts
     with tab2:
@@ -496,14 +500,18 @@ def main():
             ["توزيع الفئات", "مقارنة الشعب", "مقارنة المواد"]
         )
         
-        if chart_type == "توزيع الفئات":
-            fig = create_band_distribution_chart(all_data)
-        elif chart_type == "مقارنة الشعب":
-            fig = create_class_comparison_chart(all_data)
-        else:
-            fig = create_subject_comparison_chart(all_data)
-        
-        st.plotly_chart(fig, use_container_width=True)
+        try:
+            if chart_type == "توزيع الفئات":
+                fig = create_band_distribution_chart(all_data)
+            elif chart_type == "مقارنة الشعب":
+                fig = create_class_comparison_chart(all_data)
+            else:
+                fig = create_subject_comparison_chart(all_data)
+            
+            st.plotly_chart(fig, use_container_width=True)
+        except Exception as e:
+            st.error(f"⚠️ خطأ في إنشاء الرسم البياني: {str(e)}")
+            st.info("📈 يرجى التأكد من رفع الملفات بشكل صحيح")
     
     # Tab 3: Class/Subject Report
     with tab3:
