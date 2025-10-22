@@ -76,43 +76,60 @@ def render_school_report_tab(all_data):
     # Section 1: Quantitative Descriptive Report
     st.subheader("📊 التقرير الكمي الوصفي على مستوى المدرسة")
     
-    # Display key metrics
-    col1, col2, col3, col4 = st.columns(4)
+    # Check if there is any data to display
+    if school_stats['total_assessments'] == 0:
+        st.info("📊 **لا توجد تقييمات مستحقة حالياً**")
+        st.markdown("""
+        🔹 **الأسباب المحتملة:**
+        - جميع التقييمات لم تصل إلى تاريخ الاستحقاق بعد
+        - الفترة المحددة في فلتر التاريخ لا تحتوي على تقييمات
+        - الملفات المرفوعة لا تحتوي على بيانات تقييمات
+        
+        💡 **الحلول المقترحة:**
+        - قم بتعديل فلتر التاريخ في الشريط الجانبي
+        - تأكد من رفع ملفات Excel الصحيحة
+        - تحقق من وجود تقييمات في نظام LMS
+        """)
+    else:
+        # Display key metrics
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("👥 إجمالي الطلاب", school_stats['total_students'])
+        
+        with col2:
+            st.metric("📊 إجمالي التقييمات", school_stats['total_assessments'])
+        
+        with col3:
+            st.metric("✅ التقييمات المُنجزة", school_stats['total_completed'])
+        
+        with col4:
+            completion_rate = school_stats['completion_rate']
+            overall_band = get_band(completion_rate)
+            st.metric("🎯 نسبة الإنجاز الكلية", f"{completion_rate:.1f}%", delta=overall_band)
     
-    with col1:
-        st.metric("👥 إجمالي الطلاب", school_stats['total_students'])
-    
-    with col2:
-        st.metric("📊 إجمالي التقييمات", school_stats['total_assessments'])
-    
-    with col3:
-        st.metric("✅ التقييمات المنجزة", school_stats['total_completed'])
-    
-    with col4:
+    # Band distribution and recommendations - only show if there's data
+    if school_stats['total_assessments'] > 0:
+        st.subheader("📈 توزيع الطلاب حسب فئات الأداء")
+        
+        band_df = pd.DataFrame([
+            {'الفئة': band, 'عدد الطلاب': count, 'النسبة': f"{(count / max(school_stats['total_students'], 1) * 100):.1f}%"}
+            for band, count in school_stats['band_distribution'].items()
+        ])
+        
+        st.dataframe(band_df, use_container_width=True, hide_index=True)
+        
+        # Automatic recommendation based on completion rate
+        st.subheader("💡 التوصية التلقائية")
+        
         completion_rate = school_stats['completion_rate']
-        overall_band = get_band(completion_rate)
-        st.metric("🎯 نسبة الإنجاز الكلية", f"{completion_rate:.1f}%", delta=overall_band)
-    
-    # Band distribution
-    st.subheader("📈 توزيع الطلاب حسب فئات الأداء")
-    
-    band_df = pd.DataFrame([
-        {'الفئة': band, 'عدد الطلاب': count, 'النسبة': f"{(count / max(school_stats['total_students'], 1) * 100):.1f}%"}
-        for band, count in school_stats['band_distribution'].items()
-    ])
-    
-    st.dataframe(band_df, use_container_width=True, hide_index=True)
-    
-    # Automatic recommendation based on completion rate
-    st.subheader("💡 التوصية التلقائية")
-    
-    auto_recommendation = get_school_level_recommendation(completion_rate)
-    
-    st.info(f"""
-    **بناءً على نسبة الإنجاز الكلية ({completion_rate:.1f}%):**
-    
-    {auto_recommendation}
-    """)
+        auto_recommendation = get_school_level_recommendation(completion_rate)
+        
+        st.info(f"""
+        **بناءً على نسبة الإنجاز الكلية ({completion_rate:.1f}%):**
+        
+        {auto_recommendation}
+        """)
     
     # Section 2: Project Coordinator Actions
     st.subheader("📝 إجراءات منسق المشاريع")
