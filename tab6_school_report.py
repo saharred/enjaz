@@ -42,21 +42,34 @@ def calculate_school_statistics(all_data):
     if not all_data:
         return stats
     
-    # Calculate totals
-    for student_data in all_data:
-        stats['total_students'] += 1
-        for subject_name, subject_info in student_data.get('subjects', {}).items():
-            stats['total_assessments'] += subject_info.get('total', 0)
-            stats['total_completed'] += subject_info.get('completed', 0)
+    # Track unique students
+    unique_students = set()
+    
+    # Calculate totals from sheet_data structure
+    for sheet_data in all_data:
+        students = sheet_data.get('students', [])
+        
+        for student in students:
+            # Track unique students
+            student_name = student.get('student_name', '')
+            unique_students.add(student_name)
             
-            # Calculate student's band for this subject
-            total = subject_info.get('total', 0)
-            completed = subject_info.get('completed', 0)
-            if total > 0:
-                completion_pct = (completed / total) * 100
-                band = get_band(completion_pct)
+            # Only count students with due assessments
+            if student.get('has_due', False):
+                total_due = student.get('total_due', 0)
+                completed = student.get('completed', 0)
+                
+                stats['total_assessments'] += total_due
+                stats['total_completed'] += completed
+                
+                # Calculate student's band
+                completion_rate = student.get('completion_rate', 0.0)
+                band = get_band(completion_rate)
                 if band in stats['band_distribution']:
                     stats['band_distribution'][band] += 1
+    
+    # Set total unique students
+    stats['total_students'] = len(unique_students)
     
     # Calculate overall completion rate
     if stats['total_assessments'] > 0:
