@@ -105,7 +105,8 @@ def create_student_individual_report(student_name, all_data, class_name, section
         alignment=TA_RIGHT,
         fontSize=12,
         textColor=colors.HexColor('#6d3a46'),
-        spaceAfter=8
+        spaceAfter=8,
+        fontName=AMIRI_BOLD
     )
     
     body_style = ParagraphStyle(
@@ -113,7 +114,8 @@ def create_student_individual_report(student_name, all_data, class_name, section
         parent=styles['BodyText'],
         alignment=TA_RIGHT,
         fontSize=10,
-        spaceAfter=6
+        spaceAfter=6,
+        fontName=AMIRI_REGULAR
     )
     
     # === HEADER WITH LOGOS ===
@@ -138,7 +140,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     row1.append(Paragraph(title_text, title_style))
     
     # Enjaz Logo (right in RTL = left visually)
-    enjaz_logo_path = assets_path / 'logo.png'
+    enjaz_logo_path = assets_path / 'logo_new.png'
     if enjaz_logo_path.exists():
         enjaz_logo = Image(str(enjaz_logo_path), width=2*cm, height=2*cm)
         row1.append(enjaz_logo)
@@ -364,7 +366,8 @@ def create_class_subject_report(subject, class_code, sheet_data):
         alignment=TA_CENTER,
         fontSize=16,
         textColor=colors.HexColor('#6d3a46'),
-        spaceAfter=10
+        spaceAfter=10,
+        fontName=AMIRI_BOLD
     )
     
     heading_style = ParagraphStyle(
@@ -373,7 +376,8 @@ def create_class_subject_report(subject, class_code, sheet_data):
         alignment=TA_RIGHT,
         fontSize=12,
         textColor=colors.HexColor('#6d3a46'),
-        spaceAfter=8
+        spaceAfter=8,
+        fontName=AMIRI_BOLD
     )
     
     body_style = ParagraphStyle(
@@ -381,7 +385,8 @@ def create_class_subject_report(subject, class_code, sheet_data):
         parent=styles['BodyText'],
         alignment=TA_RIGHT,
         fontSize=10,
-        spaceAfter=6
+        spaceAfter=6,
+        fontName=AMIRI_REGULAR
     )
     
     # === HEADER ===
@@ -403,7 +408,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
     row1.append(Paragraph(title_text, title_style))
     
     # Enjaz Logo
-    enjaz_logo_path = assets_path / 'logo.png'
+    enjaz_logo_path = assets_path / 'logo_new.png'
     if enjaz_logo_path.exists():
         enjaz_logo = Image(str(enjaz_logo_path), width=2*cm, height=2*cm)
         row1.append(enjaz_logo)

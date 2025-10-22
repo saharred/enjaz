@@ -120,7 +120,8 @@ def create_pdf_report(title, content_data, filename="report.pdf"):
         alignment=TA_CENTER,
         fontSize=18,
         textColor=colors.HexColor('#6d3a46'),
-        spaceAfter=20
+        spaceAfter=20,
+        fontName=AMIRI_BOLD
     )
     
     # Arabic body style
@@ -129,7 +130,8 @@ def create_pdf_report(title, content_data, filename="report.pdf"):
         parent=styles['Normal'],
         alignment=TA_RIGHT,
         fontSize=12,
-        spaceAfter=10
+        spaceAfter=10,
+        fontName=AMIRI_REGULAR
     )
     
     # Add title

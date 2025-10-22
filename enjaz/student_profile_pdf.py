@@ -64,7 +64,8 @@ def create_student_profile_pdf(student_name, student_data, overall_band):
         alignment=TA_CENTER,
         fontSize=18,
         textColor=colors.HexColor('#6d3a46'),  # Qatar Maroon
-        spaceAfter=20
+        spaceAfter=20,
+        fontName=AMIRI_BOLD
     )
     
     heading_style = ParagraphStyle(
@@ -73,7 +74,8 @@ def create_student_profile_pdf(student_name, student_data, overall_band):
         alignment=TA_RIGHT,
         fontSize=14,
         textColor=colors.HexColor('#6d3a46'),
-        spaceAfter=10
+        spaceAfter=10,
+        fontName=AMIRI_BOLD
     )
     
     body_style = ParagraphStyle(
@@ -81,7 +83,8 @@ def create_student_profile_pdf(student_name, student_data, overall_band):
         parent=styles['BodyText'],
         alignment=TA_RIGHT,
         fontSize=11,
-        spaceAfter=10
+        spaceAfter=10,
+        fontName=AMIRI_REGULAR
     )
     
     # Header
