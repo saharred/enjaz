@@ -502,7 +502,7 @@ def main():
                 student_grade = student_info[selected_student]['grade']
                 student_section = student_info[selected_student]['section']
                 student_band = get_band(overall_rate)
-                student_emoji = get_band_emoji(overall_rate)
+                student_emoji = get_band_emoji(student_band)
                 
                 # Display student info
                 st.info(f"🏫 **الصف:** {student_grade} | 📚 **الشعبة:** {student_section}")
