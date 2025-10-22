@@ -12,7 +12,7 @@ import base64
 
 # Import Enjaz modules
 from enjaz.data_ingest_lms import aggregate_lms_files
-from enjaz.analysis import calculate_weekly_kpis, calculate_class_stats
+from enjaz.analysis import calculate_weekly_kpis, calculate_class_stats, get_band
 from enjaz.school_info import load_school_info, save_school_info
 from enjaz.advanced_charts import (
     create_band_distribution_chart,
@@ -23,6 +23,21 @@ from enjaz.advanced_charts import (
 from enjaz.individual_reports import (
     create_student_individual_report,
     create_class_subject_report
+)
+from enjaz.student_analysis import (
+    create_student_analysis_table,
+    create_student_summary_by_grade,
+    create_student_summary_by_subject,
+    create_student_summary_by_band,
+    export_student_analysis_to_excel
+)
+from enjaz.teacher_report import (
+    aggregate_teacher_data,
+    create_teacher_report_dataframe,
+    create_students_by_band_report,
+    format_teacher_report_for_email,
+    create_band_summary_table,
+    export_teacher_report_to_excel
 )
 
 # Page configuration
@@ -417,12 +432,13 @@ def main():
     st.success(f"✅ تم تحميل {len(all_data)} ورقة عمل بنجاح!")
     
     # Main navigation
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "📊 لوحة المعلومات",
         "📈 الرسوم البيانية",
         "📚 تقرير الصف/المادة",
         "👤 ملف الطالب",
-        "📥 التقارير الفردية"
+        "📥 التقارير الفردية",
+        "👩‍🏫 تقرير المعلم"
     ])
     
     # Tab 1: Dashboard
@@ -531,14 +547,19 @@ def main():
             
             col1, col2, col3 = st.columns(3)
             
+            # Calculate student count from sheet_data
+            student_count = len(sheet_data.get('students', []))
+            avg_completion = stats.get('average_completion', 0.0)
+            band = get_band(avg_completion)
+            
             with col1:
-                st.metric("عدد الطلاب", stats['student_count'])
+                st.metric("عدد الطلاب", student_count)
             
             with col2:
-                st.metric("متوسط الإنجاز", f"{stats['avg_completion_rate']:.1f}%")
+                st.metric("متوسط الإنجاز", f"{avg_completion:.1f}%")
             
             with col3:
-                st.metric("الفئة", stats['band'])
+                st.metric("الفئة", band)
             
             # Student table
             st.subheader("📋 قائمة الطلاب")
@@ -680,6 +701,143 @@ def main():
                         st.success("✅ تم إنشاء التقرير بنجاح!")
                     except Exception as e:
                         st.error(f"❌ حدث خطأ: {str(e)}")
+    
+    # Tab 6: Teacher Report
+    with tab6:
+        st.header("👩‍🏫 تقرير المعلم - اختيار متعدد")
+        
+        st.info("📌 يمكنك اختيار أكثر من مادة وشعبة لإنشاء تقرير شامل يتضمن أسماء الطلاب حسب فئاتهم")
+        
+        # Teacher name input
+        teacher_name = st.text_input(
+            "👤 اسم المعلم/ة",
+            value="المعلم/ة",
+            help="أدخل اسم المعلم ليظهر في التقرير"
+        )
+        
+        # Multi-select for subjects/classes
+        sheet_names = [f"{d['subject']} - {d.get('class_code', '')}" for d in all_data]
+        
+        selected_sheets = st.multiselect(
+            "📚 اختر المواد والشعب (يمكن اختيار أكثر من واحدة)",
+            options=sheet_names,
+            default=sheet_names[:1] if sheet_names else [],
+            help="اختر جميع المواد والشعب التي تدرسها"
+        )
+        
+        if not selected_sheets:
+            st.warning("⚠️ الرجاء اختيار مادة واحدة على الأقل")
+        else:
+            # Get indices of selected sheets
+            selected_indices = [sheet_names.index(sheet) for sheet in selected_sheets]
+            
+            # Aggregate teacher data
+            teacher_data = aggregate_teacher_data(all_data, selected_indices)
+            
+            # Display summary
+            st.subheader("📊 ملخص التقرير")
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("📚 عدد المواد/الشعب", len(teacher_data['sheets']))
+            
+            with col2:
+                st.metric("👥 إجمالي الطلاب", teacher_data['total_students'])
+            
+            with col3:
+                st.metric("📝 إجمالي التقييمات", teacher_data['total_assessments'])
+            
+            with col4:
+                st.metric("🎯 متوسط الإنجاز", f"{teacher_data['average_completion']:.1f}%")
+            
+            # Display selected subjects/classes
+            st.subheader("📚 المواد والشعب المختارة")
+            
+            sheets_info = []
+            for sheet in teacher_data['sheets']:
+                sheets_info.append({
+                    'المادة': sheet['subject'],
+                    'الشعبة': sheet['class_code'],
+                    'الصف': sheet.get('grade', ''),
+                    'القسم': sheet.get('section', '')
+                })
+            
+            sheets_df = pd.DataFrame(sheets_info)
+            st.dataframe(sheets_df, use_container_width=True)
+            
+            # Band distribution summary
+            st.subheader("📋 توزيع الطلاب حسب الفئات")
+            
+            band_summary_df = create_band_summary_table(teacher_data)
+            st.dataframe(band_summary_df, use_container_width=True)
+            
+            # Students by band
+            st.subheader("👥 أسماء الطلاب حسب الفئات")
+            
+            students_by_band = create_students_by_band_report(teacher_data)
+            
+            for band_label, data in students_by_band.items():
+                with st.expander(f"{band_label} ({data['count']} طالب/ة)"):
+                    # Display as numbered list
+                    for i, student in enumerate(data['students'], 1):
+                        st.write(f"{i}. {student}")
+            
+            # Detailed student table
+            st.subheader("📋 تفاصيل جميع الطلاب")
+            
+            detailed_df = create_teacher_report_dataframe(teacher_data)
+            st.dataframe(detailed_df, use_container_width=True)
+            
+            # Export options
+            st.subheader("📥 تصدير التقرير")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Export to Excel
+                if st.button("📄 تصدير إلى Excel"):
+                    try:
+                        import tempfile
+                        import os
+                        
+                        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
+                            excel_path = export_teacher_report_to_excel(
+                                teacher_data,
+                                tmp.name,
+                                teacher_name
+                            )
+                            
+                            with open(excel_path, 'rb') as f:
+                                excel_data = f.read()
+                            
+                            st.download_button(
+                                label="⬇️ تحميل ملف Excel",
+                                data=excel_data,
+                                file_name=f"تقرير_المعلم_{teacher_name}.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            )
+                            
+                            # Clean up temp file
+                            os.unlink(excel_path)
+                            
+                            st.success("✅ تم إنشاء ملف Excel بنجاح!")
+                    except Exception as e:
+                        st.error(f"❌ حدث خطأ: {str(e)}")
+            
+            with col2:
+                # Format for email
+                if st.button("📧 تنسيق للإيميل"):
+                    email_text = format_teacher_report_for_email(teacher_data, teacher_name)
+                    
+                    st.text_area(
+                        "📧 نص التقرير (انسخ والصق في الإيميل)",
+                        value=email_text,
+                        height=400,
+                        help="انسخ هذا النص والصقه في رسالة الإيميل"
+                    )
+                    
+                    st.success("✅ تم تنسيق التقرير للإيميل!")
     
     # Render footer
     render_footer()
