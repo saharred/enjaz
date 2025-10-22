@@ -31,13 +31,13 @@ from enjaz.student_analysis import (
     create_student_summary_by_band,
     export_student_analysis_to_excel
 )
-from enjaz.teacher_report import (
-    aggregate_teacher_data,
-    create_teacher_report_dataframe,
-    create_students_by_band_report,
-    format_teacher_report_for_email,
-    create_band_summary_table,
-    export_teacher_report_to_excel
+from enjaz.school_report import (
+    create_horizontal_school_report,
+    create_filtered_school_report,
+    export_school_report_to_excel,
+    get_unique_grades,
+    get_unique_sections,
+    create_descriptive_report
 )
 
 # Page configuration
@@ -436,9 +436,9 @@ def main():
         "📊 لوحة المعلومات",
         "📈 الرسوم البيانية",
         "📚 تقرير الصف/المادة",
-        "👤 ملف الطالب",
+        "🏫 ملف الطالب",
         "📥 التقارير الفردية",
-        "👩‍🏫 تقرير المعلم"
+        "🏫 تقرير المدرسة"
     ])
     
     # Tab 1: Dashboard
@@ -533,61 +533,110 @@ def main():
     with tab3:
         st.header("📚 تقرير الصف والمادة")
         
-        # Select sheet
-        sheet_names = [f"{d['subject']} - {d.get('class_code', '')}" for d in all_data]
-        selected_sheet = st.selectbox("اختر المادة والشعبة", sheet_names)
+        # Filters
+        col_filter1, col_filter2, col_filter3 = st.columns(3)
         
-        if selected_sheet:
-            sheet_index = sheet_names.index(selected_sheet)
-            sheet_data = all_data[sheet_index]
+        with col_filter1:
+            # Get unique grades
+            unique_grades = sorted(set(d.get('grade', '') for d in all_data if d.get('grade')))
+            selected_grade = st.selectbox(
+                "🏫 الصف (المستوى)",
+                options=['الكل'] + unique_grades,
+                help="فلتر حسب الصف"
+            )
+        
+        with col_filter2:
+            # Get unique sections
+            unique_sections = sorted(set(d.get('section', '') for d in all_data if d.get('section')))
+            selected_section = st.selectbox(
+                "📚 الشعبة",
+                options=['الكل'] + unique_sections,
+                help="فلتر حسب الشعبة"
+            )
+        
+        with col_filter3:
+            # Get unique subjects
+            unique_subjects = sorted(set(d.get('subject', '') for d in all_data if d.get('subject')))
+            selected_subject_filter = st.selectbox(
+                "📝 المادة",
+                options=['الكل'] + unique_subjects,
+                help="فلتر حسب المادة"
+            )
+        
+        # Filter data based on selections
+        filtered_data = []
+        for d in all_data:
+            grade_match = selected_grade == 'الكل' or d.get('grade', '') == selected_grade
+            section_match = selected_section == 'الكل' or d.get('section', '') == selected_section
+            subject_match = selected_subject_filter == 'الكل' or d.get('subject', '') == selected_subject_filter
             
-            stats = calculate_class_stats(sheet_data)
-            
-            st.subheader(f"📊 إحصائيات: {selected_sheet}")
-            
-            col1, col2, col3 = st.columns(3)
-            
-            # Calculate student count from sheet_data
-            student_count = len(sheet_data.get('students', []))
-            avg_completion = stats.get('average_completion', 0.0)
-            band = get_band(avg_completion)
-            
-            with col1:
-                st.metric("عدد الطلاب", student_count)
-            
-            with col2:
-                st.metric("متوسط الإنجاز", f"{avg_completion:.1f}%")
-            
-            with col3:
-                st.metric("الفئة", band)
-            
-            # Student table
-            st.subheader("📋 قائمة الطلاب")
-            
-            students_df = pd.DataFrame([
-                {
-                    'اسم الطالب': s['student_name'],
-                    'الإجمالي': s['total_due'],
-                    'المُنجز': s['completed'],
-                    'المتبقي': s['not_submitted'],
-                    'نسبة الإنجاز': f"{s['completion_rate']:.1f}%"
-                }
-                for s in sheet_data['students'] if s['has_due']
-            ])
-            
-            st.dataframe(students_df, use_container_width=True)
+            if grade_match and section_match and subject_match:
+                filtered_data.append(d)
+        
+        if not filtered_data:
+            st.warning("⚠️ لا توجد بيانات متطابقة مع الفلاتر المحددة")
+        else:
+            # Select sheet from filtered data
+            sheet_names = [f"{d['subject']} - {d.get('class_code', '')}" for d in filtered_data]
+            selected_sheet = st.selectbox("اختر المادة والشعبة", sheet_names)
+        
+            if selected_sheet:
+                sheet_index = sheet_names.index(selected_sheet)
+                sheet_data = filtered_data[sheet_index]
+                
+                stats = calculate_class_stats(sheet_data)
+                
+                st.subheader(f"📊 إحصائيات: {selected_sheet}")
+                
+                col1, col2, col3 = st.columns(3)
+                
+                # Calculate student count from sheet_data
+                student_count = len(sheet_data.get('students', []))
+                avg_completion = stats.get('average_completion', 0.0)
+                band = get_band(avg_completion)
+                
+                with col1:
+                    st.metric("عدد الطلاب", student_count)
+                
+                with col2:
+                    st.metric("متوسط الإنجاز", f"{avg_completion:.1f}%")
+                
+                with col3:
+                    st.metric("الفئة", band)
+                
+                # Student table
+                st.subheader("📋 قائمة الطلاب")
+                
+                students_df = pd.DataFrame([
+                    {
+                        'اسم الطالب': s['student_name'],
+                        'الإجمالي': s['total_due'],
+                        'المُنجز': s['completed'],
+                        'المتبقي': s['not_submitted'],
+                        'نسبة الإنجاز': f"{s['completion_rate']:.1f}%"
+                    }
+                    for s in sheet_data['students'] if s['has_due']
+                ])
+                
+                st.dataframe(students_df, use_container_width=True)
     
     # Tab 4: Student Profile
     with tab4:
         st.header("👤 ملف الطالب الفردي")
         
-        # Get all unique students
-        all_students = set()
+        # Get all unique students with their grade and section
+        student_info = {}
         for sheet_data in all_data:
             for student in sheet_data['students']:
-                all_students.add(student['student_name'])
+                student_name = student['student_name']
+                if student_name not in student_info:
+                    student_info[student_name] = {
+                        'grade': sheet_data.get('grade', ''),
+                        'section': sheet_data.get('section', '')
+                    }
         
-        selected_student = st.selectbox("اختر الطالب", sorted(all_students))
+        all_students = sorted(student_info.keys())
+        selected_student = st.selectbox("اختر الطالب", all_students)
         
         if selected_student:
             # Collect student data across all subjects
@@ -702,143 +751,11 @@ def main():
                     except Exception as e:
                         st.error(f"❌ حدث خطأ: {str(e)}")
     
-    # Tab 6: Teacher Report
+    # Tab 6: School Report
     with tab6:
-        st.header("👩‍🏫 تقرير المعلم - اختيار متعدد")
-        
-        st.info("📌 يمكنك اختيار أكثر من مادة وشعبة لإنشاء تقرير شامل يتضمن أسماء الطلاب حسب فئاتهم")
-        
-        # Teacher name input
-        teacher_name = st.text_input(
-            "👤 اسم المعلم/ة",
-            value="المعلم/ة",
-            help="أدخل اسم المعلم ليظهر في التقرير"
-        )
-        
-        # Multi-select for subjects/classes
-        sheet_names = [f"{d['subject']} - {d.get('class_code', '')}" for d in all_data]
-        
-        selected_sheets = st.multiselect(
-            "📚 اختر المواد والشعب (يمكن اختيار أكثر من واحدة)",
-            options=sheet_names,
-            default=sheet_names[:1] if sheet_names else [],
-            help="اختر جميع المواد والشعب التي تدرسها"
-        )
-        
-        if not selected_sheets:
-            st.warning("⚠️ الرجاء اختيار مادة واحدة على الأقل")
-        else:
-            # Get indices of selected sheets
-            selected_indices = [sheet_names.index(sheet) for sheet in selected_sheets]
-            
-            # Aggregate teacher data
-            teacher_data = aggregate_teacher_data(all_data, selected_indices)
-            
-            # Display summary
-            st.subheader("📊 ملخص التقرير")
-            
-            col1, col2, col3, col4 = st.columns(4)
-            
-            with col1:
-                st.metric("📚 عدد المواد/الشعب", len(teacher_data['sheets']))
-            
-            with col2:
-                st.metric("👥 إجمالي الطلاب", teacher_data['total_students'])
-            
-            with col3:
-                st.metric("📝 إجمالي التقييمات", teacher_data['total_assessments'])
-            
-            with col4:
-                st.metric("🎯 متوسط الإنجاز", f"{teacher_data['average_completion']:.1f}%")
-            
-            # Display selected subjects/classes
-            st.subheader("📚 المواد والشعب المختارة")
-            
-            sheets_info = []
-            for sheet in teacher_data['sheets']:
-                sheets_info.append({
-                    'المادة': sheet['subject'],
-                    'الشعبة': sheet['class_code'],
-                    'الصف': sheet.get('grade', ''),
-                    'القسم': sheet.get('section', '')
-                })
-            
-            sheets_df = pd.DataFrame(sheets_info)
-            st.dataframe(sheets_df, use_container_width=True)
-            
-            # Band distribution summary
-            st.subheader("📋 توزيع الطلاب حسب الفئات")
-            
-            band_summary_df = create_band_summary_table(teacher_data)
-            st.dataframe(band_summary_df, use_container_width=True)
-            
-            # Students by band
-            st.subheader("👥 أسماء الطلاب حسب الفئات")
-            
-            students_by_band = create_students_by_band_report(teacher_data)
-            
-            for band_label, data in students_by_band.items():
-                with st.expander(f"{band_label} ({data['count']} طالب/ة)"):
-                    # Display as numbered list
-                    for i, student in enumerate(data['students'], 1):
-                        st.write(f"{i}. {student}")
-            
-            # Detailed student table
-            st.subheader("📋 تفاصيل جميع الطلاب")
-            
-            detailed_df = create_teacher_report_dataframe(teacher_data)
-            st.dataframe(detailed_df, use_container_width=True)
-            
-            # Export options
-            st.subheader("📥 تصدير التقرير")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                # Export to Excel
-                if st.button("📄 تصدير إلى Excel"):
-                    try:
-                        import tempfile
-                        import os
-                        
-                        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
-                            excel_path = export_teacher_report_to_excel(
-                                teacher_data,
-                                tmp.name,
-                                teacher_name
-                            )
-                            
-                            with open(excel_path, 'rb') as f:
-                                excel_data = f.read()
-                            
-                            st.download_button(
-                                label="⬇️ تحميل ملف Excel",
-                                data=excel_data,
-                                file_name=f"تقرير_المعلم_{teacher_name}.xlsx",
-                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            )
-                            
-                            # Clean up temp file
-                            os.unlink(excel_path)
-                            
-                            st.success("✅ تم إنشاء ملف Excel بنجاح!")
-                    except Exception as e:
-                        st.error(f"❌ حدث خطأ: {str(e)}")
-            
-            with col2:
-                # Format for email
-                if st.button("📧 تنسيق للإيميل"):
-                    email_text = format_teacher_report_for_email(teacher_data, teacher_name)
-                    
-                    st.text_area(
-                        "📧 نص التقرير (انسخ والصق في الإيميل)",
-                        value=email_text,
-                        height=400,
-                        help="انسخ هذا النص والصقه في رسالة الإيميل"
-                    )
-                    
-                    st.success("✅ تم تنسيق التقرير للإيميل!")
-    
+        from enjaz.tab6_school_report import render_school_report_tab
+        render_school_report_tab(all_data)
+
     # Render footer
     render_footer()
 

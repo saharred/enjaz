@@ -156,13 +156,11 @@ def create_class_comparison_chart(all_data, title="مقارنة الشعب"):
             xanchor='center'
         ),
         xaxis=dict(
-            title="الشعبة",
-            titlefont=dict(size=14, family='Arial, sans-serif'),
+            title=dict(text="الشعبة", font=dict(size=14, family='Arial, sans-serif')),
             tickfont=dict(size=12, family='Arial, sans-serif')
         ),
         yaxis=dict(
-            title="متوسط نسبة الإنجاز (%)",
-            titlefont=dict(size=14, family='Arial, sans-serif'),
+            title=dict(text="متوسط نسبة الإنجاز (%)", font=dict(size=14, family='Arial, sans-serif')),
             tickfont=dict(size=12, family='Arial, sans-serif'),
             range=[0, 100]
         ),
@@ -238,13 +236,11 @@ def create_subject_comparison_chart(all_data, title="مقارنة المواد")
             xanchor='center'
         ),
         xaxis=dict(
-            title="المادة",
-            titlefont=dict(size=14, family='Arial, sans-serif'),
+            title=dict(text="المادة", font=dict(size=14, family='Arial, sans-serif')),
             tickfont=dict(size=12, family='Arial, sans-serif')
         ),
         yaxis=dict(
-            title="متوسط نسبة الإنجاز (%)",
-            titlefont=dict(size=14, family='Arial, sans-serif'),
+            title=dict(text="متوسط نسبة الإنجاز (%)", font=dict(size=14, family='Arial, sans-serif')),
             tickfont=dict(size=12, family='Arial, sans-serif'),
             range=[0, 100]
         ),
