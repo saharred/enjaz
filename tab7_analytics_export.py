@@ -7,10 +7,10 @@ import pandas as pd
 import tempfile
 import os
 
-from enjaz.analytics_export import (
-    create_analytics_export,
-    export_analytics_to_excel,
-    export_analytics_to_csv
+from enjaz.analytics_export_horizontal import (
+    create_horizontal_analytics_export,
+    export_horizontal_analytics_to_excel,
+    export_horizontal_analytics_to_csv
 )
 from enjaz.analysis import get_band
 
@@ -21,19 +21,19 @@ def render_analytics_export_tab(all_data):
     st.header("📊 التصدير التحليلي - Analytics Export")
     
     st.info("""
-    📌 **التصدير التحليلي الشامل**
+    📌 **التصدير التحليلي الشامل - التنسيق الأفقي**
     
-    يعرض هذا التقرير صف واحد لكل طالب × مادة مع النسبة العامة عبر جميع المواد:
-    - اسم الطالب | الصف | الشعبة | المادة
-    - إجمالي المادة | منجز في المادة
-    - النسبة العامة لكل المواد | الفئة
+    يعرض هذا التقرير صف واحد لكل طالب مع جميع المواد في أعمدة منفصلة:
+    - الطالب | الصف | الشعبة
+    - لكل مادة: إجمالي | منجز | النسبة | متبقي
+    - المتوسط العام | الفئة
     
-    **مثالي للتحليل في Excel أو Python!**
+    **مثالي للعرض في Excel والتحليل المباشر!**
     """)
     
     try:
-        # Create analytics export
-        df = create_analytics_export(all_data)
+        # Create horizontal analytics export
+        df = create_horizontal_analytics_export(all_data)
         
         if df.empty:
             st.warning("⚠️ لا توجد بيانات للعرض")
@@ -106,14 +106,16 @@ def render_analytics_export_tab(all_data):
             st.markdown("""
             ### الأعمدة:
             
-            1. **student_name** - اسم الطالب
-            2. **grade** - الصف/المستوى الدراسي
-            3. **section** - الشعبة/الفصل
-            4. **subject** - المادة
-            5. **subject_total_assigned** - إجمالي التقييمات المكلف بها في هذه المادة
-            6. **subject_total_done** - عدد التقييمات المنجزة في هذه المادة
-            7. **overall_pct_all_subjects** - النسبة العامة للإنجاز عبر **جميع المواد** (نفس القيمة لكل مواد الطالب)
-            8. **tier** - الفئة حسب النسبة العامة
+            1. **الطالب** - اسم الطالب
+            2. **الصف** - الصف/المستوى الدراسي
+            3. **الشعبة** - الشعبة/الفصل
+            4-35. **لكل مادة 4 أعمدة:**
+               - **[المادة] - إجمالي** - إجمالي التقييمات المكلف بها
+               - **[المادة] - منجز** - عدد التقييمات المنجزة
+               - **[المادة] - النسبة** - نسبة الإنجاز في هذه المادة
+               - **[المادة] - متبقي** - عدد التقييمات المتبقية
+            36. **المتوسط** - النسبة العامة للإنجاز عبر **جميع المواد**
+            37. **الفئة** - الفئة حسب النسبة العامة
             
             ### معايير التصنيف:
             
@@ -135,7 +137,7 @@ def render_analytics_export_tab(all_data):
             if st.button("📄 تصدير إلى Excel", use_container_width=True):
                 try:
                     with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
-                        excel_path = export_analytics_to_excel(df, tmp.name)
+                        excel_path = export_horizontal_analytics_to_excel(df, tmp.name)
                         
                         with open(excel_path, 'rb') as f:
                             excel_data = f.read()
@@ -164,7 +166,7 @@ def render_analytics_export_tab(all_data):
             if st.button("📄 تصدير إلى CSV", use_container_width=True):
                 try:
                     with tempfile.NamedTemporaryFile(delete=False, suffix='.csv', mode='w', encoding='utf-8-sig') as tmp:
-                        csv_path = export_analytics_to_csv(df, tmp.name)
+                        csv_path = export_horizontal_analytics_to_csv(df, tmp.name)
                         
                         with open(csv_path, 'rb') as f:
                             csv_data = f.read()
