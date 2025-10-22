@@ -443,79 +443,129 @@ def main():
         from tab6_school_report import render_school_report_tab
         render_school_report_tab(all_data)
     
-    # Tab 3: Class/Subject Report - Horizontal View
+    # Tab 3: Department Statistical Report
     with tab3:
-        st.header("✓ تقارير الأقسام - عرض أفقي")
+        st.header("✓ التقرير الإحصائي للأقسام")
+        st.subheader("📊 التقرير الكمي الوصفي")
         
-        st.info("""
-        📌 **تقرير شامل لجميع الطلاب**
-        
-        يعرض هذا التقرير جميع الطلاب مع تفاصيل أدائهم في جميع المواد بشكل أفقي:
-        - اسم الطالب | الصف | الشعبة
-        - لكل مادة: إجمالي التقييمات | المنجز | نسبة الحل
-        """)
-        
-        # Use school_report module to create horizontal report
-        from enjaz.school_report import create_horizontal_school_report
+        from enjaz.analysis import get_band
+        from enjaz.department_recommendations import get_subject_recommendation, PREDEFINED_RECOMMENDATIONS
+        import pandas as pd
         
         try:
-            # Create horizontal report
-            horizontal_df = create_horizontal_school_report(all_data)
+            # Calculate statistics per subject
+            subject_stats = []
             
-            if horizontal_df.empty:
+            for sheet_data in all_data:
+                subject_name = sheet_data.get('subject', sheet_data['sheet_name'])
+                students = sheet_data['students']
+                
+                # Calculate totals
+                total_students = len([s for s in students if s.get('has_due', False)])
+                if total_students == 0:
+                    continue
+                
+                total_completed = sum(s['completed'] for s in students)
+                total_due = sum(s['total_due'] for s in students)
+                completion_rate = round(100.0 * total_completed / max(total_due, 1), 1)
+                
+                # Calculate band distribution
+                band_counts = {
+                    'البلاتينية': 0,
+                    'الذهبية': 0,
+                    'الفضية': 0,
+                    'البرونزية': 0,
+                    'يحتاج إلى تطوير': 0,
+                    'لا يستفيد من النظام': 0
+                }
+                
+                for student in students:
+                    if student.get('has_due', False):
+                        band = get_band(student['completion_rate'])
+                        if band in band_counts:
+                            band_counts[band] += 1
+                
+                # Calculate percentages
+                band_percentages = {
+                    k: round(100.0 * v / max(total_students, 1), 1)
+                    for k, v in band_counts.items()
+                }
+                
+                # Get recommendation
+                recommendation = get_subject_recommendation(completion_rate)
+                
+                subject_stats.append({
+                    'المادة': subject_name,
+                    'نسبة الإنجاز': f"{completion_rate}%",
+                    'نسبة الطلاب الفئة البلاتينية': f"{band_percentages['البلاتينية']}%",
+                    'نسبة الطلاب الفئة الذهبية': f"{band_percentages['الذهبية']}%",
+                    'نسبة الطلاب الفئة الفضية': f"{band_percentages['الفضية']}%",
+                    'نسبة الطلاب الفئة البرونزية': f"{band_percentages['البرونزية']}%",
+                    'نسبة الطلاب الفئة تحتاج إلى تطوير من النظام': f"{band_percentages['يحتاج إلى تطوير']}%",
+                    'نسبة الطلاب الفئة لا يستفيد من النظام': f"{band_percentages['لا يستفيد من النظام']}%",
+                    'توصية منسق المشاريع': recommendation
+                })
+            
+            if not subject_stats:
                 st.warning("⚠️ لا توجد بيانات للعرض")
             else:
-                # Display statistics
-                st.subheader("📊 إحصائيات عامة")
+                # Display statistics table
+                st.subheader("📋 الجدول الإحصائي")
+                df_stats = pd.DataFrame(subject_stats)
+                st.dataframe(df_stats, use_container_width=True, height=400)
                 
-                col1, col2, col3 = st.columns(3)
+                # Recommendations section
+                st.subheader("📝 توصية منسق المشاريع")
                 
-                total_students = len(horizontal_df)
-                avg_completion = horizontal_df['نسبة الحل العامة (%)'].mean()
+                recommendation_mode = st.radio(
+                    "اختر طريقة إدخال التوصية:",
+                    ["🖊️ كتابة مباشرة", "📋 اختيار من التوصيات الجاهزة"],
+                    horizontal=True
+                )
                 
-                with col1:
-                    st.metric("إجمالي الطلاب", total_students)
+                if recommendation_mode == "🖊️ كتابة مباشرة":
+                    custom_recommendation = st.text_area(
+                        "أدخل التوصية:",
+                        height=150,
+                        placeholder="اكتب توصيتك هنا..."
+                    )
+                    final_recommendation = custom_recommendation
+                else:
+                    selected_recommendations = st.multiselect(
+                        "اختر التوصيات (يمكن اختيار أكثر من واحدة):",
+                        PREDEFINED_RECOMMENDATIONS
+                    )
+                    final_recommendation = "\n• ".join(selected_recommendations) if selected_recommendations else ""
                 
-                with col2:
-                    st.metric("متوسط الإنجاز", f"{avg_completion:.1f}%")
+                if final_recommendation:
+                    st.info(f"📌 **التوصية النهائية:**\n\n{final_recommendation}")
                 
-                with col3:
-                    band = get_band(avg_completion)
-                    st.metric("الفئة العامة", band)
-                
-                # Display horizontal table
-                st.subheader("📋 تفاصيل جميع الطلاب")
-                st.dataframe(horizontal_df, use_container_width=True, height=600)
-                
-                # Export option
+                # Export section
                 st.subheader("📄 تصدير التقرير")
-                
-                from enjaz.school_report import export_school_report_to_excel
-                import tempfile
-                import os
                 
                 col1, col2 = st.columns(2)
                 
                 with col1:
-                    if st.button("✓ تقرير جميع الطلاب (Excel)"):
-                        with tempfile.TemporaryDirectory() as tmpdir:
-                            excel_path = os.path.join(tmpdir, 'تقرير_جميع_الطلاب.xlsx')
-                            export_school_report_to_excel(horizontal_df, excel_path)
-                            
-                            with open(excel_path, 'rb') as f:
-                                st.download_button(
-                                    label="⬇️ تحميل Excel",
-                                    data=f.read(),
-                                    file_name='تقرير_جميع_الطلاب.xlsx',
-                                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                                )
+                    # Export to Excel
+                    import io
+                    excel_buffer = io.BytesIO()
+                    df_stats.to_excel(excel_buffer, index=False, engine='openpyxl')
+                    excel_buffer.seek(0)
+                    
+                    st.download_button(
+                        label="⬇️ تحميل Excel",
+                        data=excel_buffer,
+                        file_name="تقرير_الأقسام_الإحصائي.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
                 
                 with col2:
-                    st.info("📄 تصدير Word سيتم إضافته قريباً")
+                    st.info("📄 تصدير PDF/Word سيتم إضافته قريبًا")
         
         except Exception as e:
             st.error(f"❌ حدث خطأ في إنشاء التقرير: {str(e)}")
-            st.info("📊 البيانات متوفرة في التبويبات الأخرى")
+            import traceback
+            st.code(traceback.format_exc())
     
     # Tab 4: Student Profile
     with tab4:
