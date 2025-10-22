@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import pytz
+import streamlit as st
 
 
 def parse_excel_file(file_path_or_buffer, week_name=None):
@@ -29,12 +30,15 @@ def parse_excel_file(file_path_or_buffer, week_name=None):
         # Read all sheets
         excel_file = pd.ExcelFile(file_path_or_buffer)
         
+        st.info(f"📂 عدد الأوراق في الملف: {len(excel_file.sheet_names)}")
+        
         for sheet_name in excel_file.sheet_names:
             try:
                 # Read the sheet
                 df = pd.read_excel(excel_file, sheet_name=sheet_name, header=None)
                 
                 if df.empty or df.shape[0] < 4:
+                    st.warning(f"⚠️ الورقة '{sheet_name}' فارغة أو لا تحتوي على بيانات كافية")
                     continue
                 
                 # Extract assessment columns (starting from column H = index 7)
@@ -57,8 +61,16 @@ def parse_excel_file(file_path_or_buffer, week_name=None):
                             if isinstance(dd, datetime):
                                 due_dates.append(dd.date())
                             elif isinstance(dd, str):
-                                parsed_date = pd.to_datetime(dd).date()
-                                due_dates.append(parsed_date)
+                                # Try multiple date formats
+                                for fmt in ['%Y-%m-%d', '%d/%m/%Y', '%m/%d/%Y', '%d-%m-%Y']:
+                                    try:
+                                        parsed_date = datetime.strptime(dd, fmt).date()
+                                        due_dates.append(parsed_date)
+                                        break
+                                    except:
+                                        continue
+                                else:
+                                    due_dates.append(None)
                             else:
                                 due_dates.append(None)
                         except:
@@ -66,12 +78,15 @@ def parse_excel_file(file_path_or_buffer, week_name=None):
                 
                 # Process student rows (starting from row 4, index 3)
                 students_data = []
+                student_count = 0
                 
                 for idx in range(3, df.shape[0]):
-                    student_name = df.iloc[idx, 0]  # Assuming column A (index 0) has student names
+                    student_name = df.iloc[idx, 0]  # Column A (index 0) has student names
                     
                     if pd.isna(student_name) or str(student_name).strip() == '':
                         continue
+                    
+                    student_count += 1
                     
                     # Process assessments for this student
                     assessments = []
@@ -87,7 +102,8 @@ def parse_excel_file(file_path_or_buffer, week_name=None):
                         value = df.iloc[idx, actual_col]
                         
                         # Skip if column is "Overall" or assessment title contains ignore keywords
-                        if pd.notna(title) and ('Overall' in str(title) or 'overall' in str(title)):
+                        if pd.notna(title) and ('Overall' in str(title) or 'overall' in str(title) or 
+                                                'إجمالي' in str(title) or 'المجموع' in str(title)):
                             continue
                         
                         # Check if due date is valid and <= today
@@ -141,18 +157,22 @@ def parse_excel_file(file_path_or_buffer, week_name=None):
                     })
                 
                 # Store sheet data
-                all_sheets_data.append({
-                    'sheet_name': sheet_name,
-                    'week_name': week_name,
-                    'students': students_data
-                })
+                if students_data:
+                    all_sheets_data.append({
+                        'sheet_name': sheet_name,
+                        'week_name': week_name,
+                        'students': students_data
+                    })
+                    st.success(f"✅ تم معالجة الورقة '{sheet_name}' - {student_count} طالب/طالبة")
+                else:
+                    st.warning(f"⚠️ لم يتم العثور على طلاب في الورقة '{sheet_name}'")
                 
             except Exception as e:
-                print(f"Error processing sheet {sheet_name}: {str(e)}")
+                st.error(f"❌ خطأ في معالجة الورقة '{sheet_name}': {str(e)}")
                 continue
     
     except Exception as e:
-        print(f"Error reading Excel file: {str(e)}")
+        st.error(f"❌ خطأ في قراءة ملف Excel: {str(e)}")
         return []
     
     return all_sheets_data
@@ -172,8 +192,16 @@ def aggregate_multiple_files(uploaded_files):
     
     for idx, uploaded_file in enumerate(uploaded_files):
         week_name = uploaded_file.name if hasattr(uploaded_file, 'name') else f"Week {idx + 1}"
+        
+        st.info(f"📄 معالجة الملف: {week_name}")
+        
         file_data = parse_excel_file(uploaded_file, week_name=week_name)
-        all_data.extend(file_data)
+        
+        if file_data:
+            all_data.extend(file_data)
+            st.success(f"✅ تم معالجة {len(file_data)} ورقة/أوراق من الملف '{week_name}'")
+        else:
+            st.warning(f"⚠️ لم يتم العثور على بيانات صالحة في الملف '{week_name}'")
     
     return all_data
 
