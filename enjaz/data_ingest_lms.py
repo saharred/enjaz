@@ -48,7 +48,7 @@ def normalize_arabic_text(text):
     return text
 
 
-def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1"):
+def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_date=None):
     """
     Parse Excel file from Qatar LMS export format.
     
@@ -63,6 +63,7 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1"):
         file_path_or_buffer: Path to Excel file or file buffer
         today: Current date for filtering (date object)
         week_name: Name of the week/file
+        start_date: Start date for filtering assessments (optional)
     
     Returns:
         list: Parsed data for all sheets
@@ -154,8 +155,12 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1"):
                         col_idx = assessment['col_idx']
                         due_date = assessment['due_date']
                         
-                        # Only consider assessments with due_date <= today
+                        # Only consider assessments within date range
                         if due_date is None or due_date > today:
+                            continue
+                        
+                        # Filter by start_date if provided
+                        if start_date is not None and due_date < start_date:
                             continue
                         
                         total_due += 1
