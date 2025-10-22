@@ -202,7 +202,87 @@ def render_school_report_tab(all_data):
     
     st.markdown("---")
     
-    # Section 3: Comprehensive Horizontal Report
+    # Section 3: Comprehensive Presentation
+    st.subheader("🎬 العرض التقديمي الشامل")
+    
+    st.info("""
+    📊 **عرض تقديمي متكامل يتضمن:**
+    
+    1️⃣ الإحصائيات الرئيسية على مستوى المدرسة
+    2️⃣ توزيع الطلاب حسب الفئات
+    3️⃣ التحليل العام للمواد
+    4️⃣ تحليل تفصيلي لكل مادة
+    5️⃣ التوصيات العامة
+    6️⃣ توصية منسق المشاريع
+    7️⃣ إجراءات منسق المشاريع
+    """)
+    
+    # Input for coordinator recommendation
+    st.markdown("**💡 توصية منسق المشاريع (اختياري):**")
+    coordinator_recommendation = st.text_area(
+        "اكتب توصيتك الخاصة هنا:",
+        height=150,
+        placeholder="مثال: بناءً على التحليل الشامل، أوصي بالتركيز على...",
+        key="presentation_coordinator_recommendation"
+    )
+    
+    # Get coordinator actions from session state or text area
+    presentation_coordinator_actions = st.session_state.get('coordinator_actions', coordinator_actions)
+    
+    # Button to generate presentation
+    if st.button("🎬 إنشاء العرض التقديمي الشامل", type="primary", use_container_width=True):
+        with st.spinner("⏳ جاري إنشاء العرض التقديمي..."):
+            try:
+                from enjaz.school_comprehensive_presentation import (
+                    calculate_school_statistics_for_presentation,
+                    calculate_subject_statistics,
+                    get_presentation_outline
+                )
+                
+                # Calculate statistics
+                pres_school_stats = calculate_school_statistics_for_presentation(all_data)
+                subject_stats = calculate_subject_statistics(all_data)
+                
+                # Check if there's data
+                if pres_school_stats['total_assessments'] == 0:
+                    st.warning("⚠️ لا توجد تقييمات مستحقة لإنشاء عرض تقديمي")
+                else:
+                    # Get outline
+                    outline = get_presentation_outline(
+                        pres_school_stats,
+                        subject_stats,
+                        coordinator_recommendation,
+                        presentation_coordinator_actions
+                    )
+                    
+                    # Store in session state for slide generation
+                    st.session_state['presentation_data'] = {
+                        'school_stats': pres_school_stats,
+                        'subject_stats': subject_stats,
+                        'coordinator_recommendation': coordinator_recommendation,
+                        'coordinator_actions': presentation_coordinator_actions,
+                        'outline': outline
+                    }
+                    
+                    st.success(f"✅ تم إعداد العرض التقديمي بنجاح! ({len(outline)} شريحة)")
+                    st.info("⚡ يتم الآن إنشاء الشرائح...")
+                    
+                    # Display outline
+                    with st.expander("👁️ معاينة محتوى العرض"):
+                        for idx, slide in enumerate(outline, 1):
+                            st.markdown(f"**{idx}. {slide['page_title']}**")
+                            st.caption(slide['summary'])
+                    
+                    st.warning("🚧 ميزة إنشاء العرض التقديمي قيد التطوير. سيتم إضافتها في التحديث القادم.")
+                    
+            except Exception as e:
+                st.error(f"❌ حدث خطأ: {str(e)}")
+                import traceback
+                st.code(traceback.format_exc())
+    
+    st.markdown("---")
+    
+    # Section 4: Comprehensive Horizontal Report
     st.subheader("📋 التقرير التحليلي الشامل (عرض أفقي)")
     
     st.info("""
