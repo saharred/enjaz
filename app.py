@@ -272,6 +272,43 @@ def main():
         help="يمكنك رفع ملف واحد أو أكثر"
     )
     
+    # Date filter
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("📅 فلتر التاريخ")
+    
+    # Date range options
+    date_filter_type = st.sidebar.radio(
+        "نوع الفلتر",
+        ["من وإلى", "من والآن"],
+        help="اختر نوع فلتر التاريخ"
+    )
+    
+    if date_filter_type == "من وإلى":
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            start_date = st.date_input(
+                "من",
+                value=date.today() - pd.Timedelta(days=30),
+                help="تاريخ البداية"
+            )
+        with col2:
+            end_date = st.date_input(
+                "إلى",
+                value=date.today(),
+                help="تاريخ النهاية"
+            )
+    else:  # من والآن
+        start_date = st.sidebar.date_input(
+            "من تاريخ",
+            value=date.today() - pd.Timedelta(days=30),
+            help="تاريخ البداية"
+        )
+        end_date = date.today()
+    
+    # Display selected date range
+    st.sidebar.info(f"📅 الفترة: {start_date.strftime('%Y-%m-%d')} إلى {end_date.strftime('%Y-%m-%d')}")
+    st.sidebar.markdown("---")
+    
     if not uploaded_files:
         st.info("👈 الرجاء رفع ملفات Excel من القائمة الجانبية للبدء")
         render_professional_footer()
@@ -568,32 +605,98 @@ def main():
                 for student in sheet_data['students']:
                     all_students.add(student['student_name'])
             
-            selected_student = st.selectbox("اختر الطالب", sorted(all_students), key="report_student")
-            
             # Get class and section (from first sheet)
             class_name = all_data[0].get('class_code', 'غير محدد').split('/')[0] if '/' in all_data[0].get('class_code', '') else 'غير محدد'
             section = all_data[0].get('class_code', 'غير محدد').split('/')[1] if '/' in all_data[0].get('class_code', '') else 'غير محدد'
             
-            if st.button("📄 إنشاء التقرير"):
-                with st.spinner("⏳ جاري إنشاء التقرير..."):
-                    try:
-                        pdf_buffer = create_student_individual_report(
-                            selected_student,
-                            all_data,
-                            class_name,
-                            section
-                        )
+            # Choose between single or multiple students
+            report_mode = st.radio(
+                "نوع التقرير",
+                ["طالب واحد", "عدة طلاب (ملف مضغوط)"],
+                horizontal=True
+            )
+            
+            if report_mode == "طالب واحد":
+                selected_student = st.selectbox("اختر الطالب", sorted(all_students), key="report_student")
+                
+                if st.button("📄 إنشاء التقرير"):
+                    with st.spinner("⏳ جاري إنشاء التقرير..."):
+                        try:
+                            pdf_buffer = create_student_individual_report(
+                                selected_student,
+                                all_data,
+                                class_name,
+                                section
+                            )
+                            
+                            st.download_button(
+                                label="⬇️ تحميل التقرير (PDF)",
+                                data=pdf_buffer,
+                                file_name=f"تقرير_{selected_student}.pdf",
+                                mime="application/pdf"
+                            )
+                            
+                            st.success("✅ تم إنشاء التقرير بنجاح!")
+                        except Exception as e:
+                            st.error(f"❌ حدث خطأ: {str(e)}")
+            
+            else:  # عدة طلاب (ملف مضغوط)
+                selected_students = st.multiselect(
+                    "اختر الطلاب (يمكن اختيار أكثر من طالب)",
+                    sorted(all_students),
+                    key="bulk_report_students"
+                )
+                
+                if selected_students:
+                    st.info(f"📊 عدد الطلاب المختارين: {len(selected_students)}")
+                    
+                    if st.button(f"📦 إنشاء {len(selected_students)} تقرير وتنزيل ملف مضغوط"):
+                        import zipfile
+                        import io
                         
-                        st.download_button(
-                            label="⬇️ تحميل التقرير (PDF)",
-                            data=pdf_buffer,
-                            file_name=f"تقرير_{selected_student}.pdf",
-                            mime="application/pdf"
-                        )
-                        
-                        st.success("✅ تم إنشاء التقرير بنجاح!")
-                    except Exception as e:
-                        st.error(f"❌ حدث خطأ: {str(e)}")
+                        with st.spinner(f"⏳ جاري إنشاء {len(selected_students)} تقرير..."):
+                            try:
+                                # Create ZIP file in memory
+                                zip_buffer = io.BytesIO()
+                                
+                                with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                                    progress_bar = st.progress(0)
+                                    
+                                    for idx, student_name in enumerate(selected_students):
+                                        # Create individual report
+                                        pdf_buffer = create_student_individual_report(
+                                            student_name,
+                                            all_data,
+                                            class_name,
+                                            section
+                                        )
+                                        
+                                        # Add to ZIP with sanitized filename
+                                        safe_name = student_name.replace('/', '_').replace('\\', '_')
+                                        zip_file.writestr(
+                                            f"تقرير_{safe_name}.pdf",
+                                            pdf_buffer.getvalue()
+                                        )
+                                        
+                                        # Update progress
+                                        progress_bar.progress((idx + 1) / len(selected_students))
+                                
+                                zip_buffer.seek(0)
+                                
+                                st.download_button(
+                                    label=f"⬇️ تحميل {len(selected_students)} تقرير (ملف مضغوط)",
+                                    data=zip_buffer,
+                                    file_name=f"تقارير_فردية_{len(selected_students)}_طالب.zip",
+                                    mime="application/zip"
+                                )
+                                
+                                st.success(f"✅ تم إنشاء {len(selected_students)} تقرير بنجاح!")
+                            except Exception as e:
+                                st.error(f"❌ حدث خطأ: {str(e)}")
+                                import traceback
+                                st.code(traceback.format_exc())
+                else:
+                    st.warning("⚠️ الرجاء اختيار طالب واحد على الأقل")
         
         else:
             # Class/Subject report with multiselect

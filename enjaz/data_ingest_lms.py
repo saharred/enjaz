@@ -234,23 +234,35 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1"):
     return all_sheets_data
 
 
-def aggregate_lms_files(uploaded_files, today):
+def aggregate_lms_files(uploaded_files, today=None, start_date=None, end_date=None):
     """
     Aggregate data from multiple LMS Excel files.
     
     Args:
         uploaded_files: List of uploaded file objects
-        today: Current date for due date comparison (date object)
+        today: Current date for due date comparison (date object) - deprecated, use end_date
+        start_date: Start date for filtering assessments (date object)
+        end_date: End date for filtering assessments (date object)
     
     Returns:
         list: Combined data from all files
     """
     all_data = []
     
+    # Use end_date if provided, otherwise use today
+    filter_date = end_date if end_date is not None else today
+    if filter_date is None:
+        filter_date = date.today()
+    
     for idx, uploaded_file in enumerate(uploaded_files):
         week_name = uploaded_file.name if hasattr(uploaded_file, 'name') else f"Week {idx + 1}"
         
-        file_data = parse_lms_excel(uploaded_file, today=today, week_name=week_name)
+        file_data = parse_lms_excel(
+            uploaded_file, 
+            today=filter_date, 
+            week_name=week_name,
+            start_date=start_date
+        )
         all_data.extend(file_data)
     
     return all_data
