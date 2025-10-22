@@ -288,7 +288,7 @@ def main():
         with col1:
             start_date = st.date_input(
                 "من",
-                value=date.today() - pd.Timedelta(days=30),
+                value=date.today() - timedelta(days=30),
                 help="تاريخ البداية"
             )
         with col2:
@@ -300,7 +300,7 @@ def main():
     else:  # من والآن
         start_date = st.sidebar.date_input(
             "من تاريخ",
-            value=date.today() - pd.Timedelta(days=30),
+            value=date.today() - timedelta(days=30),
             help="تاريخ البداية"
         )
         end_date = date.today()
