@@ -294,7 +294,45 @@ def render_school_report_tab(all_data):
                             st.markdown(f"**{idx}. {slide['page_title']}**")
                             st.caption(slide['summary'])
                     
-                    st.warning("🚧 ميزة إنشاء العرض التقديمي قيد التطوير. سيتم إضافتها في التحديث القادم.")
+                    # Generate PowerPoint presentation
+                    try:
+                        from enjaz.pptx_generator import generate_school_presentation
+                        import tempfile
+                        
+                        # Create temporary file
+                        with tempfile.NamedTemporaryFile(delete=False, suffix='.pptx') as tmp:
+                            pptx_path = generate_school_presentation(
+                                pres_school_stats,
+                                presentation_coordinator_actions,
+                                subject_stats,
+                                tmp.name
+                            )
+                            
+                            # Read the file
+                            with open(pptx_path, 'rb') as f:
+                                pptx_data = f.read()
+                            
+                            # Download button
+                            st.download_button(
+                                label="⬇️ تحميل العرض التقديمي PowerPoint",
+                                data=pptx_data,
+                                file_name="تقرير_المدرسة_الشامل.pptx",
+                                mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                type="primary",
+                                use_container_width=True
+                            )
+                            
+                            # Clean up
+                            import os
+                            os.unlink(pptx_path)
+                            
+                            st.success("✅ تم إنشاء العرض التقديمي بنجاح!")
+                            st.info("📥 يمكنك الآن تحميل الملف بصيغة PowerPoint (.pptx)")
+                    
+                    except Exception as e:
+                        st.error(f"❌ حدث خطأ في إنشاء العرض التقديمي: {str(e)}")
+                        import traceback
+                        st.code(traceback.format_exc())
                     
             except Exception as e:
                 st.error(f"❌ حدث خطأ: {str(e)}")
