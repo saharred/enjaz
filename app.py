@@ -48,6 +48,7 @@ from enjaz.professional_design import (
     QATAR_GOLD
 )
 from tab7_analytics_export import render_analytics_export_tab
+from enjaz.data_validation import validate_uploaded_files, display_validation_results
 
 # Page configuration
 st.set_page_config(
@@ -277,19 +278,52 @@ def main():
         render_professional_footer()
         return
     
+    # Validate files first
+    with st.spinner("⏳ جاري التحقق من الملفات..."):
+        try:
+            is_valid, validation_results = validate_uploaded_files(uploaded_files)
+            
+            # Display validation results
+            if not is_valid:
+                st.warning("⚠️ تم العثور على بعض المشاكل في الملفات:")
+                display_validation_results(validation_results)
+                st.info("💡 يمكنك المتابعة إذا كانت الملفات من نظام LMS وتحتوي على بيانات صحيحة")
+            
+        except FileNotFoundError:
+            st.error("❌ لم يتم العثور على الملفات. يرجى رفع ملفات Excel.")
+            render_professional_footer()
+            return
+        except ValueError as e:
+            st.error(f"❌ خطأ في قراءة الملف: {str(e)}")
+            st.info("💡 تأكد من أن الملف بصيغة Excel صحيحة وغير تالف")
+            render_professional_footer()
+            return
+        except Exception as e:
+            st.error(f"❌ حدث خطأ غير متوقع: {str(e)}")
+            st.info("💡 يرجى التأكد من أن الملفات من نظام LMS ومحاولة مرة أخرى")
+            render_professional_footer()
+            return
+    
     # Process files
     with st.spinner("⏳ جاري معالجة الملفات..."):
-        qatar_tz = pytz.timezone('Asia/Qatar')
-        today = date.today()
-        
-        all_data = aggregate_lms_files(uploaded_files, today=today)
-    
-    if not all_data:
-        st.error("❌ لم يتم العثور على بيانات صالحة في الملفات المرفوعة.")
-        render_professional_footer()
-        return
-    
-    st.success(f"✅ تم تحميل {len(all_data)} ورقة عمل بنجاح!")
+        try:
+            qatar_tz = pytz.timezone('Asia/Qatar')
+            today = date.today()
+            
+            all_data = aggregate_lms_files(uploaded_files, today=today)
+            
+            if not all_data:
+                st.error("❌ لم يتم العثور على بيانات صالحة في الملفات المرفوعة.")
+                st.info("💡 تأكد من أن الملفات تحتوي على بيانات الطلاب والتقييمات")
+                render_professional_footer()
+                return
+            
+            st.success(f"✅ تم تحليل الملف بنجاح! تم تحميل {len(all_data)} ورقة عمل 🎉")
+            
+        except Exception as e:
+            st.error(f"❌ خطأ في معالجة البيانات: {str(e)}")
+            render_professional_footer()
+            return
     
     # Main navigation
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([

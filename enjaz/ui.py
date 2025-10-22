@@ -305,12 +305,55 @@ def create_sidebar():
     """
     with st.sidebar:
         st.markdown("### 📁 رفع الملفات")
+        
+        # File size info
+        st.caption("الحد الأقصى: 200 ميجابايت لكل ملف")
+        
         uploaded_files = st.file_uploader(
             "اختر ملفات Excel",
             type=['xlsx', 'xls'],
             accept_multiple_files=True,
-            help="قم برفع ملف واحد أو أكثر من ملفات Excel"
+            help="قم برفع ملف واحد أو أكثر من ملفات Excel من نظام LMS"
         )
+        
+        # Instructions expander
+        with st.expander("📖 تعليمات هامة"):
+            st.markdown("""
+            ### بنية الملف المطلوبة:
+            
+            يجب أن يحتوي ملف Excel على الأعمدة التالية:
+            
+            - **اسم الطالب** (نص)
+            - **الصف** (نص)
+            - **الشعبة** (نص)
+            - **المادة** (نص)
+            - **التقييم** (نص)
+            - **الحالة** (مكتمل/غير مكتمل)
+            - **التاريخ** (تاريخ)
+            
+            ### ملاحظات:
+            - يجب أن تكون أسماء الأعمدة بالعربية
+            - تأكد من عدم وجود صفوف فارغة
+            - الملف يجب أن يكون بصيغة `.xlsx` أو `.xls`
+            
+            ### تحميل ملف نموذجي:
+            """)
+            
+            # Download template button
+            try:
+                import os
+                template_path = os.path.join(os.path.dirname(__file__), '..', 'template.xlsx')
+                if os.path.exists(template_path):
+                    with open(template_path, 'rb') as f:
+                        st.download_button(
+                            label="📥 تحميل ملف نموذجي",
+                            data=f,
+                            file_name="template_injaz.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True
+                        )
+            except Exception as e:
+                st.caption("⚠️ الملف النموذجي غير متوفر حالياً")
         
         st.markdown("---")
         
