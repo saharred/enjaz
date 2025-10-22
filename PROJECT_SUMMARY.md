@@ -45,7 +45,7 @@ A complete **Arabic RTL web application** for analyzing weekly assessment comple
 
 #### UI (`enjaz/ui.py`)
 - ✅ Full RTL support
-- ✅ Qatar colors (Maroon #8A1538 & Gold #C9A227)
+- ✅ Qatar colors (Maroon #6d3a46 & Gold #C9A227)
 - ✅ Cairo font for Arabic
 - ✅ Responsive design
 - ✅ Interactive Plotly charts

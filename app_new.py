@@ -34,7 +34,7 @@ st.set_page_config(
 )
 
 # Qatar brand colors
-QATAR_MAROON = "#8A1538"
+QATAR_MAROON = "#6d3a46"
 QATAR_GOLD = "#C9A227"
 
 

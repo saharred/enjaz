@@ -62,7 +62,7 @@ def create_student_profile_pdf(student_name, student_data, overall_band):
         parent=styles['Title'],
         alignment=TA_CENTER,
         fontSize=18,
-        textColor=colors.HexColor('#8A1538'),  # Qatar Maroon
+        textColor=colors.HexColor('#6d3a46'),  # Qatar Maroon
         spaceAfter=20
     )
     
@@ -71,7 +71,7 @@ def create_student_profile_pdf(student_name, student_data, overall_band):
         parent=styles['Heading1'],
         alignment=TA_RIGHT,
         fontSize=14,
-        textColor=colors.HexColor('#8A1538'),
+        textColor=colors.HexColor('#6d3a46'),
         spaceAfter=10
     )
     
@@ -132,7 +132,7 @@ def create_student_profile_pdf(student_name, student_data, overall_band):
     # Table style
     table.setStyle(TableStyle([
         # Header row
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8A1538')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6d3a46')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
         ('FONTSIZE', (0, 0), (-1, 0), 12),

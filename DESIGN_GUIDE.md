@@ -46,7 +46,7 @@
 
 | اللون | الاسم | الكود السداسي | RGB | الاستخدام |
 |-------|-------|---------------|-----|-----------|
-| ![#8A1538](https://via.placeholder.com/15/8A1538/8A1538.png) | **العنّابي القطري** | `#8A1538` | `rgb(138, 21, 56)` | اللون الأساسي - الهيدر، الأزرار، العناوين |
+| ![#6d3a46](https://via.placeholder.com/15/8A1538/8A1538.png) | **العنّابي القطري** | `#6d3a46` | `rgb(138, 21, 56)` | اللون الأساسي - الهيدر، الأزرار، العناوين |
 | ![#C9A227](https://via.placeholder.com/15/C9A227/C9A227.png) | **الذهبي القطري** | `#C9A227` | `rgb(201, 162, 39)` | اللون الثانوي - التمييز، الشارات، الأيقونات |
 | ![#FFFFFF](https://via.placeholder.com/15/FFFFFF/000000.png) | **الأبيض** | `#FFFFFF` | `rgb(255, 255, 255)` | الخلفيات، النصوص على الخلفيات الداكنة |
 
@@ -227,7 +227,7 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 - **الحدود:** بدون حدود أو حد رفيع جداً
 - **الزوايا:** دائرية (12px - 16px)
 - **الظل:** `0 4px 12px rgba(0, 0, 0, 0.08)`
-- **الحد الأيمن:** 5px بلون العنّابي (`#8A1538`)
+- **الحد الأيمن:** 5px بلون العنّابي (`#6d3a46`)
 - **التباعد الداخلي:** 1.5rem - 2rem
 
 **التأثيرات التفاعلية:**
@@ -255,7 +255,7 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
 **الزر الأساسي (Primary Button):**
 ```css
-background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
 color: white;
 border-radius: 10px;
 padding: 0.75rem 2rem;
@@ -267,7 +267,7 @@ box-shadow: 0 4px 12px rgba(138, 21, 56, 0.3);
 ```css
 :hover {
     background: linear-gradient(135deg, #C9A227 0%, #B8A020 100%);
-    color: #8A1538;
+    color: #6d3a46;
     transform: translateY(-2px);
 }
 ```
@@ -281,7 +281,7 @@ box-shadow: 0 4px 12px rgba(138, 21, 56, 0.3);
 
 **رأس الجدول (Table Header):**
 ```css
-background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
 color: white;
 font-weight: 700;
 text-align: center;
@@ -309,7 +309,7 @@ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
 **التبويب النشط:**
 ```css
-background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
 color: white;
 box-shadow: 0 4px 12px rgba(138, 21, 56, 0.3);
 ```
@@ -317,14 +317,14 @@ box-shadow: 0 4px 12px rgba(138, 21, 56, 0.3);
 **التبويب غير النشط:**
 ```css
 background-color: transparent;
-color: #8A1538;
+color: #6d3a46;
 ```
 
 ### 5. الهيدر (Header)
 
 **المواصفات:**
 ```css
-background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
 padding: 2.5rem 2rem;
 border-radius: 0 0 30px 30px;
 text-align: center;
@@ -341,7 +341,7 @@ box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
 
 **المواصفات:**
 ```css
-background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
 padding: 2.5rem 2rem;
 border-radius: 30px 30px 0 0;
 text-align: center;
@@ -506,7 +506,7 @@ get_metric_card_html(title, value, subtitle, badge=None) -> str
 **الثوابت:**
 
 ```python
-QATAR_MAROON = "#8A1538"
+QATAR_MAROON = "#6d3a46"
 QATAR_GOLD = "#C9A227"
 QATAR_WHITE = "#FFFFFF"
 

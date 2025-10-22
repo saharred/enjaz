@@ -9,7 +9,7 @@ from plotly.subplots import make_subplots
 import pandas as pd
 
 # Qatar brand colors
-QATAR_MAROON = "#8A1538"
+QATAR_MAROON = "#6d3a46"
 QATAR_GOLD = "#C9A227"
 
 # Band colors (updated for new classification system)

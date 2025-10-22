@@ -4,7 +4,7 @@ Flat Design with Qatar Education Branding
 """
 
 # Qatar Official Colors
-QATAR_MAROON = "#8A1538"
+QATAR_MAROON = "#6d3a46"
 QATAR_GOLD = "#C9A227"
 QATAR_WHITE = "#FFFFFF"
 
@@ -596,7 +596,7 @@ def get_header_html(logo_horizontal_path=None):
         <div class="logo-container">
             {logo_html}
         </div>
-        <h1>🏆 إنجاز - Injaz</h1>
+        <h1>✅ إنجاز - Injaz</h1>
         <div class="subtitle">نظام تحليل التقييمات الأسبوعية</div>
         <div class="tagline">Assessment Analysis System | Qatar Education</div>
     </div>

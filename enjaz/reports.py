@@ -58,7 +58,7 @@ def export_to_excel(dataframe, filename="report.xlsx"):
         # Add formats
         header_format = workbook.add_format({
             'bold': True,
-            'bg_color': '#8A1538',
+            'bg_color': '#6d3a46',
             'font_color': 'white',
             'align': 'center',
             'valign': 'vcenter',
@@ -117,7 +117,7 @@ def create_pdf_report(title, content_data, filename="report.pdf"):
         parent=styles['Heading1'],
         alignment=TA_CENTER,
         fontSize=18,
-        textColor=colors.HexColor('#8A1538'),
+        textColor=colors.HexColor('#6d3a46'),
         spaceAfter=20
     )
     
@@ -156,7 +156,7 @@ def create_pdf_report(title, content_data, filename="report.pdf"):
             # Create table
             t = Table(table_data)
             t.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8A1538')),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6d3a46')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                 ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),

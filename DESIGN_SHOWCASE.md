@@ -14,7 +14,7 @@
 تعتمد الهوية البصرية لنظام إنجاز على الألوان الرسمية لدولة قطر:
 
 **الألوان الأساسية:**
-- 🔴 **العنّابي القطري** `#8A1538` - اللون الأساسي للهوية
+- 🔴 **العنّابي القطري** `#6d3a46` - اللون الأساسي للهوية
 - 🟡 **الذهبي القطري** `#C9A227` - لون التمييز والتميز
 - ⚪ **الأبيض** `#FFFFFF` - الخلفيات والنصوص
 
@@ -78,7 +78,7 @@
 
 **الكود:**
 ```css
-background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
 border-radius: 0 0 30px 30px;
 box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
 ```
@@ -109,7 +109,7 @@ box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
 ```css
 .metric-card {
     background: white;
-    border-right: 5px solid #8A1538;
+    border-right: 5px solid #6d3a46;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
@@ -142,7 +142,7 @@ box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
 **الكود:**
 ```css
 .stButton>button {
-    background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+    background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
     color: white;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(138, 21, 56, 0.3);
@@ -150,7 +150,7 @@ box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
 
 .stButton>button:hover {
     background: linear-gradient(135deg, #C9A227 0%, #B8A020 100%);
-    color: #8A1538;
+    color: #6d3a46;
     transform: translateY(-2px);
 }
 ```
@@ -174,7 +174,7 @@ box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
 **الكود:**
 ```css
 .dataframe thead tr {
-    background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+    background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
 }
 
 .dataframe th {
@@ -217,7 +217,7 @@ box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
 }
 
 .stTabs [aria-selected="true"] {
-    background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+    background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
     color: white !important;
 }
 ```
@@ -238,7 +238,7 @@ box-shadow: 0 8px 24px rgba(138, 21, 56, 0.3);
 
 **الكود:**
 ```css
-background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
 border-radius: 30px 30px 0 0;
 box-shadow: 0 -8px 24px rgba(138, 21, 56, 0.2);
 ```
@@ -335,7 +335,7 @@ box-shadow: 0 -8px 24px rgba(138, 21, 56, 0.2);
 **الكود:**
 ```css
 :focus {
-    outline: 2px solid #8A1538;
+    outline: 2px solid #6d3a46;
     outline-offset: 2px;
     box-shadow: 0 0 0 3px rgba(138, 21, 56, 0.1);
 }

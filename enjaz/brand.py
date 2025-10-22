@@ -118,7 +118,7 @@ def extract_brand_maroon(logo_path: str) -> str:
         logo_path: Path to logo image file
     
     Returns:
-        Hex color string (e.g., "#8A1538")
+        Hex color string (e.g., "#6d3a46")
     """
     try:
         from PIL import Image
@@ -184,7 +184,7 @@ def extract_brand_maroon(logo_path: str) -> str:
     except Exception as e:
         print(f"Warning: Could not extract color from logo: {e}")
         # Fallback to Qatar maroon
-        return "#8A1538"
+        return "#6d3a46"
 
 
 def build_palette(base_hex: str) -> Dict[str, any]:

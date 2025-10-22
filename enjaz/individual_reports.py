@@ -93,7 +93,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
         parent=styles['Title'],
         alignment=TA_CENTER,
         fontSize=16,
-        textColor=colors.HexColor('#8A1538'),
+        textColor=colors.HexColor('#6d3a46'),
         spaceAfter=10,
         fontName='Helvetica-Bold'
     )
@@ -103,7 +103,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
         parent=styles['Heading2'],
         alignment=TA_RIGHT,
         fontSize=12,
-        textColor=colors.HexColor('#8A1538'),
+        textColor=colors.HexColor('#6d3a46'),
         spaceAfter=8
     )
     
@@ -219,7 +219,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     subject_table = Table(table_data, colWidths=[4*cm, 4*cm, 4*cm, 3*cm])
     subject_table.setStyle(TableStyle([
         # Header row
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8A1538')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6d3a46')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
         ('FONTSIZE', (0, 0), (-1, 0), 10),
@@ -362,7 +362,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
         parent=styles['Title'],
         alignment=TA_CENTER,
         fontSize=16,
-        textColor=colors.HexColor('#8A1538'),
+        textColor=colors.HexColor('#6d3a46'),
         spaceAfter=10
     )
     
@@ -371,7 +371,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
         parent=styles['Heading2'],
         alignment=TA_RIGHT,
         fontSize=12,
-        textColor=colors.HexColor('#8A1538'),
+        textColor=colors.HexColor('#6d3a46'),
         spaceAfter=8
     )
     
@@ -454,7 +454,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
     student_table = Table(table_data, colWidths=[3*cm, 2.5*cm, 2.5*cm, 2.5*cm, 4.5*cm])
     student_table.setStyle(TableStyle([
         # Header
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8A1538')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6d3a46')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
         ('FONTSIZE', (0, 0), (-1, 0), 10),

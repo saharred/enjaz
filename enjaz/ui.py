@@ -7,7 +7,7 @@ import streamlit as st
 
 
 # Qatar brand colors
-QATAR_MAROON = "#8A1538"
+QATAR_MAROON = "#6d3a46"
 QATAR_GOLD = "#C9A227"
 
 
@@ -34,7 +34,7 @@ def apply_rtl_styling():
         
         /* Header styling */
         .main-header {
-            background: linear-gradient(135deg, #8A1538 0%, #6B0F2A 100%);
+            background: linear-gradient(135deg, #6d3a46 0%, #6B0F2A 100%);
             padding: 2rem;
             border-radius: 10px;
             margin-bottom: 2rem;
@@ -59,7 +59,7 @@ def apply_rtl_styling():
         
         /* Footer styling */
         .main-footer {
-            background-color: #8A1538;
+            background-color: #6d3a46;
             color: white;
             padding: 2rem;
             border-radius: 10px;
@@ -83,13 +83,13 @@ def apply_rtl_styling():
             background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
             padding: 1.5rem;
             border-radius: 10px;
-            border-right: 5px solid #8A1538;
+            border-right: 5px solid #6d3a46;
             margin-bottom: 1rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .metric-card h3 {
-            color: #8A1538;
+            color: #6d3a46;
             margin-bottom: 0.5rem;
         }
         
@@ -101,7 +101,7 @@ def apply_rtl_styling():
         
         /* Button styling */
         .stButton > button {
-            background-color: #8A1538;
+            background-color: #6d3a46;
             color: white;
             border: none;
             border-radius: 5px;
@@ -171,7 +171,7 @@ def apply_rtl_styling():
         }
         
         .band-needs {
-            background-color: #8A1538;
+            background-color: #6d3a46;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -183,7 +183,7 @@ def render_header():
     """
     st.markdown("""
         <div class="main-header">
-            <h1>🏆 إنجاز</h1>
+            <h1>✅ إنجاز</h1>
             <p>نظام تحليل التقييمات الإلكترونية الأسبوعية على قطر للتعليم</p>
         </div>
     """, unsafe_allow_html=True)
