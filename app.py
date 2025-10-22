@@ -100,12 +100,12 @@ def render_professional_header():
 
 
 def render_professional_footer():
-    """Render professional footer."""
-    footer_html = get_footer_html()
-    st.markdown(footer_html, unsafe_allow_html=True)
-    return
-    
-    # Old footer code (to be removed)
+    """Render professional footer - DEPRECATED, use render_footer from footer.py instead."""
+    # This function is deprecated and should not be called
+    # Use render_footer() from footer.py instead
+    pass
+
+if False:  # Old footer code (to be removed)
     old_footer_html = f"""
     <div class="custom-footer">
         <p style="margin:0;"><strong>© 2025 — جميع الحقوق محفوظة</strong></p>
