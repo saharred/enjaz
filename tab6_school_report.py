@@ -1,5 +1,5 @@
 """
-Tab 6 content for School Report with comprehensive analytical layout.
+Tab 6 content for School Report with comprehensive analytical layout and quantitative descriptive report.
 """
 
 import streamlit as st
@@ -14,12 +14,179 @@ from enjaz.comprehensive_report import (
     export_comprehensive_report_to_excel
 )
 from enjaz.analysis import get_band
+from enjaz.department_recommendations import get_recommendation_by_completion_rate
+
+
+def get_school_level_recommendation(completion_rate):
+    """Get school-level recommendation based on overall completion rate."""
+    return get_recommendation_by_completion_rate(completion_rate)
+
+
+def calculate_school_statistics(all_data):
+    """Calculate comprehensive school-level statistics."""
+    stats = {
+        'total_students': 0,
+        'total_assessments': 0,
+        'total_completed': 0,
+        'completion_rate': 0.0,
+        'band_distribution': {
+            'البلاتينية': 0,
+            'الذهبية': 0,
+            'الفضية': 0,
+            'البرونزية': 0,
+            'يحتاج إلى تطوير من النظام': 0,
+            'لا يستفيد من النظام': 0
+        }
+    }
+    
+    if not all_data:
+        return stats
+    
+    # Calculate totals
+    for student_data in all_data:
+        stats['total_students'] += 1
+        for subject_name, subject_info in student_data.get('subjects', {}).items():
+            stats['total_assessments'] += subject_info.get('total', 0)
+            stats['total_completed'] += subject_info.get('completed', 0)
+            
+            # Calculate student's band for this subject
+            total = subject_info.get('total', 0)
+            completed = subject_info.get('completed', 0)
+            if total > 0:
+                completion_pct = (completed / total) * 100
+                band = get_band(completion_pct)
+                if band in stats['band_distribution']:
+                    stats['band_distribution'][band] += 1
+    
+    # Calculate overall completion rate
+    if stats['total_assessments'] > 0:
+        stats['completion_rate'] = (stats['total_completed'] / stats['total_assessments']) * 100
+    
+    return stats
 
 
 def render_school_report_tab(all_data):
-    """Render the school report tab with comprehensive analytical layout."""
+    """Render the school report tab with comprehensive analytical layout and quantitative report."""
     
-    st.header("🏫 تقرير المدرسة - عرض أفقي شامل")
+    st.header("🏫 تقرير المدرسة - التقرير الكمي الوصفي")
+    
+    # Calculate school statistics
+    school_stats = calculate_school_statistics(all_data)
+    
+    # Section 1: Quantitative Descriptive Report
+    st.subheader("📊 التقرير الكمي الوصفي على مستوى المدرسة")
+    
+    # Display key metrics
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("👥 إجمالي الطلاب", school_stats['total_students'])
+    
+    with col2:
+        st.metric("📊 إجمالي التقييمات", school_stats['total_assessments'])
+    
+    with col3:
+        st.metric("✅ التقييمات المنجزة", school_stats['total_completed'])
+    
+    with col4:
+        completion_rate = school_stats['completion_rate']
+        overall_band = get_band(completion_rate)
+        st.metric("🎯 نسبة الإنجاز الكلية", f"{completion_rate:.1f}%", delta=overall_band)
+    
+    # Band distribution
+    st.subheader("📈 توزيع الطلاب حسب فئات الأداء")
+    
+    band_df = pd.DataFrame([
+        {'الفئة': band, 'عدد الطلاب': count, 'النسبة': f"{(count / max(school_stats['total_students'], 1) * 100):.1f}%"}
+        for band, count in school_stats['band_distribution'].items()
+    ])
+    
+    st.dataframe(band_df, use_container_width=True, hide_index=True)
+    
+    # Automatic recommendation based on completion rate
+    st.subheader("💡 التوصية التلقائية")
+    
+    auto_recommendation = get_school_level_recommendation(completion_rate)
+    
+    st.info(f"""
+    **بناءً على نسبة الإنجاز الكلية ({completion_rate:.1f}%):**
+    
+    {auto_recommendation}
+    """)
+    
+    # Section 2: Project Coordinator Actions
+    st.subheader("📝 إجراءات منسق المشاريع")
+    
+    st.markdown("""
+    يمكن لمنسق المشاريع كتابة الإجراءات المتخذة أو المخطط لها لتحسين الأداء على مستوى المدرسة.
+    هذه الإجراءات ستُضاف تلقائياً كشريحة في العرض التقديمي.
+    """)
+    
+    # Text area for coordinator actions
+    coordinator_actions = st.text_area(
+        "اكتب إجراءات منسق المشاريع هنا:",
+        height=200,
+        placeholder="""مثال:
+- عقد اجتماع مع جميع رؤساء الأقسام لمناقشة نتائج التقرير
+- تنظيم ورشة عمل للمعلمين حول استراتيجيات تحفيز الطلاب
+- إطلاق حملة توعوية لأولياء الأمور حول أهمية المتابعة
+- تفعيل نظام المكافآت للطلاب المتميزين
+- متابعة أسبوعية للمواد ذات الأداء المنخفض"""
+    )
+    
+    # Option to use pre-written actions
+    use_template = st.checkbox("استخدام إجراءات جاهزة (نموذج)")
+    
+    if use_template:
+        template_actions = f"""**الإجراءات المتخذة على مستوى المدرسة:**
+
+**1. على المستوى الإداري:**
+- عقد اجتماع طارئ مع جميع رؤساء الأقسام لمناقشة نتائج التقرير الكمي الوصفي
+- تشكيل لجنة متابعة دائمة لرصد نسب الإنجاز أسبوعياً
+- تخصيص موارد إضافية للأقسام ذات الأداء المنخفض
+
+**2. على مستوى المعلمين:**
+- تنظيم ورشة عمل لجميع المعلمين حول استراتيجيات رفع نسبة الإنجاز
+- مشاركة أفضل الممارسات من الأقسام المتميزة
+- توفير الدعم الفني للمعلمين في استخدام نظام قطر للتعليم
+
+**3. على مستوى الطلاب:**
+- إطلاق حملة تحفيزية تحت شعار "إنجاز 100%"
+- تفعيل نظام المكافآت للطلاب المتميزين
+- تنظيم جلسات توعوية للطلاب حول أهمية التقييمات الأسبوعية
+
+**4. على مستوى أولياء الأمور:**
+- إرسال تقارير دورية لأولياء الأمور عن أداء أبنائهم
+- عقد اجتماع عام لأولياء الأمور لتوضيح أهمية المتابعة
+- تفعيل قنوات التواصل المباشر (واتساب، بريد إلكتروني)
+
+**5. المتابعة والتقييم:**
+- إعداد تقرير متابعة أسبوعي لقياس التحسن
+- مراجعة الإجراءات وتعديلها حسب النتائج
+- تحديد موعد للتقرير القادم بعد شهر واحد
+
+**التوقيع:**  
+منسق المشاريع  
+التاريخ: {pd.Timestamp.now().strftime('%Y-%m-%d')}
+"""
+        coordinator_actions = template_actions
+        st.text_area("الإجراءات الجاهزة:", value=template_actions, height=400, disabled=True)
+    
+    # Button to add actions as a slide
+    if st.button("➕ إضافة الإجراءات كشريحة في العرض التقديمي", type="primary"):
+        if coordinator_actions.strip():
+            # Store actions in session state
+            st.session_state['coordinator_actions'] = coordinator_actions
+            st.session_state['school_stats'] = school_stats
+            st.success("✅ تم حفظ الإجراءات! يمكنك الآن إنشاء العرض التقديمي الشامل.")
+            st.info("📊 ستتم إضافة شريحة جديدة تحتوي على إجراءات منسق المشاريع إلى العرض التقديمي.")
+        else:
+            st.warning("⚠️ الرجاء كتابة الإجراءات أولاً")
+    
+    st.markdown("---")
+    
+    # Section 3: Comprehensive Horizontal Report
+    st.subheader("📋 التقرير التحليلي الشامل (عرض أفقي)")
     
     st.info("""
     📌 **تقرير المدرسة الشامل**
@@ -38,39 +205,7 @@ def render_school_report_tab(all_data):
             st.warning("⚠️ لا توجد بيانات للعرض")
             return
         
-        # Display summary metrics
-        st.subheader("📊 ملخص التقرير")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        # Calculate unique students
-        unique_students = df['اسم الطالب'].nunique()
-        
-        # Calculate average completion
-        avg_completion = df['نسبة الحل (%)'].mean()
-        
-        # Count subjects (from column names)
-        subject_cols = [col for col in df.columns if ' - إجمالي' in col]
-        unique_subjects = len(subject_cols)
-        
-        # Get overall band
-        overall_band = get_band(avg_completion)
-        
-        with col1:
-            st.metric("👥 إجمالي الطلاب", unique_students)
-        
-        with col2:
-            st.metric("📚 عدد المواد", unique_subjects)
-        
-        with col3:
-            st.metric("🎯 متوسط الإنجاز", f"{avg_completion:.1f}%")
-        
-        with col4:
-            st.metric("🏆 الفئة العامة", overall_band)
-        
         # Display the comprehensive report
-        st.subheader("📋 التقرير التحليلي الشامل")
-        
         st.dataframe(
             df,
             use_container_width=True,
