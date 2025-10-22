@@ -39,18 +39,29 @@ from enjaz.school_report import (
     get_unique_sections,
     create_descriptive_report
 )
+from enjaz.professional_design import (
+    get_professional_css,
+    get_header_html,
+    get_footer_html,
+    get_metric_card_html,
+    QATAR_MAROON,
+    QATAR_GOLD
+)
 
 # Page configuration
 st.set_page_config(
-    page_title="إنجاز - نظام تحليل التقييمات",
-    page_icon="🏆",
+    page_title="إنجاز - نظام تحليل التقييمات | Injaz Assessment System",
+    page_icon="enjaz/assets/favicon.png",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'mailto:Sahar.Osman@education.qa',
+        'Report a bug': 'https://github.com/saharred/enjaz/issues',
+        'About': '# إنجاز - Injaz\n\nنظام تحليل التقييمات الأسبوعية\n\nمدرسة عثمان بن عفّان النموذجية للبنين\n\nوزارة التعليم والتعليم العالي - دولة قطر 🇶🇦'
+    }
 )
 
-# Qatar brand colors
-QATAR_MAROON = "#8A1538"
-QATAR_GOLD = "#C9A227"
+# Qatar brand colors are now imported from professional_design
 
 
 def get_base64_image(image_path):
@@ -62,255 +73,39 @@ def get_base64_image(image_path):
         return None
 
 
-def apply_custom_css():
-    """Apply custom CSS with logos and branding."""
-    assets_path = Path(__file__).parent / 'enjaz' / 'assets'
-    
-    # Get base64 encoded logos
-    enjaz_logo_b64 = get_base64_image(assets_path / 'logo.png')
-    moe_logo_b64 = get_base64_image(assets_path / 'moe_logo.png')
-    qatar_lms_logo_b64 = get_base64_image(assets_path / 'qatar_lms_logo.png')
-    
-    css = f"""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-    
-    * {{
-        font-family: 'Cairo', sans-serif !important;
-    }}
-    
-    html, body, [class*="css"] {{
-        direction: rtl;
-        text-align: right;
-    }}
-    
-    .stApp {{
-        background-color: #FFFFFF;
-    }}
-    
-    /* Custom Header */
-    .custom-header {{
-        background: linear-gradient(135deg, {QATAR_MAROON} 0%, #6B0F2A 100%);
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        text-align: center;
-        color: white;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        position: relative;
-    }}
-    
-    .header-logos {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }}
-    
-    .logo-left {{
-        width: 80px;
-        height: auto;
-    }}
-    
-    .logo-center {{
-        width: 120px;
-        height: auto;
-    }}
-    
-    .logo-right {{
-        width: 60px;
-        height: auto;
-    }}
-    
-    .custom-header h1 {{
-        color: {QATAR_GOLD};
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0.5rem 0;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }}
-    
-    .custom-header .subtitle {{
-        color: {QATAR_GOLD};
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin: 0.5rem 0;
-    }}
-    
-    .custom-header p {{
-        color: white;
-        font-size: 1.1rem;
-        margin-top: 0.5rem;
-    }}
-    
-    /* Metric Cards */
-    .metric-card {{
-        background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-        padding: 1.5rem;
-        border-radius: 12px;
-        border-right: 5px solid {QATAR_MAROON};
-        margin-bottom: 1rem;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s;
-    }}
-    
-    .metric-card:hover {{
-        transform: translateY(-3px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }}
-    
-    .metric-card h3 {{
-        color: {QATAR_MAROON};
-        margin-bottom: 0.5rem;
-        font-size: 1.2rem;
-    }}
-    
-    .metric-card .value {{
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: {QATAR_GOLD};
-        margin: 0.5rem 0;
-    }}
-    
-    .metric-card .subtitle {{
-        color: #666;
-        font-size: 0.95rem;
-    }}
-    
-    /* Footer */
-    .custom-footer {{
-        background-color: {QATAR_MAROON};
-        color: white;
-        padding: 2rem;
-        border-radius: 12px;
-        margin-top: 3rem;
-        text-align: center;
-        font-size: 0.95rem;
-        line-height: 1.8;
-    }}
-    
-    .custom-footer a {{
-        color: {QATAR_GOLD};
-        text-decoration: none;
-    }}
-    
-    .custom-footer a:hover {{
-        text-decoration: underline;
-    }}
-    
-    /* Buttons */
-    .stButton>button {{
-        background-color: {QATAR_MAROON};
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 2rem;
-        font-size: 1rem;
-        font-weight: 600;
-        transition: all 0.3s;
-    }}
-    
-    .stButton>button:hover {{
-        background-color: {QATAR_GOLD};
-        color: {QATAR_MAROON};
-        transform: scale(1.05);
-    }}
-    
-    /* Sidebar */
-    .css-1d391kg {{
-        background-color: #f8f9fa;
-    }}
-    
-    /* Tables */
-    .dataframe {{
-        font-size: 0.9rem;
-    }}
-    
-    .dataframe th {{
-        background-color: {QATAR_MAROON} !important;
-        color: white !important;
-        text-align: center !important;
-    }}
-    
-    .dataframe td {{
-        text-align: center !important;
-    }}
-    </style>
-    """
-    
+def apply_professional_design():
+    """Apply professional Flat Design CSS."""
+    # Get and apply professional CSS
+    css = get_professional_css()
     st.markdown(css, unsafe_allow_html=True)
 
 
-def render_header():
-    """Render custom header with logos - New Design."""
+def render_professional_header():
+    """Render professional header with new logo."""
     assets_path = Path(__file__).parent / 'enjaz' / 'assets'
+    logo_horizontal_path = assets_path / 'logo_horizontal.png'
     
-    # Logos
-    enjaz_logo_path = assets_path / 'logo.png'
-    qatar_lms_logo_path = assets_path / 'qatar_lms_logo.png'
+    # Get base64 encoded logo
+    logo_b64 = None
+    if logo_horizontal_path.exists():
+        logo_b64 = get_base64_image(logo_horizontal_path)
     
-    # Get base64 encoded images
-    enjaz_logo_b64 = get_base64_image(enjaz_logo_path) if enjaz_logo_path.exists() else ''
-    qatar_logo_b64 = get_base64_image(qatar_lms_logo_path) if qatar_lms_logo_path.exists() else ''
+    # Create logo data URL
+    logo_url = f"data:image/png;base64,{logo_b64}" if logo_b64 else None
     
-    header_html = f"""
-    <style>
-    .enjaz-logos {{
-        display: grid;
-        grid-template-columns: 96px 1fr 96px;
-        gap: 12px;
-        align-items: center;
-        max-width: 1100px;
-        margin: 0 auto 8px auto;
-        padding: 20px 0;
-    }}
-    .enjaz-logos img {{
-        width: 100%;
-        height: auto;
-        object-fit: contain;
-    }}
-    .enjaz-title {{
-        text-align: center;
-        color: {QATAR_MAROON};
-        font-weight: 800;
-        font-size: 42px;
-        font-family: 'Cairo', sans-serif;
-        margin: 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    }}
-    .enjaz-subtitle {{
-        text-align: center;
-        color: {QATAR_GOLD};
-        font-weight: 700;
-        font-size: 18px;
-        font-family: 'Cairo', sans-serif;
-        margin: 8px 0 4px 0;
-    }}
-    .enjaz-description {{
-        text-align: center;
-        color: #555;
-        font-size: 16px;
-        font-family: 'Cairo', sans-serif;
-        margin: 0;
-    }}
-    </style>
-    
-    <div class="enjaz-logos">
-        {'<img src="data:image/png;base64,' + enjaz_logo_b64 + '" alt="Enjaz"/>' if enjaz_logo_b64 else '<div></div>'}
-        <div class="enjaz-title">إنجاز</div>
-        {'<img src="data:image/png;base64,' + qatar_logo_b64 + '" alt="Qatar Education"/>' if qatar_logo_b64 else '<div></div>'}
-    </div>
-    
-    <p class="enjaz-subtitle">ضمان تنمية رقمية مستدامة</p>
-    <p class="enjaz-description">نظام تحليل التقييمات الإلكترونية الأسبوعية على قطر للتعليم</p>
-    """
-    
+    # Get header HTML
+    header_html = get_header_html(logo_url)
     st.markdown(header_html, unsafe_allow_html=True)
 
 
-def render_footer():
-    """Render custom footer."""
-    footer_html = f"""
+def render_professional_footer():
+    """Render professional footer."""
+    footer_html = get_footer_html()
+    st.markdown(footer_html, unsafe_allow_html=True)
+    return
+    
+    # Old footer code (to be removed)
+    old_footer_html = f"""
     <div class="custom-footer">
         <p style="margin:0;"><strong>© 2025 — جميع الحقوق محفوظة</strong></p>
         <p style="margin:0;"><strong>مدرسة عثمان بن عفّان النموذجية للبنين</strong></p>
@@ -455,11 +250,11 @@ def school_info_settings():
 
 def main():
     """Main application function."""
-    # Apply custom CSS
-    apply_custom_css()
+    # Apply professional design
+    apply_professional_design()
     
-    # Render header
-    render_header()
+    # Render professional header
+    render_professional_header()
     
     # Sidebar
     st.sidebar.title("📊 القائمة الرئيسية")
@@ -478,7 +273,7 @@ def main():
     
     if not uploaded_files:
         st.info("👈 الرجاء رفع ملفات Excel من القائمة الجانبية للبدء")
-        render_footer()
+        render_professional_footer()
         return
     
     # Process files
@@ -490,7 +285,7 @@ def main():
     
     if not all_data:
         st.error("❌ لم يتم العثور على بيانات صالحة في الملفات المرفوعة.")
-        render_footer()
+        render_professional_footer()
         return
     
     st.success(f"✅ تم تحميل {len(all_data)} ورقة عمل بنجاح!")
@@ -524,43 +319,45 @@ def main():
         val_missing = kpis.get('total_not_submitted', total_missing)
         val_avg = kpis.get('school_completion_avg', round(100.0 * total_completed / max(total_due, 1), 1))
         
+        # Professional metric cards
         col1, col2, col3, col4 = st.columns(4)
         
+        from enjaz.analysis import get_band
+        school_band = get_band(val_avg)
+        
         with col1:
-            st.markdown(f"""
-            <div class="metric-card">
-                <h3>إجمالي الطلاب</h3>
-                <div class="value">{val_students}</div>
-                <div class="subtitle">طالب</div>
-            </div>
-            """, unsafe_allow_html=True)
+            card_html = get_metric_card_html(
+                title="👥 إجمالي الطلاب",
+                value=val_students,
+                subtitle="طالب"
+            )
+            st.markdown(card_html, unsafe_allow_html=True)
         
         with col2:
-            st.markdown(f"""
-            <div class="metric-card">
-                <h3>متوسط الإنجاز</h3>
-                <div class="value">{val_avg:.1f}%</div>
-                <div class="subtitle">نسبة الحل</div>
-            </div>
-            """, unsafe_allow_html=True)
+            card_html = get_metric_card_html(
+                title="🎯 متوسط الإنجاز",
+                value=f"{val_avg:.1f}%",
+                subtitle="نسبة الحل",
+                badge=school_band
+            )
+            st.markdown(card_html, unsafe_allow_html=True)
         
         with col3:
-            st.markdown(f"""
-            <div class="metric-card">
-                <h3>إجمالي التقييمات</h3>
-                <div class="value">{val_due}</div>
-                <div class="subtitle">تقييم مستحق</div>
-            </div>
-            """, unsafe_allow_html=True)
+            card_html = get_metric_card_html(
+                title="📊 إجمالي التقييمات",
+                value=val_due,
+                subtitle="تقييم مستحق"
+            )
+            st.markdown(card_html, unsafe_allow_html=True)
         
         with col4:
-            st.markdown(f"""
-            <div class="metric-card">
-                <h3>التقييمات المُنجزة</h3>
-                <div class="value">{val_completed}</div>
-                <div class="subtitle">تقييم</div>
-            </div>
-            """, unsafe_allow_html=True)
+            completion_pct = round(100.0 * val_completed / max(val_due, 1), 1)
+            card_html = get_metric_card_html(
+                title="✅ التقييمات المُنجزة",
+                value=val_completed,
+                subtitle=f"{completion_pct}% من الإجمالي"
+            )
+            st.markdown(card_html, unsafe_allow_html=True)
         
         # Comprehensive dashboard
         st.subheader("📈 لوحة المعلومات الشاملة")
@@ -810,7 +607,7 @@ def main():
         render_school_report_tab(all_data)
 
     # Render footer
-    render_footer()
+    render_professional_footer()
 
 
 if __name__ == "__main__":
