@@ -42,34 +42,41 @@ def calculate_school_statistics(all_data):
     if not all_data:
         return stats
     
-    # Track unique students
-    unique_students = set()
+    # Track unique students with their overall performance
+    student_performance = {}  # {student_name: {'total_due': x, 'completed': y}}
     
     # Calculate totals from sheet_data structure
     for sheet_data in all_data:
         students = sheet_data.get('students', [])
         
         for student in students:
-            # Track unique students
             student_name = student.get('student_name', '')
-            unique_students.add(student_name)
             
             # Only count students with due assessments
             if student.get('has_due', False):
                 total_due = student.get('total_due', 0)
                 completed = student.get('completed', 0)
                 
+                # Aggregate per student
+                if student_name not in student_performance:
+                    student_performance[student_name] = {'total_due': 0, 'completed': 0}
+                
+                student_performance[student_name]['total_due'] += total_due
+                student_performance[student_name]['completed'] += completed
+                
                 stats['total_assessments'] += total_due
                 stats['total_completed'] += completed
-                
-                # Calculate student's band
-                completion_rate = student.get('completion_rate', 0.0)
-                band = get_band(completion_rate)
-                if band in stats['band_distribution']:
-                    stats['band_distribution'][band] += 1
+    
+    # Calculate band distribution based on each student's overall performance
+    for student_name, performance in student_performance.items():
+        if performance['total_due'] > 0:
+            completion_rate = (performance['completed'] / performance['total_due']) * 100
+            band = get_band(completion_rate)
+            if band in stats['band_distribution']:
+                stats['band_distribution'][band] += 1
     
     # Set total unique students
-    stats['total_students'] = len(unique_students)
+    stats['total_students'] = len(student_performance)
     
     # Calculate overall completion rate
     if stats['total_assessments'] > 0:

@@ -14,6 +14,7 @@ matplotlib.use('Agg')  # Non-interactive backend
 import pandas as pd
 import tempfile
 import os
+from enjaz.arabic_text_helper import fix_arabic_text
 
 # Qatar Colors
 MAROON = RGBColor(138, 21, 56)  # #8A1538
@@ -51,7 +52,7 @@ def create_band_distribution_chart(band_distribution, output_path):
         if band == 'يحتاج إلى تطوير':
             count = band_distribution.get('يحتاج إلى تطوير من النظام', count)
         if count > 0:
-            labels.append(band)
+            labels.append(fix_arabic_text(band))
             sizes.append(count)
     
     # Create figure
@@ -74,7 +75,7 @@ def create_band_distribution_chart(band_distribution, output_path):
         autotext.set_weight('bold')
     
     ax.axis('equal')
-    plt.title('توزيع الطلاب حسب الفئات', fontsize=20, weight='bold', pad=20)
+    plt.title(fix_arabic_text('توزيع الطلاب حسب الفئات'), fontsize=20, weight='bold', pad=20)
     plt.tight_layout()
     
     # Save
@@ -90,7 +91,7 @@ def create_subject_comparison_chart(subject_stats, output_path):
         return None
     
     # Prepare data - top 6 subjects
-    subjects = [s['subject_name'] for s in subject_stats[:6]]
+    subjects = [fix_arabic_text(s['subject_name']) for s in subject_stats[:6]]
     rates = [s['completion_rate'] for s in subject_stats[:6]]
     
     # Create figure
@@ -105,8 +106,8 @@ def create_subject_comparison_chart(subject_stats, output_path):
                 va='center', fontsize=12, weight='bold', color=MAROON_HEX)
     
     # Styling
-    ax.set_xlabel('نسبة الإنجاز (%)', fontsize=14, weight='bold')
-    ax.set_title('مقارنة أداء المواد الدراسية', fontsize=18, weight='bold', pad=15)
+    ax.set_xlabel(fix_arabic_text('نسبة الإنجاز (%)'), fontsize=14, weight='bold')
+    ax.set_title(fix_arabic_text('مقارنة أداء المواد الدراسية'), fontsize=18, weight='bold', pad=15)
     ax.set_xlim(0, 105)
     ax.grid(axis='x', alpha=0.3, linestyle='--')
     ax.spines['top'].set_visible(False)
@@ -124,7 +125,7 @@ def create_statistics_chart(school_stats, output_path):
     fig, ax = plt.subplots(figsize=(10, 6))
     
     # Data
-    categories = ['إجمالي الطلاب', 'إجمالي التقييمات', 'التقييمات المنجزة']
+    categories = [fix_arabic_text('إجمالي الطلاب'), fix_arabic_text('إجمالي التقييمات'), fix_arabic_text('التقييمات المنجزة')]
     values = [
         school_stats['total_students'],
         school_stats['total_assessments'],
@@ -143,8 +144,8 @@ def create_statistics_chart(school_stats, output_path):
                 ha='center', va='bottom', fontsize=16, weight='bold')
     
     # Styling
-    ax.set_ylabel('العدد', fontsize=14, weight='bold')
-    ax.set_title('الإحصائيات الرئيسية', fontsize=18, weight='bold', pad=15)
+    ax.set_ylabel(fix_arabic_text('العدد'), fontsize=14, weight='bold')
+    ax.set_title(fix_arabic_text('الإحصائيات الرئيسية'), fontsize=18, weight='bold', pad=15)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.grid(axis='y', alpha=0.3, linestyle='--')

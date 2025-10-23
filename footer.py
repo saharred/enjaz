@@ -245,7 +245,12 @@ def render_footer():
             <!-- 4. فاصل -->
             <div class="sep"></div>
             
-            <!-- 5. الرؤية -->
+            <!-- 5. مديرة المدرسة -->
+            <div class="row" style="font-size: 1.1rem; color: #E5C75A; font-weight: 600; margin-bottom: 8px;">
+                مديرة المدرسة/ منيرة الهاجري
+            </div>
+            
+            <!-- 6. الرؤية -->
             <div class="vision">"متعلّم ريادي لتنمية مستدامة"</div>
             
             <!-- 6. حقوق الملكية -->
