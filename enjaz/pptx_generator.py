@@ -423,7 +423,7 @@ def add_closing_slide(prs):
         Inches(9), Inches(1.5)
     )
     contact_frame = contact_box.text_frame
-    contact_text = "تطوير وتنفيذ: Sahar Osman\nE-Learning Projects Coordinator\ns.mahgoub0101@education.qa"
+    contact_text = "تطوير وتنفيذ: Sahar Osman\nE-Learning Projects Coordinator\ns.mahgoub0101@education.qa\nlinkedin.com/in/sahar-osman-a19a45209"
     contact_frame.text = contact_text
     
     for para in contact_frame.paragraphs:
@@ -456,7 +456,7 @@ def generate_school_presentation(school_stats, coordinator_actions="", subject_s
     create_title_slide(
         prs,
         "تقرير المدرسة الشامل",
-        "مدرسة عثمان بن عفّان النموذجية للبنين\nوزارة التعليم والتعليم العالي – دولة قطر"
+        "مدرسة عثمان بن عفّان النموذجية للبنين\nوزارة التعليم والتعليم العالي"
     )
     
     add_statistics_slide(prs, school_stats)
