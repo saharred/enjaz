@@ -1,5 +1,5 @@
 """
-Enjaz - نظام تحليل التقييمات الإلكترونية الأسبوعية
+Electronic Weekly Reports - التقارير الأسبوعية الإلكترونية
 Main Streamlit Application with Advanced Features
 """
 
@@ -51,14 +51,14 @@ from enjaz.data_validation import validate_uploaded_files, display_validation_re
 
 # Page configuration
 st.set_page_config(
-    page_title="إنجاز - نظام تحليل التقييمات | Injaz Assessment System",
+    page_title="Electronic Weekly Reports - التقارير الأسبوعية الإلكترونية",
     page_icon="enjaz/assets/favicon.png",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
         'Get Help': 'mailto:Sahar.Osman@education.qa',
         'Report a bug': 'https://github.com/saharred/enjaz/issues',
-        'About': '# إنجاز - Injaz\n\nنظام تحليل التقييمات الأسبوعية\n\nمدرسة عثمان بن عفّان النموذجية للبنين\n\nوزارة التعليم والتعليم العالي - دولة قطر 🇶🇦'
+        'About': '# Electronic Weekly Reports\n\nالتقارير الأسبوعية الإلكترونية\n\nمدرسة عثمان بن عفّان النموذجية للبنين\n\nوزارة التعليم والتعليم العالي 🇶🇦'
     }
 )
 
