@@ -296,7 +296,7 @@ def render_school_report_tab(all_data):
                     
                     # Generate PowerPoint presentation
                     try:
-                        from enjaz.pptx_generator import generate_school_presentation
+                        from enjaz.pptx_generator_enhanced import generate_school_presentation
                         import tempfile
                         
                         # Create temporary file
