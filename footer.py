@@ -216,9 +216,12 @@ def render_footer():
     </head>
     <body>
         <div class="injaz-footer">
-            <!-- 1. الوزارة + المدرسة -->
+            <!-- 1. الوزارة + المدرسة + الرؤية -->
             <div class="row">وزارة التعليم والتعليم العالي</div>
-            <div class="row">مدرسة عثمان بن عفّان النموذجية للبنين <span style="font-size: 0.85rem; margin-right: 15px;">"متعلّم ريادي لتنمية مستدامة"</span></div>
+            <div class="row">مدرسة عثمان بن عفّان النموذجية للبنين</div>
+            <div class="row" style="font-size: 0.95rem; margin-top: 4px;">
+                <span style="color: #E5C75A; font-weight: 600;">رؤيتنا:</span> "متعلّم ريادي لتنمية مستدامة"
+            </div>
             
             <div class="sep"></div>
             
