@@ -11,7 +11,7 @@ import re
 
 def parse_lms_date(date_str):
     """
-    Parse date from LMS format (e.g., 'Oct 31', 'Sep 30').
+    Parse date from LMS format (e.g., 'Oct 31', 'Sep 30', 'أكتوبر 31', 'سبتمبر 30').
     
     Args:
         date_str: Date string from LMS
@@ -21,6 +21,21 @@ def parse_lms_date(date_str):
     """
     if pd.isna(date_str) or date_str == '-' or str(date_str).strip() == '':
         return None
+    
+    # Arabic to English month mapping
+    arabic_months = {
+        'يناير': 'Jan', 'فبراير': 'Feb', 'مارس': 'Mar', 'أبريل': 'Apr',
+        'مايو': 'May', 'يونيو': 'Jun', 'يوليو': 'Jul', 'أغسطس': 'Aug',
+        'سبتمبر': 'Sep', 'أكتوبر': 'Oct', 'نوفمبر': 'Nov', 'ديسمبر': 'Dec'
+    }
+    
+    date_str = str(date_str).strip()
+    
+    # Try to replace Arabic month with English
+    for arabic, english in arabic_months.items():
+        if arabic in date_str:
+            date_str = date_str.replace(arabic, english)
+            break
     
     try:
         # Try parsing "Oct 31" format
@@ -99,9 +114,22 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                     print(f"Skipping sheet '{sheet_name}': too few rows")
                     continue
                 
-                # Parse sheet name (e.g., "اللغة العربية 03 1" -> subject="اللغة العربية", class="03 1")
+                # Parse sheet name - support two formats:
+                # Format 1: "اللغة العربية 03 1" -> subject="اللغة العربية", class="03 1"
+                # Format 2: "03 الحوسبة وتكنولوجيا المعلومات 1" -> subject="الحوسبة وتكنولوجيا المعلومات", class="03 1"
                 parts = sheet_name.strip().split()
-                if len(parts) >= 3:
+                
+                # Check if first part is a number (Format 2)
+                if len(parts) >= 2 and parts[0].isdigit():
+                    # Format 2: "03 الحوسبة وتكنولوجيا المعلومات 1"
+                    class_code = parts[0]
+                    if len(parts) >= 3 and parts[-1].isdigit():
+                        class_code = f"{parts[0]} {parts[-1]}"
+                        subject = ' '.join(parts[1:-1])
+                    else:
+                        subject = ' '.join(parts[1:])
+                elif len(parts) >= 3:
+                    # Format 1: "اللغة العربية 03 1"
                     subject = ' '.join(parts[:-2])
                     class_code = ' '.join(parts[-2:])
                 else:
