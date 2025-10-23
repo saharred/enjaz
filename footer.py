@@ -186,7 +186,7 @@ FOOTER_HTML = """
   <div class="sep"></div>
   
   <!-- 2. تطوير وتنفيذ -->
-  <div class="row"><span class="label">تطوير وتنفيذ:</span> Sahar Osman</div>
+  <div class="row"><span class="label">تطوير وتنفيذ:</span> <span style="color: #E5C75A; font-weight: 700;">Sahar Osman</span></div>
   <div class="row" style="font-size: 0.95rem; color: #E5C75A; font-weight: 600; margin-top: 2px;">E-Learning Projects Coordinator</div>
   <div class="row"><a href="mailto:s.mahgoub0101@education.qa">s.mahgoub0101@education.qa</a></div>
   <div class="row">
