@@ -216,9 +216,9 @@ def render_footer():
     </head>
     <body>
         <div class="injaz-footer">
-            <!-- 1. المدرسة + الوزارة -->
-            <div class="row">مدرسة عثمان بن عفّان النموذجية للبنين</div>
+            <!-- 1. الوزارة + المدرسة -->
             <div class="row">وزارة التعليم والتعليم العالي</div>
+            <div class="row">مدرسة عثمان بن عفّان النموذجية للبنين <span style="font-size: 0.85rem; margin-right: 15px;">"متعلّم ريادي لتنمية مستدامة"</span></div>
             
             <div class="sep"></div>
             
@@ -246,12 +246,9 @@ def render_footer():
             <div class="sep"></div>
             
             <!-- 5. مديرة المدرسة -->
-            <div class="row" style="font-size: 1.1rem; color: #E5C75A; font-weight: 600; margin-bottom: 8px;">
+            <div class="row" style="font-size: 1.1rem; color: #E5C75A; font-weight: 600; margin-top: 8px;">
                 مديرة المدرسة/ منيرة الهاجري
             </div>
-            
-            <!-- 6. الرؤية -->
-            <div class="vision">"متعلّم ريادي لتنمية مستدامة"</div>
             
             <!-- 6. حقوق الملكية -->
             <div class="copyright">© 2025 جميع الحقوق محفوظة – <strong>إنجاز</strong></div>
