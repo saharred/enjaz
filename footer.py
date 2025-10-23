@@ -1,5 +1,6 @@
 import streamlit as st
 
+# Footer HTML with Qatar visual identity - Updated 2025-10-23
 FOOTER_HTML = """
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -210,6 +211,6 @@ FOOTER_HTML = """
 """
 
 def render_footer():
-    """Render the Injaz footer component."""
+    """Render the Injaz footer component - Updated with LinkedIn icon and golden name."""
     st.markdown(FOOTER_HTML, unsafe_allow_html=True)
 
