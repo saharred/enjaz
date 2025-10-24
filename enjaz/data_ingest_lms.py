@@ -199,11 +199,10 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                         # Determine status
                         if pd.isna(cell_value) or str(cell_value).strip() in ['', '-']:
                             status = 'empty'
-                        elif str(cell_value).upper() == 'M':
-                            status = 'M'
+                        elif str(cell_value).upper() in ['M', 'I', 'AB', 'X']:
+                            # All these values count as not submitted (0%)
+                            status = str(cell_value).upper()
                             not_submitted += 1
-                        elif str(cell_value).upper() in ['I', 'AB', 'X']:
-                            status = 'excluded'
                         else:
                             # Try to parse as number
                             try:

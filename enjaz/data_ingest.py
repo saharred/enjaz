@@ -109,6 +109,26 @@ def parse_due_date(value, dayfirst=True):
     if isinstance(value, str):
         value = value.strip()
         
+        # Arabic month names mapping
+        arabic_months = {
+            'يناير': 1, 'فبراير': 2, 'مارس': 3, 'أبريل': 4,
+            'مايو': 5, 'يونيو': 6, 'يوليو': 7, 'أغسطس': 8,
+            'سبتمبر': 9, 'أكتوبر': 10, 'نوفمبر': 11, 'ديسمبر': 12
+        }
+        
+        # Try to parse Arabic date format: "شهر يوم" (e.g., "سبتمبر 30")
+        for month_name, month_num in arabic_months.items():
+            if month_name in value:
+                # Extract day number
+                day_str = value.replace(month_name, '').strip()
+                try:
+                    day = int(day_str)
+                    # Use current year
+                    current_year = datetime.now().year
+                    return date(current_year, month_num, day)
+                except (ValueError, TypeError):
+                    pass
+        
         # Try pandas parser with dayfirst
         try:
             parsed = pd.to_datetime(value, dayfirst=dayfirst, errors='coerce')
@@ -268,12 +288,9 @@ def parse_excel_file(file_path_or_buffer, today, week_name=None):
                             'value': cell_value
                         })
                         
-                        if value_str == 'M':
-                            # Not submitted
+                        if value_str in ['M', 'I', 'AB', 'X']:
+                            # Not submitted (M/I/AB/X all count as 0%)
                             not_submitted += 1
-                        elif value_str in ['I', 'AB', 'X']:
-                            # Ignored - don't count as due
-                            total_due -= 1
                         else:
                             # Submitted (numeric or any other value)
                             completed += 1
