@@ -54,7 +54,7 @@ st.set_page_config(
     page_title="Electronic Weekly Reports - التقارير الأسبوعية الإلكترونية",
     page_icon="enjaz/assets/favicon.png",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",  # Sidebar hidden by default
     menu_items={
         'Get Help': 'mailto:Sahar.Osman@education.qa',
         'Report a bug': 'https://github.com/saharred/enjaz/issues',
@@ -79,6 +79,29 @@ def apply_professional_design():
     # Get and apply professional CSS
     css = get_professional_css()
     st.markdown(css, unsafe_allow_html=True)
+    
+    # Hide Streamlit default elements
+    hide_streamlit_style = """
+    <style>
+    /* Hide GitHub icon and hamburger menu */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Hide footer */
+    footer {visibility: hidden;}
+    
+    /* Hide Streamlit deploy button */
+    .stDeployButton {display: none;}
+    
+    /* Hide "Made with Streamlit" */
+    footer:after {
+        content:''; 
+        visibility: hidden;
+        display: block;
+    }
+    </style>
+    """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 
 def render_professional_header():
