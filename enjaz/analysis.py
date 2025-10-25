@@ -212,7 +212,6 @@ def calculate_weekly_kpis(all_data):
     """
     total_students = set()
     all_completion_rates = []
-    all_bands = []
     subject_averages = []
     
     for sheet_data in all_data:
@@ -224,7 +223,6 @@ def calculate_weekly_kpis(all_data):
         for student in valid_students:
             total_students.add(student['student_name'])
             all_completion_rates.append(student['completion_rate'])
-            all_bands.append(get_band(student['completion_rate']))
         
         # Calculate subject average
         class_stats = calculate_class_stats(sheet_data)
@@ -237,10 +235,14 @@ def calculate_weekly_kpis(all_data):
     # Overall average (school_completion_avg)
     school_completion_avg = round(np.mean(all_completion_rates), 2) if all_completion_rates else 0.0
     
-    # Band distribution
+    # Calculate band distribution based on OVERALL student performance
+    # (not per subject, but per student across all subjects)
+    student_overall_stats = calculate_student_overall_stats(all_data)
     band_counts = {}
-    for band in all_bands:
-        band_counts[band] = band_counts.get(band, 0) + 1
+    for student_name, stats in student_overall_stats.items():
+        band = stats['overall_band']
+        if band != 'N/A':  # Exclude students with no valid data
+            band_counts[band] = band_counts.get(band, 0) + 1
     
     # Top and bottom subjects
     sorted_subjects = sorted(subject_averages, key=lambda x: x['average'], reverse=True)
