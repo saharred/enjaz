@@ -153,8 +153,8 @@ def parse_sheet_name(sheet_name):
     Returns:
         tuple: (subject, class_code)
     """
-    # Pattern: digits/digits or digits-digits
-    class_pattern = r'\d+[/-]\d+'
+    # Pattern: digits/digits or digits-digits or digits space digits
+    class_pattern = r'\d+[/\-\s]\d+'
     
     match = re.search(class_pattern, sheet_name)
     

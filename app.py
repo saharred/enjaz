@@ -567,8 +567,20 @@ def main():
                     all_students.add(student['student_name'])
             
             # Get class and section (from first sheet)
-            class_name = all_data[0].get('class_code', 'غير محدد').split('/')[0] if '/' in all_data[0].get('class_code', '') else 'غير محدد'
-            section = all_data[0].get('class_code', 'غير محدد').split('/')[1] if '/' in all_data[0].get('class_code', '') else 'غير محدد'
+            class_code = all_data[0].get('class_code', 'غير محدد')
+            
+            # Handle different formats: "03/1", "03-1", or "03 1"
+            if '/' in class_code:
+                parts = class_code.split('/')
+            elif '-' in class_code:
+                parts = class_code.split('-')
+            elif ' ' in class_code:
+                parts = class_code.split()
+            else:
+                parts = ['غير محدد', 'غير محدد']
+            
+            class_name = parts[0] if len(parts) > 0 else 'غير محدد'
+            section = parts[1] if len(parts) > 1 else 'غير محدد'
             
             # Choose between single or multiple students
             report_mode = st.radio(
