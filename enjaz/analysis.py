@@ -1,6 +1,8 @@
 """
 Analysis module for Enjaz application.
 Handles data analysis, banding, and statistics.
+
+Version: 2.1 - Fixed band distribution calculation (2025-10-24)
 """
 
 import pandas as pd
