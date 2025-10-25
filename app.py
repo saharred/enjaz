@@ -635,8 +635,7 @@ def main():
                 selected_students = st.multiselect(
                     "اختر الطلاب (يمكن اختيار أكثر من طالب)",
                     sorted(all_students),
-                    default=st.session_state.bulk_report_students,
-                    key="bulk_report_students"
+                    key="bulk_report_students"  # No default needed - uses session_state automatically
                 )
                 
                 if selected_students:
