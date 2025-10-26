@@ -429,10 +429,22 @@ def main():
         kpis = calculate_weekly_kpis(all_data)
         
         # Calculate fallback values from data directly
-        total_completed = sum(s['completed'] for d in all_data for s in d['students'])
-        total_due = sum(s['total_due'] for d in all_data for s in d['students'])
-        total_missing = sum(s['not_submitted'] for d in all_data for s in d['students'])
-        total_students = sum(len(d['students']) for d in all_data)
+        # Only count students with due assessments (matching school report logic)
+        student_performance = {}
+        for sheet_data in all_data:
+            for student in sheet_data.get('students', []):
+                if student.get('has_due', False):
+                    student_name = student.get('student_name', '')
+                    if student_name not in student_performance:
+                        student_performance[student_name] = {'total_due': 0, 'completed': 0, 'not_submitted': 0}
+                    student_performance[student_name]['total_due'] += student.get('total_due', 0)
+                    student_performance[student_name]['completed'] += student.get('completed', 0)
+                    student_performance[student_name]['not_submitted'] += student.get('not_submitted', 0)
+        
+        total_completed = sum(p['completed'] for p in student_performance.values())
+        total_due = sum(p['total_due'] for p in student_performance.values())
+        total_missing = sum(p['not_submitted'] for p in student_performance.values())
+        total_students = len(student_performance)
         
         # Use .get() with fallbacks
         val_students = kpis.get('total_students', total_students)
