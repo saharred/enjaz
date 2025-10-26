@@ -384,28 +384,37 @@ def render_school_report_tab(all_data):
             # Export to Excel
             if st.button("📄 تصدير إلى Excel"):
                 try:
-                    with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
-                        excel_path = export_comprehensive_report_to_excel(
-                            df,
-                            tmp.name
-                        )
-                        
-                        with open(excel_path, 'rb') as f:
-                            excel_data = f.read()
-                        
-                        st.download_button(
-                            label="⬇️ تحميل ملف Excel",
-                            data=excel_data,
-                            file_name="التقرير_التحليلي_الشامل.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        )
-                        
-                        # Clean up temp file
+                    import tempfile as tmp_module
+                    tmp_file = tmp_module.NamedTemporaryFile(delete=False, suffix='.xlsx')
+                    tmp_path = tmp_file.name
+                    tmp_file.close()
+                    
+                    excel_path = export_comprehensive_report_to_excel(
+                        df,
+                        tmp_path
+                    )
+                    
+                    with open(excel_path, 'rb') as f:
+                        excel_data = f.read()
+                    
+                    st.download_button(
+                        label="⬇️ تحميل ملف Excel",
+                        data=excel_data,
+                        file_name="التقرير_التحليلي_الشامل.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+                    
+                    # Clean up temp file
+                    try:
                         os.unlink(excel_path)
-                        
-                        st.success("✅ تم إنشاء ملف Excel بنجاح!")
+                    except:
+                        pass
+                    
+                    st.success("✅ تم إنشاء ملف Excel بنجاح!")
                 except Exception as e:
                     st.error(f"❌ حدث خطأ: {str(e)}")
+                    import traceback
+                    st.code(traceback.format_exc())
         
         with col2:
             # Export to CSV
