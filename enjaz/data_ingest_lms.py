@@ -38,9 +38,17 @@ def parse_lms_date(date_str):
             break
     
     try:
-        # Try parsing "Oct 31" format
+        # Try parsing "Oct 31" format (month day)
         current_year = datetime.now().year
         parsed = datetime.strptime(f"{date_str} {current_year}", "%b %d %Y")
+        return parsed.date()
+    except:
+        pass
+    
+    try:
+        # Try parsing "2 Oct" format (day month)
+        current_year = datetime.now().year
+        parsed = datetime.strptime(f"{date_str} {current_year}", "%d %b %Y")
         return parsed.date()
     except:
         pass
