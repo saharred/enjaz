@@ -186,14 +186,14 @@ def create_student_individual_report(student_name, all_data, class_name, section
     # Define subject order with "تكنولوجيا المعلومات" as LAST row
     SUBJECT_ORDER = [
         "الحوسبة وتكنولوجيا المعلومات",
-        "التربية الإسلامية",
+        "التربية الاسلامية",  # Fixed: removed hamza
         "اللغة العربية",
-        "اللغة الإنجليزية",
+        "اللغة الانجليزية",  # Fixed: removed hamza
         "الرياضيات",
         "العلوم",
-        "الدراسات الإجتماعية",
-        "الفنون البصرية",
-        "تكنولوجيا المعلومات"  # LAST row
+        "الدراسات الاجتماعية",  # Fixed: removed hamza
+        "التربية البدنية",  # Added: was missing
+        "الفنون البصرية"
     ]
     
     table_data = []
