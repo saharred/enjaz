@@ -216,6 +216,9 @@ def calculate_weekly_kpis(all_data):
     all_completion_rates = []
     subject_averages = []
     
+    # Track total assessments and completed assessments per student
+    student_performance = {}
+    
     for sheet_data in all_data:
         valid_students = [s for s in sheet_data['students'] if s.get('has_due', True)]
         
@@ -223,8 +226,15 @@ def calculate_weekly_kpis(all_data):
             continue
         
         for student in valid_students:
-            total_students.add(student['student_name'])
+            student_name = student['student_name']
+            total_students.add(student_name)
             all_completion_rates.append(student['completion_rate'])
+            
+            # Aggregate assessments per student
+            if student_name not in student_performance:
+                student_performance[student_name] = {'total_due': 0, 'completed': 0}
+            student_performance[student_name]['total_due'] += student.get('total_due', 0)
+            student_performance[student_name]['completed'] += student.get('completed', 0)
         
         # Calculate subject average
         class_stats = calculate_class_stats(sheet_data)
@@ -251,9 +261,14 @@ def calculate_weekly_kpis(all_data):
     top_subjects = sorted_subjects[:5]
     bottom_subjects = sorted_subjects[-5:]
     
+    # Calculate total assessments and completed from aggregated student data
+    total_assessments = sum(p['total_due'] for p in student_performance.values())
+    total_assessments_completed = sum(p['completed'] for p in student_performance.values())
+    
     return {
         'total_students': len(total_students),
-        'total_assessments': len(all_completion_rates),
+        'total_assessments': total_assessments,
+        'total_assessments_completed': total_assessments_completed,
         'school_completion_avg': school_completion_avg,
         'band_distribution': band_counts,
         'top_subjects': top_subjects,
