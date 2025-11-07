@@ -371,7 +371,7 @@ def main():
             qatar_tz = pytz.timezone('Asia/Qatar')
             today = date.today()
             
-            all_data = aggregate_lms_files(uploaded_files, today=today)
+            all_data = aggregate_lms_files(uploaded_files, start_date=start_date, end_date=end_date)
             
             if not all_data:
                 st.error("❌ لم يتم العثور على بيانات صالحة في الملفات المرفوعة.")
