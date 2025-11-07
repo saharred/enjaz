@@ -595,7 +595,7 @@ def main():
             selected_teacher = st.selectbox("اختر المعلم/ة", teacher_names)
             
             if selected_teacher:
-                from enjaz.teacher_report import create_teacher_specific_report
+                from teacher_report import create_teacher_specific_report
                 
                 # Filter data for the selected teacher
                 teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == selected_teacher]
@@ -775,7 +775,7 @@ def main():
                         selected_indices = [sheet_names.index(name) for name in selected_sheets]
                         
                         # Import teacher report module
-                        from enjaz.teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
+                        from teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
                         
                         # Aggregate data from selected sheets
                         teacher_data = aggregate_teacher_data(all_data, selected_indices)
