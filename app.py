@@ -415,10 +415,11 @@ def main():
             return
     
     # Main navigation
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "✓ لوحة المعلومات",
         "✓ تقرير المدرسة",
         "✓ ملف الطالب",
+        "✓ تقرير المعلمين",
         "✓ التقارير الفردية"
     ])
     
@@ -580,8 +581,46 @@ def main():
                 st.dataframe(subjects_df, use_container_width=True)
     
     # Tab 4: Individual Reports
+    with tab5:
+        st.header("📄 التقارير الفردية")
+
     with tab4:
-        st.header("📥 التقارير الفردية")
+        st.header("👩‍🏫 تقرير المعلمين")
+        if 'teachers_data' not in st.session_state:
+            st.warning("⚠️ يرجى تحميل ملف بيانات المعلمين في الشريط الجانبي (إعدادات المدرسة) لعرض هذا التقرير.")
+        else:
+            teachers_df = st.session_state['teachers_data']
+            teacher_names = sorted(teachers_df['اسم المعلم'].unique())
+            
+            selected_teacher = st.selectbox("اختر المعلم/ة", teacher_names)
+            
+            if selected_teacher:
+                from enjaz.teacher_report import create_teacher_specific_report
+                
+                # Filter data for the selected teacher
+                teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == selected_teacher]
+                
+                # Create the report
+                teacher_report_data = create_teacher_specific_report(all_data, teacher_subjects)
+                
+                # Display the report
+                if teacher_report_data:
+                    st.subheader(f"📊 تقرير الأداء للمعلم/ة: {selected_teacher}")
+                    
+                    col1, col2, col3 = st.columns(3)
+                    col1.metric("📚 عدد المواد/الشعب", teacher_report_data['total_subjects'])
+                    col2.metric("🎯 متوسط الإنجاز الإجمالي", f"{teacher_report_data['overall_completion_rate']:.1f}%")
+                    col3.metric("👥 إجمالي الطلاب", teacher_report_data['total_students'])
+                    
+                    st.dataframe(teacher_report_data['details_df'], use_container_width=True)
+                    
+                    # Chart
+                    import plotly.express as px
+                    fig = px.bar(teacher_report_data['details_df'], x='المادة/الشعبة', y='نسبة الإنجاز', title=f"مقارنة الإنجاز للمواد التي يدرسها {selected_teacher}")
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.info("لم يتم العثور على بيانات لهذا المعلم في الملفات المحملة.")
+
         
         report_type = st.radio(
             "نوع التقرير",

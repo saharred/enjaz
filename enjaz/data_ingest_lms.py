@@ -130,18 +130,31 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                 # Check if first part is a number (Format 2)
                 if len(parts) >= 2 and parts[0].isdigit():
                     # Format 2: "03 الحوسبة وتكنولوجيا المعلومات 1"
+                    # Extract class and section from class_code
+                    class_parts = class_code.split()
+                    class_name = class_parts[0] if len(class_parts) > 0 else 'غير محدد'
+                    section = class_parts[1] if len(class_parts) > 1 else 'غير محدد'
                     class_code = parts[0]
                     if len(parts) >= 3 and parts[-1].isdigit():
                         class_code = f"{parts[0]} {parts[-1]}"
                         subject = ' '.join(parts[1:-1])
+                        class_name = parts[0]
+                        section = parts[-1]
                     else:
                         subject = ' '.join(parts[1:])
+                        class_name = parts[0]
+                        section = 'غير محدد'
                 elif len(parts) >= 3:
                     # Format 1: "اللغة العربية 03 1"
                     subject = ' '.join(parts[:-2])
+                    class_parts = parts[-2:]
+                    class_name = class_parts[0]
+                    section = class_parts[1]
                     class_code = ' '.join(parts[-2:])
                 else:
                     subject = sheet_name
+                    class_name = 'غير محدد'
+                    section = 'غير محدد'
                     class_code = "N/A"
                 
                 # Row 0: Headers (assignment titles)
@@ -253,6 +266,8 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                     all_sheets_data.append({
                         'sheet_name': sheet_name,
                         'subject': subject,
+                        'class_name': class_name,
+                        'section': section,
                         'class_code': class_code,
                         'week_name': week_name,
                         'students': students_data
