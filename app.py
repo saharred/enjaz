@@ -595,7 +595,16 @@ def main():
             selected_teacher = st.selectbox("اختر المعلم/ة", teacher_names)
             
             if selected_teacher:
-                from .teacher_report import create_teacher_specific_report
+                # إصلاح خطأ الاستيراد
+                try:
+                    from teacher_report import create_teacher_specific_report
+                except ImportError:
+                    try:
+                        from .teacher_report import create_teacher_specific_report
+                    except ImportError:
+                        def create_teacher_specific_report(*args, **kwargs):
+                            st.warning("⚠️ ميزة تقرير المعلم غير متاحة حالياً")
+                            return None
                 
                 # Filter data for the selected teacher
                 teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == selected_teacher]
@@ -774,8 +783,15 @@ def main():
                         # Get selected sheet indices
                         selected_indices = [sheet_names.index(name) for name in selected_sheets]
                         
-                        # Import teacher report module
-                        from .teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
+                        # Import teacher report module - إصلاح خطف الاستيراد
+                        try:
+                            from teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
+                        except ImportError:
+                            try:
+                                from .teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
+                            except ImportError:
+                                st.error("❌ لم نتمكن من تحميل موديول تقرير المعلم")
+                                st.stop()
                         
                         # Aggregate data from selected sheets
                         teacher_data = aggregate_teacher_data(all_data, selected_indices)
