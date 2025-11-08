@@ -31,7 +31,8 @@ def create_teacher_specific_report(all_data, teacher_subjects):
     # Get teacher's subjects and sections
     teacher_subject_list = []
     for _, row in teacher_subjects.iterrows():
-        subject = row.get('المادة', row.get('subject', ''))
+        # Handle different column name variations
+        subject = row.get('المادة', row.get('المادة الدراسية', row.get('subject', '')))
         section = row.get('الشعبة', row.get('section', ''))
         grade = row.get('الصف', row.get('grade', ''))
         
