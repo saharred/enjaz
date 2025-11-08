@@ -587,7 +587,38 @@ def main():
             st.warning("⚠️ يرجى تحميل ملف بيانات المعلمين في الشريط الجانبي (إعدادات المدرسة) لعرض هذا التقرير.")
         else:
             teachers_df = st.session_state['teachers_data']
-            teacher_names = sorted(teachers_df['اسم المعلم'].unique())
+            
+            # Filter teachers to only show those with data in uploaded files
+            teachers_with_data = []
+            for teacher_name in teachers_df['اسم المعلم'].unique():
+                teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == teacher_name]
+                
+                # Check if this teacher has any matching data
+                has_data = False
+                for _, row in teacher_subjects.iterrows():
+                    subject = row.get('المادة', row.get('المادة الدراسية', ''))
+                    section = str(row.get('الشعبة', '')).strip()
+                    
+                    # Check if there's matching data in all_data
+                    for sheet_data in all_data:
+                        sheet_subject = sheet_data.get('subject', '').strip()
+                        sheet_section = str(sheet_data.get('section', '')).strip()
+                        
+                        if subject.strip() == sheet_subject and section == sheet_section:
+                            has_data = True
+                            break
+                    
+                    if has_data:
+                        break
+                
+                if has_data:
+                    teachers_with_data.append(teacher_name)
+            
+            if not teachers_with_data:
+                st.warning("⚠️ لم يتم العثور على معلمين لديهم بيانات في الملفات المحملة. يرجى التأكد من مطابقة أسماء المواد والشعب في كلا الملفين.")
+                st.stop()
+            
+            teacher_names = sorted(teachers_with_data)
             
             selected_teacher = st.selectbox("اختر المعلم/ة", teacher_names)
             
