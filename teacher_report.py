@@ -32,9 +32,14 @@ def create_teacher_specific_report(all_data, teacher_subjects):
     teacher_subject_list = []
     for _, row in teacher_subjects.iterrows():
         # Handle different column name variations
-        subject = row.get('المادة', row.get('المادة الدراسية', row.get('subject', '')))
-        section = row.get('الشعبة', row.get('section', ''))
-        grade = row.get('الصف', row.get('grade', ''))
+        subject = str(row.get('المادة', row.get('المادة الدراسية', row.get('subject', '')))).strip()
+        section = str(row.get('الشعبة', row.get('section', ''))).strip()
+        grade_raw = str(row.get('الصف', row.get('grade', ''))).strip()
+        
+        # Extract grade number from text like "ثالو3" -> "3"
+        import re
+        grade_numbers = re.findall(r'\d+', grade_raw)
+        grade = grade_numbers[0] if grade_numbers else grade_raw
         
         teacher_subject_list.append({
             'subject': subject,
@@ -54,11 +59,12 @@ def create_teacher_specific_report(all_data, teacher_subjects):
         
         # Check if this sheet matches any of teacher's subjects
         for teacher_subj in teacher_subject_list:
-            # Match by subject and section
+            # Match by subject, section, AND grade
             subject_match = (teacher_subj['subject'].strip().lower() == sheet_subject.strip().lower())
             section_match = (str(teacher_subj['section']).strip() == str(sheet_section).strip())
+            grade_match = (str(teacher_subj['grade']).strip() == str(sheet_grade).strip())
             
-            if subject_match and section_match:
+            if subject_match and section_match and grade_match:
                 # Calculate statistics for this subject/section
                 students = sheet_data.get('students', [])
                 total_due = 0

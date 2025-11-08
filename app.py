@@ -596,7 +596,7 @@ def main():
                 # Check if this teacher has any matching data
                 has_data = False
                 for _, row in teacher_subjects.iterrows():
-                    subject = row.get('المادة', row.get('المادة الدراسية', ''))
+                    subject = str(row.get('المادة', row.get('المادة الدراسية', ''))).strip()
                     section = str(row.get('الشعبة', '')).strip()
                     grade_raw = str(row.get('الصف', '')).strip()
                     
