@@ -588,8 +588,18 @@ def main():
         else:
             teachers_df = st.session_state['teachers_data']
             
+            # Show diagnostic info
+            st.info(f"📊 عدد المعلمات في الملف: {len(teachers_df)}")
+            st.info(f"📊 عدد أوراق بيانات الطلاب: {len(all_data)}")
+            
+            # Show available student data
+            with st.expander("🔍 عرض بيانات الطلاب المتاحة"):
+                for sheet in all_data:
+                    st.write(f"- المادة: '{sheet.get('subject', '')}', الصف: '{sheet.get('grade', '')}', الشعبة: '{sheet.get('section', '')}'")            
+            
             # Filter teachers to only show those with data in uploaded files
             teachers_with_data = []
+            matching_details = []
             for teacher_name in teachers_df['اسم المعلم'].unique():
                 teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == teacher_name]
                 
@@ -604,6 +614,15 @@ def main():
                     import re
                     grade_numbers = re.findall(r'\d+', grade_raw)
                     grade = grade_numbers[0] if grade_numbers else grade_raw
+                    
+                    # Store search criteria for first 3 teachers
+                    if len(matching_details) < 3:
+                        matching_details.append({
+                            'teacher': teacher_name,
+                            'subject': subject,
+                            'grade': grade,
+                            'section': section
+                        })
                     
                     # Check if there's matching data in all_data
                     for sheet_data in all_data:
@@ -625,7 +644,14 @@ def main():
                     teachers_with_data.append(teacher_name)
             
             if not teachers_with_data:
-                st.warning("⚠️ لم يتم العثور على معلمين لديهم بيانات في الملفات المحملة. يرجى التأكد من مطابقة أسماء المواد والشعب في كلا الملفين.")
+                st.warning("⚠️ لم يتم العثور على معلمين لديهم بيانات في الملفات المحملة.")
+                
+                # Show what we're looking for
+                st.write("🔍 **ما يبحث عنه التطبيق (أول 3 معلمات):**")
+                for detail in matching_details[:3]:
+                    st.write(f"- {detail['teacher']}: المادة='{detail['subject']}', الصف='{detail['grade']}', الشعبة='{detail['section']}'")
+                
+                st.info("💡 **الحل:** تأكدي من أن ملف بيانات الطلاب يحتوي على نفس الصفوف والشعب الموجودة في ملف المعلمات.")
                 st.stop()
             
             teacher_names = sorted(teachers_with_data)
