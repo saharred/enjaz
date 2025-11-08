@@ -263,11 +263,15 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                 
                 # Store sheet data
                 if students_data:
+                    # Normalize class_name: remove leading zeros ("03" -> "3")
+                    normalized_grade = str(int(class_name)) if class_name.isdigit() else class_name
+                    
                     all_sheets_data.append({
                         'sheet_name': sheet_name,
                         'subject': subject,
                         'class_name': class_name,
                         'section': section,
+                        'grade': normalized_grade,  # Add grade field with normalized value
                         'class_code': class_code,
                         'week_name': week_name,
                         'students': students_data
