@@ -580,10 +580,7 @@ def main():
                 
                 st.dataframe(subjects_df, use_container_width=True)
     
-    # Tab 4: Individual Reports
-    with tab5:
-        st.header("📄 التقارير الفردية")
-
+    # Tab 4: Teacher Reports
     with tab4:
         st.header("👩‍🏫 تقرير المعلمين")
         if 'teachers_data' not in st.session_state:
@@ -630,6 +627,9 @@ def main():
                 else:
                     st.info("لم يتم العثور على بيانات لهذا المعلم في الملفات المحملة.")
 
+    # Tab 5: Individual Reports
+    with tab5:
+        st.header("📄 التقارير الفردية")
         
         report_type = st.radio(
             "نوع التقرير",
