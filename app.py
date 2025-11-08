@@ -598,7 +598,12 @@ def main():
                 for _, row in teacher_subjects.iterrows():
                     subject = row.get('المادة', row.get('المادة الدراسية', ''))
                     section = str(row.get('الشعبة', '')).strip()
-                    grade = str(row.get('الصف', '')).strip()
+                    grade_raw = str(row.get('الصف', '')).strip()
+                    
+                    # Extract grade number from text like "ثالو3" -> "3"
+                    import re
+                    grade_numbers = re.findall(r'\d+', grade_raw)
+                    grade = grade_numbers[0] if grade_numbers else grade_raw
                     
                     # Check if there's matching data in all_data
                     for sheet_data in all_data:
