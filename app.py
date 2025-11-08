@@ -598,13 +598,18 @@ def main():
                 for _, row in teacher_subjects.iterrows():
                     subject = row.get('المادة', row.get('المادة الدراسية', ''))
                     section = str(row.get('الشعبة', '')).strip()
+                    grade = str(row.get('الصف', '')).strip()
                     
                     # Check if there's matching data in all_data
                     for sheet_data in all_data:
                         sheet_subject = sheet_data.get('subject', '').strip()
                         sheet_section = str(sheet_data.get('section', '')).strip()
+                        sheet_grade = str(sheet_data.get('grade', '')).strip()
                         
-                        if subject.strip() == sheet_subject and section == sheet_section:
+                        # Match subject, section, AND grade
+                        if (subject.strip() == sheet_subject and 
+                            section == sheet_section and 
+                            grade == sheet_grade):
                             has_data = True
                             break
                     
