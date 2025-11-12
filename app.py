@@ -415,11 +415,10 @@ def main():
             return
     
     # Main navigation
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4 = st.tabs([
         "✓ لوحة المعلومات",
         "✓ تقرير المدرسة",
         "✓ ملف الطالب",
-        "✓ تقرير المعلمين",
         "✓ التقارير الفردية"
     ])
     
@@ -580,122 +579,122 @@ def main():
                 
                 st.dataframe(subjects_df, use_container_width=True)
     
-    # Tab 4: Teacher Reports
-    with tab4:
-        st.header("👩‍🏫 تقرير المعلمين")
-        if 'teachers_data' not in st.session_state:
-            st.warning("⚠️ يرجى تحميل ملف بيانات المعلمين في الشريط الجانبي (إعدادات المدرسة) لعرض هذا التقرير.")
-        else:
-            teachers_df = st.session_state['teachers_data']
-            
-            # Show diagnostic info
-            st.info(f"📊 عدد المعلمات في الملف: {len(teachers_df)}")
-            st.info(f"📊 عدد أوراق بيانات الطلاب: {len(all_data)}")
-            
-            # Show available student data
-            with st.expander("🔍 عرض بيانات الطلاب المتاحة"):
-                for sheet in all_data:
-                    st.write(f"- المادة: '{sheet.get('subject', '')}', الصف: '{sheet.get('grade', '')}', الشعبة: '{sheet.get('section', '')}'")            
-            
-            # Filter teachers to only show those with data in uploaded files
-            teachers_with_data = []
-            matching_details = []
-            for teacher_name in teachers_df['اسم المعلم'].unique():
-                teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == teacher_name]
-                
-                # Check if this teacher has any matching data
-                has_data = False
-                for _, row in teacher_subjects.iterrows():
-                    subject = str(row.get('المادة', row.get('المادة الدراسية', ''))).strip()
-                    section = str(row.get('الشعبة', '')).strip()
-                    grade_raw = str(row.get('الصف', '')).strip()
-                    
-                    # Extract grade number from text like "ثالو3" -> "3"
-                    import re
-                    grade_numbers = re.findall(r'\d+', grade_raw)
-                    grade = grade_numbers[0] if grade_numbers else grade_raw
-                    
-                    # Store search criteria for first 3 teachers
-                    if len(matching_details) < 3:
-                        matching_details.append({
-                            'teacher': teacher_name,
-                            'subject': subject,
-                            'grade': grade,
-                            'section': section
-                        })
-                    
-                    # Check if there's matching data in all_data
-                    for sheet_data in all_data:
-                        sheet_subject = sheet_data.get('subject', '').strip()
-                        sheet_section = str(sheet_data.get('section', '')).strip()
-                        sheet_grade = str(sheet_data.get('grade', '')).strip()
-                        
-                        # Match subject, section, AND grade
-                        if (subject.strip() == sheet_subject and 
-                            section == sheet_section and 
-                            grade == sheet_grade):
-                            has_data = True
-                            break
-                    
-                    if has_data:
-                        break
-                
-                if has_data:
-                    teachers_with_data.append(teacher_name)
-            
-            if not teachers_with_data:
-                st.warning("⚠️ لم يتم العثور على معلمين لديهم بيانات في الملفات المحملة.")
-                
-                # Show what we're looking for
-                st.write("🔍 **ما يبحث عنه التطبيق (أول 3 معلمات):**")
-                for detail in matching_details[:3]:
-                    st.write(f"- {detail['teacher']}: المادة='{detail['subject']}', الصف='{detail['grade']}', الشعبة='{detail['section']}'")
-                
-                st.info("💡 **الحل:** تأكدي من أن ملف بيانات الطلاب يحتوي على نفس الصفوف والشعب الموجودة في ملف المعلمات.")
-                st.stop()
-            
-            teacher_names = sorted(teachers_with_data)
-            
-            selected_teacher = st.selectbox("اختر المعلم/ة", teacher_names)
-            
-            if selected_teacher:
-                # إصلاح خطأ الاستيراد
-                try:
-                    from teacher_report import create_teacher_specific_report
-                except ImportError:
-                    try:
-                        from .teacher_report import create_teacher_specific_report
-                    except ImportError:
-                        def create_teacher_specific_report(*args, **kwargs):
-                            st.warning("⚠️ ميزة تقرير المعلم غير متاحة حالياً")
-                            return None
-                
-                # Filter data for the selected teacher
-                teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == selected_teacher]
-                
-                # Create the report
-                teacher_report_data = create_teacher_specific_report(all_data, teacher_subjects)
-                
-                # Display the report
-                if teacher_report_data:
-                    st.subheader(f"📊 تقرير الأداء للمعلم/ة: {selected_teacher}")
-                    
-                    col1, col2, col3 = st.columns(3)
-                    col1.metric("📚 عدد المواد/الشعب", teacher_report_data['total_subjects'])
-                    col2.metric("🎯 متوسط الإنجاز الإجمالي", f"{teacher_report_data['overall_completion_rate']:.1f}%")
-                    col3.metric("👥 إجمالي الطلاب", teacher_report_data['total_students'])
-                    
-                    st.dataframe(teacher_report_data['details_df'], use_container_width=True)
-                    
-                    # Chart
-                    import plotly.express as px
-                    fig = px.bar(teacher_report_data['details_df'], x='المادة/الشعبة', y='نسبة الإنجاز', title=f"مقارنة الإنجاز للمواد التي يدرسها {selected_teacher}")
-                    st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.info("لم يتم العثور على بيانات لهذا المعلم في الملفات المحملة.")
+    # Tab 4: Teacher Reports (DISABLED)
+    # with tab4:
+    #     st.header("👩‍🏫 تقرير المعلمين")
+    #     if 'teachers_data' not in st.session_state:
+    #         st.warning("⚠️ يرجى تحميل ملف بيانات المعلمين في الشريط الجانبي (إعدادات المدرسة) لعرض هذا التقرير.")
+    #     else:
+    #         teachers_df = st.session_state['teachers_data']
+    #         
+    #         # Show diagnostic info
+    #         st.info(f"📊 عدد المعلمات في الملف: {len(teachers_df)}")
+    #         st.info(f"📊 عدد أوراق بيانات الطلاب: {len(all_data)}")
+    #         
+    #         # Show available student data
+    #         with st.expander("🔍 عرض بيانات الطلاب المتاحة"):
+    #             for sheet in all_data:
+    #                 st.write(f"- المادة: '{sheet.get('subject', '')}', الصف: '{sheet.get('grade', '')}', الشعبة: '{sheet.get('section', '')}'")            
+    #             
+    #             # Filter teachers to only show those with data in uploaded files
+    #             teachers_with_data = []
+    #             matching_details = []
+    #             for teacher_name in teachers_df['اسم المعلم'].unique():
+    #                 teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == teacher_name]
+    #                 
+    #                 # Check if this teacher has any matching data
+    #                 has_data = False
+    #                 for _, row in teacher_subjects.iterrows():
+    #                     subject = str(row.get('المادة', row.get('المادة الدراسية', ''))).strip()
+    #                     section = str(row.get('الشعبة', '')).strip()
+    #                     grade_raw = str(row.get('الصف', '')).strip()
+    #                     
+    #                     # Extract grade number from text like "ثالو3" -> "3"
+    #                     import re
+    #                     grade_numbers = re.findall(r'\d+', grade_raw)
+    #                     grade = grade_numbers[0] if grade_numbers else grade_raw
+    #                     
+    #                     # Store search criteria for first 3 teachers
+    #                     if len(matching_details) < 3:
+    #                         matching_details.append({
+    #                             'teacher': teacher_name,
+    #                             'subject': subject,
+    #                             'grade': grade,
+    #                             'section': section
+    #                         })
+    #                     
+    #                     # Check if there's matching data in all_data
+    #                     for sheet_data in all_data:
+    #                         sheet_subject = sheet_data.get('subject', '').strip()
+    #                         sheet_section = str(sheet_data.get('section', '')).strip()
+    #                         sheet_grade = str(sheet_data.get('grade', '')).strip()
+    #                         
+    #                         # Match subject, section, AND grade
+    #                         if (subject.strip() == sheet_subject and 
+    #                             section == sheet_section and 
+    #                             grade == sheet_grade):
+    #                             has_data = True
+    #                             break
+    #                     
+    #                     if has_data:
+    #                         break
+    #                 
+    #                 if has_data:
+    #                     teachers_with_data.append(teacher_name)
+    #             
+    #             if not teachers_with_data:
+    #                 st.warning("⚠️ لم يتم العثور على معلمين لديهم بيانات في الملفات المحملة.")
+    #                 
+    #                 # Show what we're looking for
+    #                 st.write("🔍 **ما يبحث عنه التطبيق (أول 3 معلمات):**")
+    #                 for detail in matching_details[:3]:
+    #                     st.write(f"- {detail['teacher']}: المادة='{detail['subject']}', الصف='{detail['grade']}', الشعبة='{detail['section']}'")
+    #                 
+    #                 st.info("💡 **الحل:** تأكدي من أن ملف بيانات الطلاب يحتوي على نفس الصفوف والشعب الموجودة في ملف المعلمات.")
+    #                 st.stop()
+    #             
+    #             teacher_names = sorted(teachers_with_data)
+    #             
+    #             selected_teacher = st.selectbox("اختر المعلم/ة", teacher_names)
+    #             
+    #             if selected_teacher:
+    #                 # إصلاح خطأ الاستيراد
+    #                 try:
+    #                     from teacher_report import create_teacher_specific_report
+    #                 except ImportError:
+    #                     try:
+    #                         from .teacher_report import create_teacher_specific_report
+    #                     except ImportError:
+    #                         def create_teacher_specific_report(*args, **kwargs):
+    #                             st.warning("⚠️ ميزة تقرير المعلم غير متاحة حالياً")
+    #                             return None
+    #                 
+    #                 # Filter data for the selected teacher
+    #                 teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == selected_teacher]
+    #                 
+    #                 # Create the report
+    #                 teacher_report_data = create_teacher_specific_report(all_data, teacher_subjects)
+    #                 
+    #                 # Display the report
+    #                 if teacher_report_data:
+    #                     st.subheader(f"📊 تقرير الأداء للمعلم/ة: {selected_teacher}")
+    #                     
+    #                     col1, col2, col3 = st.columns(3)
+    #                     col1.metric("📚 عدد المواد/الشعب", teacher_report_data['total_subjects'])
+    #                     col2.metric("🎯 متوسط الإنجاز الإجمالي", f"{teacher_report_data['overall_completion_rate']:.1f}%")
+    #                     col3.metric("👥 إجمالي الطلاب", teacher_report_data['total_students'])
+    #                     
+    #                     st.dataframe(teacher_report_data['details_df'], use_container_width=True)
+    #                     
+    #                     # Chart
+    #                     import plotly.express as px
+    #                     fig = px.bar(teacher_report_data['details_df'], x='المادة/الشعبة', y='نسبة الإنجاز', title=f"مقارنة الإنجاز للمواد التي يدرسها {selected_teacher}")
+    #                     st.plotly_chart(fig, use_container_width=True)
+    #                 else:
+    #                     st.info("لم يتم العثور على بيانات لهذا المعلم في الملفات المحملة.")
 
-    # Tab 5: Individual Reports
-    with tab5:
+    # Tab 4: Individual Reports (was tab5)
+    with tab4:
         st.header("📄 التقارير الفردية")
         
         report_type = st.radio(

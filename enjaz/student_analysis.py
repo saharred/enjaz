@@ -30,16 +30,41 @@ def create_student_analysis_table(all_data):
     
     for sheet_data in all_data:
         subject = sheet_data.get('subject', 'غير محدد')
-        class_code = sheet_data.get('class_code', 'غير محدد')
         
-        # Parse class_code to extract grade and section
-        # Format: "03/1" -> Grade: 03, Section: 1
-        if '/' in class_code:
-            parts = class_code.split('/')
-            grade = parts[0].strip()
-            section = parts[1].strip() if len(parts) > 1 else 'غير محدد'
-        else:
-            grade = class_code
+        # Try to get grade and section directly from sheet_data first (most reliable)
+        grade = sheet_data.get('grade', '')
+        section = sheet_data.get('section', '')
+        
+        # If not available, try to parse from class_code as fallback
+        if not grade or not section:
+            class_code = sheet_data.get('class_code', 'غير محدد')
+            
+            # Parse class_code to extract grade and section
+            # Support multiple formats: "03/1", "03 1", "03-1"
+            if '/' in class_code:
+                parts = class_code.split('/')
+                if not grade:
+                    grade = parts[0].strip()
+                if not section and len(parts) > 1:
+                    section = parts[1].strip()
+            elif ' ' in class_code:
+                parts = class_code.split()
+                if len(parts) >= 2:
+                    if not grade:
+                        grade = parts[0].strip()
+                    if not section:
+                        section = parts[1].strip()
+            elif '-' in class_code:
+                parts = class_code.split('-')
+                if not grade:
+                    grade = parts[0].strip()
+                if not section and len(parts) > 1:
+                    section = parts[1].strip()
+        
+        # Set defaults if still empty
+        if not grade:
+            grade = 'غير محدد'
+        if not section:
             section = 'غير محدد'
         
         for student in sheet_data['students']:

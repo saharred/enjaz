@@ -122,40 +122,66 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                     print(f"Skipping sheet '{sheet_name}': too few rows")
                     continue
                 
-                # Parse sheet name - support two formats:
-                # Format 1: "اللغة العربية 03 1" -> subject="اللغة العربية", class="03 1"
-                # Format 2: "03 الحوسبة وتكنولوجيا المعلومات 1" -> subject="الحوسبة وتكنولوجيا المعلومات", class="03 1"
+                # Parse sheet name - support multiple formats:
+                # Format 1: "اللغة العربية 03 1" -> subject="اللغة العربية", grade="03", section="1"
+                # Format 2: "التربية الاسلامية 1 03" -> subject="التربية الاسلامية", grade="03", section="1"
+                # Format 3: "03 الحوسبة 1" -> subject="الحوسبة", grade="03", section="1"
+                
                 parts = sheet_name.strip().split()
                 
-                # Check if first part is a number (Format 2)
-                if len(parts) >= 2 and parts[0].isdigit():
-                    # Format 2: "03 الحوسبة وتكنولوجيا المعلومات 1"
-                    # Extract class and section from class_code
-                    class_parts = class_code.split()
-                    class_name = class_parts[0] if len(class_parts) > 0 else 'غير محدد'
-                    section = class_parts[1] if len(class_parts) > 1 else 'غير محدد'
-                    class_code = parts[0]
-                    if len(parts) >= 3 and parts[-1].isdigit():
-                        class_code = f"{parts[0]} {parts[-1]}"
-                        subject = ' '.join(parts[1:-1])
-                        class_name = parts[0]
-                        section = parts[-1]
+                # Initialize defaults
+                subject = sheet_name
+                class_name = 'غير محدد'
+                section = 'غير محدد'
+                class_code = "N/A"
+                
+                if len(parts) >= 3:
+                    # Check if first part is a number (Format 3: "03 subject 1")
+                    if parts[0].isdigit() or (parts[0].startswith('0') and parts[0][1:].isdigit()):
+                        # Format 3: "03 الحوسبة وتكنولوجيا المعلومات 1"
+                        if parts[-1].isdigit():
+                            class_name = parts[0]
+                            section = parts[-1]
+                            subject = ' '.join(parts[1:-1])
+                            class_code = f"{parts[0]} {parts[-1]}"
+                        else:
+                            # No section at end, just grade at start
+                            class_name = parts[0]
+                            subject = ' '.join(parts[1:])
+                            class_code = parts[0]
                     else:
-                        subject = ' '.join(parts[1:])
+                        # Format 1 or 2: "subject 03 1" or "subject 1 03"
+                        # Last two parts should be numbers
+                        if len(parts) >= 3:
+                            last_two = parts[-2:]
+                            # Check if both are numeric
+                            if all(p.isdigit() or (p.startswith('0') and p[1:].isdigit()) for p in last_two):
+                                subject = ' '.join(parts[:-2])
+                                first_num = last_two[0]
+                                second_num = last_two[1]
+                                
+                                # Determine which is grade and which is section
+                                # Grade usually has leading zero (03, 04) or is > 9
+                                if first_num.startswith('0') or (first_num.isdigit() and int(first_num) > 9):
+                                    # Format 1: "subject 03 1" (grade first)
+                                    class_name = first_num
+                                    section = second_num
+                                else:
+                                    # Format 2: "subject 1 03" (section first)
+                                    class_name = second_num
+                                    section = first_num
+                                
+                                class_code = f"{class_name} {section}"
+                elif len(parts) == 2:
+                    # Only two parts - could be "subject grade" or "grade subject"
+                    if parts[0].isdigit() or (parts[0].startswith('0') and parts[0][1:].isdigit()):
                         class_name = parts[0]
-                        section = 'غير محدد'
-                elif len(parts) >= 3:
-                    # Format 1: "اللغة العربية 03 1"
-                    subject = ' '.join(parts[:-2])
-                    class_parts = parts[-2:]
-                    class_name = class_parts[0]
-                    section = class_parts[1]
-                    class_code = ' '.join(parts[-2:])
-                else:
-                    subject = sheet_name
-                    class_name = 'غير محدد'
-                    section = 'غير محدد'
-                    class_code = "N/A"
+                        subject = parts[1]
+                        class_code = parts[0]
+                    elif parts[1].isdigit() or (parts[1].startswith('0') and parts[1][1:].isdigit()):
+                        subject = parts[0]
+                        class_name = parts[1]
+                        class_code = parts[1]
                 
                 # Row 0: Headers (assignment titles)
                 # Row 1: Category
