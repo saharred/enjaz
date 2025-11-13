@@ -193,6 +193,13 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                                     section = first_num
                                 
                                 class_code = f"{class_name} {section}"
+                            elif parts[-1].isdigit() or (parts[-1].startswith('0') and parts[-1][1:].isdigit()):
+                                # Only last part is a number - it's the grade
+                                # e.g., "الحوسبة وتكنولوجيا المعلومات 03"
+                                subject = ' '.join(parts[:-1])
+                                class_name = parts[-1]
+                                class_code = parts[-1]
+                                # Section will be extracted from common_section later
                 elif len(parts) == 2:
                     # Only two parts - could be "subject grade" or "grade subject"
                     if parts[0].isdigit() or (parts[0].startswith('0') and parts[0][1:].isdigit()):
@@ -215,6 +222,18 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                     section = common_section
                     if class_name != 'غير محدد':
                         class_code = f"{class_name} {section}"
+                
+                # Remove leading zeros from class_name and section
+                if class_name != 'غير محدد':
+                    class_name = class_name.lstrip('0') or '0'
+                if section != 'غير محدد':
+                    section = section.lstrip('0') or '0'
+                
+                # Update class_code with cleaned values
+                if class_name != 'غير محدد' and section != 'غير محدد':
+                    class_code = f"{class_name} {section}"
+                elif class_name != 'غير محدد':
+                    class_code = class_name
                 
                 # Row 0: Headers (assignment titles)
                 # Row 1: Category
