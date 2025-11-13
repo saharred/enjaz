@@ -343,7 +343,32 @@ def create_student_individual_report(student_name, all_data, class_name, section
     ]))
     
     elements.append(qr_table)
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.3*cm))  # Space before parent section
+    
+    # === PARENT COMMENT SECTION ===
+    parent_comment_title = reshape_arabic("تعليق ولي الأمر:")
+    elements.append(Paragraph(parent_comment_title, heading_style))
+    
+    # Create a line for parent comment (underscores)
+    comment_line = "_" * 120  # Long line for writing
+    comment_style = ParagraphStyle(
+        'CommentLine',
+        parent=body_style,
+        alignment=TA_RIGHT,
+        fontSize=10,
+        spaceAfter=3
+    )
+    elements.append(Paragraph(comment_line, comment_style))
+    elements.append(Spacer(1, 0.5*cm))  # Reasonable space
+    
+    # === PARENT SIGNATURE SECTION ===
+    signature_title = reshape_arabic("توقيع ولي الأمر:")
+    elements.append(Paragraph(signature_title, heading_style))
+    
+    # Create a line for signature
+    signature_line = "_" * 40  # Shorter line for signature
+    elements.append(Paragraph(signature_line, comment_style))
+    elements.append(Spacer(1, 0.3*cm))  # Space before footer
     
     # === FOOTER WITH STAFF INFO ===
     footer_data = [
