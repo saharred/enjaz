@@ -214,41 +214,7 @@ def school_info_settings():
             st.success("✅ تم حفظ شعار الوزارة بنجاح")
             st.image(moe_logo_file, width=150)
         
-        st.markdown("---")
-        st.subheader("👩‍🏫 بيانات المعلمين")
-        
-        teachers_file = st.file_uploader(
-            "رفع ملف بيانات المعلمين (Excel/CSV)",
-            type=['xlsx', 'xls', 'csv'],
-            help="الملف يجب أن يحتوي على: اسم المعلم - المستوى - الشعبة - المادة - البريد الإلكتروني",
-            key="teachers_file_uploader"
-        )
-        
-        if teachers_file is not None:
-            try:
-                # Read teachers data
-                if teachers_file.name.endswith('.csv'):
-                    teachers_df = pd.read_csv(teachers_file)
-                else:
-                    teachers_df = pd.read_excel(teachers_file)
-                
-                # Save to session state
-                st.session_state['teachers_data'] = teachers_df
-                
-                # Save to file
-                data_path = Path(__file__).parent / 'enjaz' / 'data'
-                data_path.mkdir(exist_ok=True)
-                teachers_path = data_path / 'teachers.xlsx'
-                teachers_df.to_excel(teachers_path, index=False)
-                
-                st.success(f"✅ تم تحميل بيانات {len(teachers_df)} معلم")
-                
-                # Display preview
-                with st.expander("👁️ معاينة البيانات"):
-                    st.dataframe(teachers_df.head(), use_container_width=True)
-                    
-            except Exception as e:
-                st.error(f"❌ خطأ في قراءة الملف: {str(e)}")
+
         
         st.markdown("---")
         
@@ -579,121 +545,7 @@ def main():
                 
                 st.dataframe(subjects_df, use_container_width=True)
     
-    # Tab 4: Teacher Reports (DISABLED)
-    # with tab4:
-    #     st.header("👩‍🏫 تقرير المعلمين")
-    #     if 'teachers_data' not in st.session_state:
-    #         st.warning("⚠️ يرجى تحميل ملف بيانات المعلمين في الشريط الجانبي (إعدادات المدرسة) لعرض هذا التقرير.")
-    #     else:
-    #         teachers_df = st.session_state['teachers_data']
-    #         
-    #         # Show diagnostic info
-    #         st.info(f"📊 عدد المعلمات في الملف: {len(teachers_df)}")
-    #         st.info(f"📊 عدد أوراق بيانات الطلاب: {len(all_data)}")
-    #         
-    #         # Show available student data
-    #         with st.expander("🔍 عرض بيانات الطلاب المتاحة"):
-    #             for sheet in all_data:
-    #                 st.write(f"- المادة: '{sheet.get('subject', '')}', الصف: '{sheet.get('grade', '')}', الشعبة: '{sheet.get('section', '')}'")            
-    #             
-    #             # Filter teachers to only show those with data in uploaded files
-    #             teachers_with_data = []
-    #             matching_details = []
-    #             for teacher_name in teachers_df['اسم المعلم'].unique():
-    #                 teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == teacher_name]
-    #                 
-    #                 # Check if this teacher has any matching data
-    #                 has_data = False
-    #                 for _, row in teacher_subjects.iterrows():
-    #                     subject = str(row.get('المادة', row.get('المادة الدراسية', ''))).strip()
-    #                     section = str(row.get('الشعبة', '')).strip()
-    #                     grade_raw = str(row.get('الصف', '')).strip()
-    #                     
-    #                     # Extract grade number from text like "ثالو3" -> "3"
-    #                     import re
-    #                     grade_numbers = re.findall(r'\d+', grade_raw)
-    #                     grade = grade_numbers[0] if grade_numbers else grade_raw
-    #                     
-    #                     # Store search criteria for first 3 teachers
-    #                     if len(matching_details) < 3:
-    #                         matching_details.append({
-    #                             'teacher': teacher_name,
-    #                             'subject': subject,
-    #                             'grade': grade,
-    #                             'section': section
-    #                         })
-    #                     
-    #                     # Check if there's matching data in all_data
-    #                     for sheet_data in all_data:
-    #                         sheet_subject = sheet_data.get('subject', '').strip()
-    #                         sheet_section = str(sheet_data.get('section', '')).strip()
-    #                         sheet_grade = str(sheet_data.get('grade', '')).strip()
-    #                         
-    #                         # Match subject, section, AND grade
-    #                         if (subject.strip() == sheet_subject and 
-    #                             section == sheet_section and 
-    #                             grade == sheet_grade):
-    #                             has_data = True
-    #                             break
-    #                     
-    #                     if has_data:
-    #                         break
-    #                 
-    #                 if has_data:
-    #                     teachers_with_data.append(teacher_name)
-    #             
-    #             if not teachers_with_data:
-    #                 st.warning("⚠️ لم يتم العثور على معلمين لديهم بيانات في الملفات المحملة.")
-    #                 
-    #                 # Show what we're looking for
-    #                 st.write("🔍 **ما يبحث عنه التطبيق (أول 3 معلمات):**")
-    #                 for detail in matching_details[:3]:
-    #                     st.write(f"- {detail['teacher']}: المادة='{detail['subject']}', الصف='{detail['grade']}', الشعبة='{detail['section']}'")
-    #                 
-    #                 st.info("💡 **الحل:** تأكدي من أن ملف بيانات الطلاب يحتوي على نفس الصفوف والشعب الموجودة في ملف المعلمات.")
-    #                 st.stop()
-    #             
-    #             teacher_names = sorted(teachers_with_data)
-    #             
-    #             selected_teacher = st.selectbox("اختر المعلم/ة", teacher_names)
-    #             
-    #             if selected_teacher:
-    #                 # إصلاح خطأ الاستيراد
-    #                 try:
-    #                     from teacher_report import create_teacher_specific_report
-    #                 except ImportError:
-    #                     try:
-    #                         from .teacher_report import create_teacher_specific_report
-    #                     except ImportError:
-    #                         def create_teacher_specific_report(*args, **kwargs):
-    #                             st.warning("⚠️ ميزة تقرير المعلم غير متاحة حالياً")
-    #                             return None
-    #                 
-    #                 # Filter data for the selected teacher
-    #                 teacher_subjects = teachers_df[teachers_df['اسم المعلم'] == selected_teacher]
-    #                 
-    #                 # Create the report
-    #                 teacher_report_data = create_teacher_specific_report(all_data, teacher_subjects)
-    #                 
-    #                 # Display the report
-    #                 if teacher_report_data:
-    #                     st.subheader(f"📊 تقرير الأداء للمعلم/ة: {selected_teacher}")
-    #                     
-    #                     col1, col2, col3 = st.columns(3)
-    #                     col1.metric("📚 عدد المواد/الشعب", teacher_report_data['total_subjects'])
-    #                     col2.metric("🎯 متوسط الإنجاز الإجمالي", f"{teacher_report_data['overall_completion_rate']:.1f}%")
-    #                     col3.metric("👥 إجمالي الطلاب", teacher_report_data['total_students'])
-    #                     
-    #                     st.dataframe(teacher_report_data['details_df'], use_container_width=True)
-    #                     
-    #                     # Chart
-    #                     import plotly.express as px
-    #                     fig = px.bar(teacher_report_data['details_df'], x='المادة/الشعبة', y='نسبة الإنجاز', title=f"مقارنة الإنجاز للمواد التي يدرسها {selected_teacher}")
-    #                     st.plotly_chart(fig, use_container_width=True)
-    #                 else:
-    #                     st.info("لم يتم العثور على بيانات لهذا المعلم في الملفات المحملة.")
-
-    # Tab 4: Individual Reports (was tab5)
+    # Tab 4: Individual Reports
     with tab4:
         st.header("📄 التقارير الفردية")
         
@@ -849,112 +701,12 @@ def main():
                         # Get selected sheet indices
                         selected_indices = [sheet_names.index(name) for name in selected_sheets]
                         
-                        # Import teacher report module - إصلاح خطف الاستيراد
-                        try:
-                            from teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
-                        except ImportError:
-                            try:
-                                from .teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
-                            except ImportError:
-                                st.error("❌ لم نتمكن من تحميل موديول تقرير المعلم")
-                                st.stop()
+                        st.success(f"✅ تم اختيار {len(selected_sheets)} مادة/شعبة")
                         
-                        # Aggregate data from selected sheets
-                        teacher_data = aggregate_teacher_data(all_data, selected_indices)
-                        
-                        # Create Excel report
-                        import tempfile
-                        import os
-                        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
-                            excel_path = export_teacher_report_to_excel(teacher_data, tmp.name)
-                            
-                            with open(excel_path, 'rb') as f:
-                                excel_data = f.read()
-                            
-                            st.download_button(
-                                label="⬇️ تحميل التقرير (Excel)",
-                                data=excel_data,
-                                file_name=f"تقرير_مجمّع_{len(selected_sheets)}_مواد.xlsx",
-                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            )
-                            
-                            # Clean up
-                            os.unlink(excel_path)
-                        
-                        st.success(f"✅ تم إنشاء تقرير مجمّع لـ {len(selected_sheets)} مادة/شعبة بنجاح!")
-                        
-                        # Display summary
-                        st.subheader("📊 ملخص التقرير")
-                        col1, col2, col3, col4 = st.columns(4)
-                        
-                        with col1:
-                            st.metric("👥 عدد الطلاب", teacher_data['total_students'])
-                        
-                        with col2:
-                            st.metric("📊 عدد التقييمات", teacher_data['total_assessments'])
-                        
-                        with col3:
-                            st.metric("✅ المُنجز", teacher_data['total_completed'])
-                        
-                        with col4:
-                            st.metric("🎯 متوسط الإنجاز", f"{teacher_data['average_completion']:.1f}%")
-                        
-                        # Email sending feature
-                        st.divider()
-                        st.subheader("📧 إرسال التقرير عبر البريد الإلكتروني")
-                        
-                        with st.expander("📧 إرسال التقرير للمعلم", expanded=False):
-                            from enjaz.email_sender import send_teacher_report_email, validate_email, get_email_config_instructions
-                            
-                            col_email1, col_email2 = st.columns(2)
-                            
-                            with col_email1:
-                                teacher_name = st.text_input(
-                                    "👤 اسم المعلم/ة",
-                                    placeholder="مثلاً: أحمد محمد",
-                                    key="teacher_name_email"
-                                )
-                            
-                            with col_email2:
-                                teacher_email = st.text_input(
-                                    "📧 البريد الإلكتروني",
-                                    placeholder="teacher@school.qa",
-                                    key="teacher_email"
-                                )
-                            
-                            if st.button("✉️ إرسال التقرير", key="send_email_btn"):
-                                if not teacher_name or not teacher_email:
-                                    st.warning("⚠️ يرجى إدخال الاسم والبريد الإلكتروني")
-                                elif not validate_email(teacher_email):
-                                    st.error("❌ البريد الإلكتروني غير صحيح")
-                                else:
-                                    with st.spinner("📤 جاري إرسال التقرير..."):
-                                        # Create temporary file for email
-                                        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_email:
-                                            excel_path_email = export_teacher_report_to_excel(teacher_data, tmp_email.name)
-                                            
-                                            success, message = send_teacher_report_email(
-                                                recipient_email=teacher_email,
-                                                teacher_name=teacher_name,
-                                                report_file_path=excel_path_email,
-                                                subject_count=len(selected_sheets)
-                                            )
-                                            
-                                            # Clean up
-                                            os.unlink(excel_path_email)
-                                        
-                                        if success:
-                                            st.success(message)
-                                        else:
-                                            st.warning(message)
-                            
-                            # Configuration instructions
-                            with st.expander("⚙️ إعدادات البريد الإلكتروني"):
-                                st.markdown(get_email_config_instructions())
-                        
-                        # Store report path in session state for email
-                        if 'last_report_path' not in st.session_state:
-                            st.session_state.last_report_path = None
+                        # Display selected sheets
+                        st.subheader("📊 المواد المختارة")
+                        for sheet_name in selected_sheets:
+                            st.write(f"- {sheet_name}")
                         
                     except Exception as e:
                         st.error(f"❌ حدث خطأ: {str(e)}")
