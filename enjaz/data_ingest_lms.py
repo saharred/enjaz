@@ -108,6 +108,27 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
             xls = pd.ExcelFile(file_path_or_buffer, engine='openpyxl')
             engine = 'openpyxl'
         
+        # First pass: extract common section number from all sheets
+        common_section = None
+        for sheet_name in xls.sheet_names:
+            parts = sheet_name.strip().split()
+            if len(parts) >= 3:
+                # Check last two parts for numbers
+                last_two = parts[-2:]
+                if all(p.isdigit() or (p.startswith('0') and len(p) > 1 and p[1:].isdigit()) for p in last_two):
+                    # Found grade and section
+                    first_num = last_two[0]
+                    second_num = last_two[1]
+                    # Determine which is section (usually single digit without leading zero)
+                    if first_num.startswith('0') or (first_num.isdigit() and int(first_num) > 9):
+                        # first is grade, second is section
+                        common_section = second_num.lstrip('0')
+                    else:
+                        # first is section, second is grade
+                        common_section = first_num.lstrip('0')
+                    break  # Found section, no need to check other sheets
+        
+        # Second pass: process all sheets
         for sheet_name in xls.sheet_names:
             try:
                 # Read sheet without headers
@@ -188,6 +209,12 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                     # Only one part or no numbers found - try to extract from subject name
                     # e.g., "الحوسبة" might have grade/section in student data
                     pass
+                
+                # If section is still غير محدد, use common_section from other sheets
+                if section == 'غير محدد' and common_section:
+                    section = common_section
+                    if class_name != 'غير محدد':
+                        class_code = f"{class_name} {section}"
                 
                 # Row 0: Headers (assignment titles)
                 # Row 1: Category
