@@ -93,9 +93,9 @@ def create_student_individual_report(student_name, all_data, class_name, section
         'ArabicTitle',
         parent=styles['Title'],
         alignment=TA_CENTER,
-        fontSize=13,  # Reduced for single-page fit
+        fontSize=11,  # Further reduced for single-page fit
         textColor=colors.HexColor('#8A1538'),  # Qatar maroon
-        spaceAfter=4,  # Reduced spacing
+        spaceAfter=2,  # Minimal spacing
         fontName=AMIRI_BOLD
     )
     
@@ -103,9 +103,9 @@ def create_student_individual_report(student_name, all_data, class_name, section
         'ArabicHeading',
         parent=styles['Heading2'],
         alignment=TA_RIGHT,
-        fontSize=10,  # Reduced for single-page fit
+        fontSize=9,  # Further reduced for single-page fit
         textColor=colors.HexColor('#8A1538'),  # Qatar maroon
-        spaceAfter=3,  # Reduced spacing
+        spaceAfter=2,  # Minimal spacing
         fontName=AMIRI_BOLD
     )
     
@@ -113,8 +113,8 @@ def create_student_individual_report(student_name, all_data, class_name, section
         'ArabicBody',
         parent=styles['BodyText'],
         alignment=TA_RIGHT,
-        fontSize=8,  # Reduced for single-page fit
-        spaceAfter=2,  # Reduced spacing
+        fontSize=7,  # Further reduced for single-page fit
+        spaceAfter=1,  # Minimal spacing
         fontName=AMIRI_REGULAR
     )
     
@@ -159,15 +159,19 @@ def create_student_individual_report(student_name, all_data, class_name, section
     ]))
     
     elements.append(header_table)
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
     
     # === STUDENT INFO ===
     info_title = reshape_arabic("معلومات الطالب")
     elements.append(Paragraph(info_title, heading_style))
     
     # RTL order: right to left
+    # Clean class_name and section - remove leading zeros and ensure proper display
+    clean_class = str(class_name).lstrip('0') if class_name and class_name != 'غير محدد' else class_name
+    clean_section = str(section).lstrip('0') if section and section != 'غير محدد' else section
+    
     info_data = [
-        [reshape_arabic(class_name), reshape_arabic("الصف:"), reshape_arabic(section), reshape_arabic("الشعبة:")],
+        [clean_class, reshape_arabic("الصف:"), clean_section, reshape_arabic("الشعبة:")],
         ['', '', reshape_arabic(student_name), reshape_arabic("اسم الطالب:")]
     ]
     
@@ -180,7 +184,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     ]))
     
     elements.append(info_table)
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
     
     # === SUBJECT-WISE TABLE ===
     # Define subject order with "تكنولوجيا المعلومات" as LAST row
@@ -275,7 +279,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     ]))
     
     elements.append(subject_table)
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
     
     # === STATISTICS ===
     stats_title = reshape_arabic("الإحصائيات:")
@@ -299,7 +303,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     ]))
     
     elements.append(stats_table)
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
     
     # === RECOMMENDATION ===
     rec_title = reshape_arabic("توصية منسق المشاريع:")
@@ -310,7 +314,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     rec_text = reshape_arabic(recommendation)
     elements.append(Paragraph(rec_text, body_style))
     
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
     
     # === QR CODES ===
     qr_title = reshape_arabic("روابط مهمة:")
@@ -343,7 +347,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     ]))
     
     elements.append(qr_table)
-    elements.append(Spacer(1, 0.3*cm))  # Space before parent section
+    elements.append(Spacer(1, 0.1*cm))  # Space before parent section
     
     # === PARENT COMMENT SECTION ===
     parent_comment_title = reshape_arabic("تعليق ولي الأمر:")
@@ -359,7 +363,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
         spaceAfter=3
     )
     elements.append(Paragraph(comment_line, comment_style))
-    elements.append(Spacer(1, 0.5*cm))  # Reasonable space
+    elements.append(Spacer(1, 0.15*cm))  # Reasonable space
     
     # === PARENT SIGNATURE SECTION ===
     signature_title = reshape_arabic("توقيع ولي الأمر:")
@@ -368,7 +372,7 @@ def create_student_individual_report(student_name, all_data, class_name, section
     # Create a line for signature
     signature_line = "_" * 40  # Shorter line for signature
     elements.append(Paragraph(signature_line, comment_style))
-    elements.append(Spacer(1, 0.3*cm))  # Space before footer
+    elements.append(Spacer(1, 0.1*cm))  # Space before footer
     
     # === FOOTER WITH STAFF INFO ===
     footer_data = [
@@ -430,9 +434,9 @@ def create_class_subject_report(subject, class_code, sheet_data):
         'ArabicTitle',
         parent=styles['Title'],
         alignment=TA_CENTER,
-        fontSize=13,  # Reduced for single-page fit
+        fontSize=11,  # Further reduced for single-page fit
         textColor=colors.HexColor('#8A1538'),  # Qatar maroon
-        spaceAfter=4,  # Reduced spacing
+        spaceAfter=2,  # Minimal spacing
         fontName=AMIRI_BOLD
     )
     
@@ -440,9 +444,9 @@ def create_class_subject_report(subject, class_code, sheet_data):
         'ArabicHeading',
         parent=styles['Heading2'],
         alignment=TA_RIGHT,
-        fontSize=10,  # Reduced for single-page fit
+        fontSize=9,  # Further reduced for single-page fit
         textColor=colors.HexColor('#8A1538'),  # Qatar maroon
-        spaceAfter=3,  # Reduced spacing
+        spaceAfter=2,  # Minimal spacing
         fontName=AMIRI_BOLD
     )
     
@@ -450,8 +454,8 @@ def create_class_subject_report(subject, class_code, sheet_data):
         'ArabicBody',
         parent=styles['BodyText'],
         alignment=TA_RIGHT,
-        fontSize=8,  # Reduced for single-page fit
-        spaceAfter=2,  # Reduced spacing
+        fontSize=7,  # Further reduced for single-page fit
+        spaceAfter=1,  # Minimal spacing
         fontName=AMIRI_REGULAR
     )
     
@@ -492,7 +496,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
     ]))
     
     elements.append(header_table)
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
     
     # === STUDENT LIST TABLE ===
     table_data = []
@@ -541,7 +545,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
     ]))
     
     elements.append(student_table)
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
     
     # === CLASS STATISTICS ===
     students_with_due = [s for s in sheet_data['students'] if s['has_due']]
@@ -559,7 +563,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
         )
         elements.append(Paragraph(stats_text, body_style))
         
-        elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+        elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
         
         # === RECOMMENDATION ===
         rec_title = reshape_arabic("التوصيات:")
@@ -570,7 +574,7 @@ def create_class_subject_report(subject, class_code, sheet_data):
         rec_text = reshape_arabic(recommendation)
         elements.append(Paragraph(rec_text, body_style))
     
-    elements.append(Spacer(1, 0.2*cm))  # Reduced for single-page fit
+    elements.append(Spacer(1, 0.08*cm))  # Reduced for single-page fit
     
     # === FOOTER ===
     footer_data = [

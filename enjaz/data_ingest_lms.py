@@ -178,10 +178,16 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                         class_name = parts[0]
                         subject = parts[1]
                         class_code = parts[0]
+                        # Section remains 'غير محدد' - will be extracted from student data if available
                     elif parts[1].isdigit() or (parts[1].startswith('0') and parts[1][1:].isdigit()):
                         subject = parts[0]
                         class_name = parts[1]
                         class_code = parts[1]
+                        # Section remains 'غير محدد' - will be extracted from student data if available
+                else:
+                    # Only one part or no numbers found - try to extract from subject name
+                    # e.g., "الحوسبة" might have grade/section in student data
+                    pass
                 
                 # Row 0: Headers (assignment titles)
                 # Row 1: Category

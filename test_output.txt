@@ -1,0 +1,85 @@
+=== Teacher Data ===
+Total teachers: 141
+
+Columns: ['المادة الدراسية', 'الصف', 'الشعبة', 'اسم المعلم']
+
+First 3 rows:
+
+Teacher: وضحى عايض راشد الجربوعى المرى
+  Subject: 'التربية الاسلامية '
+  Grade (raw): 'رابع4' → (extracted): '4'
+  Section: '4'
+
+Teacher: آلاء قاسم محمد  ابوشقير
+  Subject: 'اللغة الانجليزية '
+  Grade (raw): 'رابع4' → (extracted): '4'
+  Section: '4'
+
+Teacher: اميمه عبدالفتاح احمد محمود
+  Subject: 'الرياضيات '
+  Grade (raw): 'رابع4' → (extracted): '4'
+  Section: '4'
+
+
+=== Student Data ===
+✅ Processed sheet 'الحوسبة وتكنولوجيا المعلومات 03': 27 students
+✅ Processed sheet 'التربية الاسلامية 03 1': 27 students
+✅ Processed sheet 'اللغة العربية 03 1': 27 students
+✅ Processed sheet 'اللغة الانجليزية 03 1': 27 students
+✅ Processed sheet 'الرياضيات 03 1': 27 students
+✅ Processed sheet 'العلوم 03 1': 27 students
+✅ Processed sheet 'الدراسات الاجتماعية 03 1': 27 students
+✅ Processed sheet 'الفنون البصرية 03 1': 27 students
+Number of sheets: 8
+
+Sheet: الحوسبة وتكنولوجيا المعلومات 03
+  Subject: 'الحوسبة وتكنولوجيا'
+  Grade: 'المعلومات'
+  Section: '03'
+
+Sheet: التربية الاسلامية 03 1
+  Subject: 'التربية الاسلامية'
+  Grade: '3'
+  Section: '1'
+
+Sheet: اللغة العربية 03 1
+  Subject: 'اللغة العربية'
+  Grade: '3'
+  Section: '1'
+
+Sheet: اللغة الانجليزية 03 1
+  Subject: 'اللغة الانجليزية'
+  Grade: '3'
+  Section: '1'
+
+Sheet: الرياضيات 03 1
+  Subject: 'الرياضيات'
+  Grade: '3'
+  Section: '1'
+
+
+=== Testing Matches ===
+
+✗ وضحى عايض راشد الجربوعى المرى: NO MATCH
+  Looking for: Subject='التربية الاسلامية ', Grade='4', Section='4'
+  Available sheets:
+    - Subject='الحوسبة وتكنولوجيا', Grade='المعلومات', Section='03'
+    - Subject='التربية الاسلامية', Grade='3', Section='1'
+    - Subject='اللغة العربية', Grade='3', Section='1'
+
+✗ آلاء قاسم محمد  ابوشقير: NO MATCH
+  Looking for: Subject='اللغة الانجليزية ', Grade='4', Section='4'
+  Available sheets:
+    - Subject='الحوسبة وتكنولوجيا', Grade='المعلومات', Section='03'
+    - Subject='التربية الاسلامية', Grade='3', Section='1'
+    - Subject='اللغة العربية', Grade='3', Section='1'
+
+✗ اميمه عبدالفتاح احمد محمود: NO MATCH
+  Looking for: Subject='الرياضيات ', Grade='4', Section='4'
+  Available sheets:
+    - Subject='الحوسبة وتكنولوجيا', Grade='المعلومات', Section='03'
+    - Subject='التربية الاسلامية', Grade='3', Section='1'
+    - Subject='اللغة العربية', Grade='3', Section='1'
+
+
+Total matches: 0 out of 141 teachers

@@ -1,0 +1,2 @@
+# Force update marker
+# Updated: 2025-10-24 - Fixed band distribution calculation
