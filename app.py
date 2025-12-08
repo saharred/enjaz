@@ -710,7 +710,8 @@ def main():
                         teacher_data = aggregate_teacher_data(all_data, selected_indices)
                         
                         # 2. Export to Excel
-                        exported_file = export_teacher_report_to_excel(teacher_data)
+                        output_path = "dummy_path_for_compatibility"
+                        exported_file = export_teacher_report_to_excel(teacher_data, output_path)
                         
                         # 3. Read the file content for download
                         with open(exported_file, "rb") as f:
