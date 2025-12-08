@@ -160,11 +160,35 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                     # Check if first part is a number (Format 3: "03 subject 1")
                     if parts[0].isdigit() or (parts[0].startswith('0') and parts[0][1:].isdigit()):
                         # Format 3: "03 الحوسبة وتكنولوجيا المعلومات 1"
-                        if parts[-1].isdigit():
-                            class_name = parts[0]
-                            section = parts[-1]
+                        # Check if last part is a number (section)
+                        if parts[-1].isdigit() or (parts[-1].startswith('0') and parts[-1][1:].isdigit()):
+                            # Format 3: "03 الحوسبة وتكنولوجيا المعلومات 1"
+                            first_num = parts[0]
+                            second_num = parts[-1]
+                            
+                            # Determine which is grade and which is section (same logic as before)
+                            try:
+                                num1 = int(first_num)
+                                num2 = int(second_num)
+                            except ValueError:
+                                class_name = first_num
+                                section = second_num
+                            else:
+                                if first_num.startswith('0') and not second_num.startswith('0'):
+                                    class_name = first_num
+                                    section = second_num
+                                elif second_num.startswith('0') and not first_num.startswith('0'):
+                                    class_name = second_num
+                                    section = first_num
+                                elif num1 >= num2:
+                                    class_name = first_num
+                                    section = second_num
+                                else:
+                                    class_name = second_num
+                                    section = first_num
+                                    
                             subject = ' '.join(parts[1:-1])
-                            class_code = f"{parts[0]} {parts[-1]}"
+                            class_code = f"{class_name} {section}"
                         else:
                             # No section at end, just grade at start
                             class_name = parts[0]
@@ -182,15 +206,32 @@ def parse_lms_excel(file_path_or_buffer, today=None, week_name="Week 1", start_d
                                 second_num = last_two[1]
                                 
                                 # Determine which is grade and which is section
-                                # Grade usually has leading zero (03, 04) or is > 9
-                                if first_num.startswith('0') or (first_num.isdigit() and int(first_num) > 9):
-                                    # Format 1: "subject 03 1" (grade first)
+                                # Grade is usually the larger number or the one with a leading zero (e.g., 03, 04)
+                                # Section is usually the smaller number (e.g., 1, 2)
+                                
+                                # Convert to int for comparison, handling potential leading zeros
+                                try:
+                                    num1 = int(first_num)
+                                    num2 = int(second_num)
+                                except ValueError:
+                                    # Fallback if conversion fails (shouldn't happen with isdigit check)
                                     class_name = first_num
                                     section = second_num
                                 else:
-                                    # Format 2: "subject 1 03" (section first)
-                                    class_name = second_num
-                                    section = first_num
+                                    # Prioritize the number with a leading zero as the grade
+                                    if first_num.startswith('0') and not second_num.startswith('0'):
+                                        class_name = first_num
+                                        section = second_num
+                                    elif second_num.startswith('0') and not first_num.startswith('0'):
+                                        class_name = second_num
+                                        section = first_num
+                                    # If no leading zero, assume the larger number is the grade
+                                    elif num1 >= num2:
+                                        class_name = first_num
+                                        section = second_num
+                                    else:
+                                        class_name = second_num
+                                        section = first_num
                                 
                                 class_code = f"{class_name} {section}"
                             elif parts[-1].isdigit() or (parts[-1].startswith('0') and parts[-1][1:].isdigit()):

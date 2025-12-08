@@ -153,42 +153,41 @@ def aggregate_teacher_data(all_data, selected_indices):
         return teacher_data
 
 
-def export_teacher_report_to_excel(teacher_data, output_path, teacher_name="المعلم/ة"):
+import tempfile
+import os
+
+def export_teacher_report_to_excel(teacher_data, teacher_name="المعلم/ة"):
     """
-    Export teacher report to Excel file.
-    
+    Export teacher report to Excel file using a temporary file for cross-platform safety.
+
     Args:
         teacher_data: Aggregated teacher data
-        output_path: Path to save Excel file
         teacher_name: Name of the teacher
-    
-    Returns:
-        str: Path to saved file
-    """
-    # Import from enjaz module
-    try:
-        from enjaz.teacher_report import export_teacher_report_to_excel as enjaz_export
-        return enjaz_export(teacher_data, output_path, teacher_name)
-    except ImportError:
-        # Fallback simple implementation
-        with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-            # Overview sheet
-            overview_data = {
-                'البيان': [
-                    'اسم المعلم/ة',
-                    'عدد المواد/الشعب',
-                    'إجمالي الطلاب',
-                    'متوسط الإنجاز'
-                ],
-                'القيمة': [
-                    teacher_name,
-                    len(teacher_data.get('sheets', [])),
-                    teacher_data.get('total_students', 0),
-                    f"{teacher_data.get('average_completion', 0):.1f}%"
-                ]
-            }
-            overview_df = pd.DataFrame(overview_data)
-            overview_df.to_excel(writer, sheet_name='نظرة عامة', index=False)
-        
-        return output_path
 
+    Returns:
+        str: Path to saved temporary file
+    """
+    # Use tempfile.NamedTemporaryFile for a guaranteed safe path
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
+        temp_file_path = tmp.name
+    
+    with pd.ExcelWriter(temp_file_path, engine='openpyxl') as writer:
+        # Overview sheet
+        overview_data = {
+            'البيان': [
+                'اسم المعلم/ة',
+                'عدد المواد/الشعب',
+                'إجمالي الطلاب',
+                'متوسط الإنجاز'
+            ],
+            'القيمة': [
+                teacher_name,
+                len(teacher_data.get('sheets', [])),
+                teacher_data.get('total_students', 0),
+                f"{teacher_data.get('average_completion', 0):.1f}%"
+            ]
+        }
+        overview_df = pd.DataFrame(overview_data)
+        overview_df.to_excel(writer, sheet_name='نظرة عامة', index=False)
+    
+    return temp_file_path
