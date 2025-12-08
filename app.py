@@ -701,12 +701,28 @@ def main():
                         # Get selected sheet indices
                         selected_indices = [sheet_names.index(name) for name in selected_sheets]
                         
-                        st.success(f"✅ تم اختيار {len(selected_sheets)} مادة/شعبة")
+                        # Get selected sheet indices
+                        selected_indices = [sheet_names.index(name) for name in selected_sheets]
                         
-                        # Display selected sheets
-                        st.subheader("📊 المواد المختارة")
-                        for sheet_name in selected_sheets:
-                            st.write(f"- {sheet_name}")
+                        # 1. Aggregate data for the selected sheets
+                        teacher_data = aggregate_teacher_data(all_data, selected_indices)
+                        
+                        # 2. Export to Excel
+                        output_path = f"/tmp/تقرير_المعلم_{len(selected_sheets)}_مادة.xlsx"
+                        exported_file = export_teacher_report_to_excel(teacher_data, output_path)
+                        
+                        # 3. Read the file content for download
+                        with open(exported_file, "rb") as f:
+                            excel_data = f.read()
+                        
+                        st.download_button(
+                            label="⬇️ تحميل التقرير (Excel)",
+                            data=excel_data,
+                            file_name=f"تقرير_المعلم_{len(selected_sheets)}_مادة.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                        
+                        st.success(f"✅ تم إنشاء تقرير {len(selected_sheets)} مادة/شعبة بنجاح!")
                         
                     except Exception as e:
                         st.error(f"❌ حدث خطأ: {str(e)}")
