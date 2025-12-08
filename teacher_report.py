@@ -156,7 +156,7 @@ def aggregate_teacher_data(all_data, selected_indices):
 import tempfile
 import os
 
-def export_teacher_report_to_excel(teacher_data, teacher_name="المعلم/ة"):
+def export_teacher_report_to_excel(teacher_data, output_path=None, teacher_name="المعلم/ة"):
     """
     Export teacher report to Excel file using a temporary file for cross-platform safety.
 
