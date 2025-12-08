@@ -31,6 +31,7 @@ from enjaz.student_analysis import (
     create_student_summary_by_band,
     export_student_analysis_to_excel
 )
+from enjaz.teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
 from enjaz.school_report import (
     create_horizontal_school_report,
     create_filtered_school_report,
@@ -39,6 +40,7 @@ from enjaz.school_report import (
     get_unique_sections,
     create_descriptive_report
 )
+from enjaz.teacher_report import aggregate_teacher_data, export_teacher_report_to_excel
 from enjaz.professional_design import (
     get_professional_css,
     get_header_html,
