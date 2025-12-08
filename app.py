@@ -710,8 +710,7 @@ def main():
                         teacher_data = aggregate_teacher_data(all_data, selected_indices)
                         
                         # 2. Export to Excel
-                        output_path = f"/tmp/تقرير_المعلم_{len(selected_sheets)}_مادة.xlsx"
-                        exported_file = export_teacher_report_to_excel(teacher_data, output_path)
+                        exported_file = export_teacher_report_to_excel(teacher_data)
                         
                         # 3. Read the file content for download
                         with open(exported_file, "rb") as f:
