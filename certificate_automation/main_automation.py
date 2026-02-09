@@ -54,11 +54,16 @@ GROUP_EMAIL = 'school-group@education.qa'
 # موضوع الإيميل
 EMAIL_SUBJECT = 'شهادة شكر وتقدير - الدرجة الكاملة في جودة الأداء'
 
+# نص الشهادة - السبب
+CERT_REASON_LINE1 = 'وذلك تقديراً لتحقيقها شروط المحتوى الرقمي'
+CERT_REASON_LINE2 = 'على نظام قطر للتعليم خلال شهر يناير'
+CERT_REASON_LINE3 = 'مع تمنياتنا لها بالتوفيق والتميز'
+
 # نص الإيميل
 EMAIL_BODY = """السلام عليكم ورحمة الله وبركاته
 
 تتقدم إدارة مدرسة عثمان بن عفان النموذجية للبنين بخالص الشكر والتقدير
-للمعلمات المتميزات الحاصلات على الدرجة الكاملة (8/8) في جودة الأداء على نظام قطر للتعليم.
+للمعلمات المتميزات لتحقيقهن شروط المحتوى الرقمي على نظام قطر للتعليم خلال شهر يناير.
 
 مرفق شهادات الشكر والتقدير.
 
@@ -264,11 +269,11 @@ def generate_certificate(teacher_name, subject, output_path):
     
     # --- السبب ---
     y += h + 18
-    h = draw_centered_text(draw, "وذلك تقديراً لحصولها على الدرجة الكاملة (8/8) في جودة الأداء", y, font_reason, DARK_TEXT, img_w)
+    h = draw_centered_text(draw, CERT_REASON_LINE1, y, font_reason, DARK_TEXT, img_w)
     y += h + 5
-    h = draw_centered_text(draw, "على نظام قطر للتعليم", y, font_reason, DARK_TEXT, img_w)
+    h = draw_centered_text(draw, CERT_REASON_LINE2, y, font_reason, DARK_TEXT, img_w)
     y += h + 5
-    h = draw_centered_text(draw, "مع تمنياتنا بدوام التوفيق والتميز", y, font_reason, DARK_TEXT, img_w)
+    h = draw_centered_text(draw, CERT_REASON_LINE3, y, font_reason, DARK_TEXT, img_w)
     y += h + 8
     draw_centered_text(draw, "★     ★     ★", y, font_stars, GOLD, img_w)
     
